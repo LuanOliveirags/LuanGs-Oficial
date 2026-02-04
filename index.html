@@ -18,9 +18,10 @@
     <!-- ETAPA 1 · Pré-carregamento da identidade visual -->
     <div id="preloader">
         <div class="preloader-content">
-            <div class="loader-emblem" aria-hidden="true" style="display: flex; flex-direction: column; align-items: center; gap: 0;">
-                <div style="width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle, rgba(0,246,255,0.18) 0%, rgba(0,246,255,0.04) 70%, transparent 100%); display: flex; align-items: center; justify-content: center; margin-bottom: 0.5em; animation: preloader-glow 2.2s ease-in-out infinite alternate;">
-                    <img src="img/logo.png" alt="Luan GS Analista de Sistemas" style="width: 110px; max-width: 80vw; filter: drop-shadow(0 0 32px var(--primary)); opacity: 0.95; animation: preloader-fadein 1.2s;">
+            <div class="loader-emblem" aria-hidden="true" style="display: flex; flex-direction: column; align-items: center; gap: 0; position: relative;">
+                <div class="preloader-spinner"></div>
+                <div style="width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle, rgba(0,246,255,0.18) 0%, rgba(0,246,255,0.04) 70%, transparent 100%); display: flex; align-items: center; justify-content: center; margin-bottom: 0.5em; animation: preloader-glow 2.2s ease-in-out infinite alternate; position: absolute; top: 0; left: 0; right: 0; bottom: 0; margin: auto; pointer-events: none;">
+                    <img src="img/logo.png" alt="Luan GS Analista de Sistemas" class="preloader-logo" style="width: 110px; max-width: 80vw; filter: drop-shadow(0 0 32px var(--primary)); opacity: 0.95; animation: preloader-fadein 1.2s; z-index: 2;">
                 </div>
             </div>
             <div class="loader-text" style="text-align: center; margin-top: 0;">
@@ -52,10 +53,10 @@
             </button>
             <ul class="nav-menu" id="navMenu">
                 <li><a href="#inicio">Início</a></li>
-                <li><a href="#sobre">Sobre</a></li>
+                <li><a href="#sobre">Sobre mim</a></li>
                 <li><a href="#como-funciona">Como funciona</a></li>
-                <li><a href="#planos">Consultoria</a></li>
-                <li><a href="#resultados">Resultados</a></li>
+                <li><a href="#planos">Serviços</a></li>
+                <li><a href="#resultados">Clientes</a></li>
             </ul>
         </nav>
     </header>           
