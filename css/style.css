@@ -1,3 +1,36 @@
+@media (max-width: 400px) {
+  .container { padding: 0 0.5rem; }
+  .section-title { font-size: 1.3rem; }
+  .brand-name { font-size: 1.2rem; --brand-spacing: 0.12rem; }
+  .brand-subtitle { font-size: 0.7rem; letter-spacing: 0.18rem; margin-bottom: 1.2rem; }
+  .plan-card, .process-card { padding: 18px 8px; }
+  .plan-card h3, .process-card h3 { font-size: 1rem; }
+  .plan-price .amount { font-size: 2.2rem; }
+  .plan-price .currency, .plan-price .cents { font-size: 1rem; }
+  .plan-badge { font-size: 0.7rem; padding: 5px 12px; }
+  .plan-features li { font-size: 0.85rem; padding: 7px 0; }
+  .plan-button { padding: 10px; font-size: 0.95rem; }
+  .whatsapp-float, .instagram-float { width: 40px; height: 40px; right: 7px; }
+  .instagram-float { bottom: 50px; }
+  .whatsapp-float { bottom: 7px; }
+}
+
+@media (max-width: 350px) {
+  .container { padding: 0 0.2rem; }
+  .section-title { font-size: 1.05rem; }
+  .brand-name { font-size: 0.95rem; --brand-spacing: 0.08rem; }
+  .brand-subtitle { font-size: 0.55rem; letter-spacing: 0.12rem; margin-bottom: 0.7rem; }
+  .plan-card, .process-card { padding: 10px 2px; }
+  .plan-card h3, .process-card h3 { font-size: 0.8rem; }
+  .plan-price .amount { font-size: 1.3rem; }
+  .plan-price .currency, .plan-price .cents { font-size: 0.7rem; }
+  .plan-badge { font-size: 0.5rem; padding: 3px 7px; }
+  .plan-features li { font-size: 0.7rem; padding: 4px 0; }
+  .plan-button { padding: 7px; font-size: 0.8rem; }
+  .whatsapp-float, .instagram-float { width: 30px; height: 30px; right: 2px; }
+  .instagram-float { bottom: 35px; }
+  .whatsapp-float { bottom: 2px; }
+}
 /* Logo do preloader girando para frente */
 .loader-emblem img {
   animation: preloader-logo-spin 1.6s linear infinite;
