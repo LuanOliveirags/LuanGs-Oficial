@@ -3,9 +3,18 @@
     text-align: center;
     padding-left: 0;
     padding-right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
   }
   .plans-grid {
-    justify-items: center;
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    gap: 2rem;
   }
   .plan-card {
     margin-left: auto;
