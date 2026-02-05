@@ -1,0 +1,206 @@
+/* =========================
+   Responsividade para a seção Serviços (skills-section)
+========================= */
+.skills-section {
+  width: 100vw;
+  max-width: 100vw;
+  padding: 0;
+  margin: 0 auto;
+}
+.plans-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+.plan-card {
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+@media (max-width: 900px) {
+  .plans-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 0 0.5rem;
+  }
+  .plan-card {
+    margin-bottom: 1.2rem;
+  }
+}
+@media (max-width: 600px) {
+  .skills-section {
+    padding: 0.5rem 0;
+  }
+  .plans-grid {
+    grid-template-columns: 1fr;
+    gap: 0.7rem;
+    padding: 0 0.2rem;
+  }
+  .plan-card {
+    font-size: 0.95rem;
+    padding: 0.5rem;
+  }
+}
+/* =========================
+   Ajuste para orientação paisagem em dispositivos móveis
+========================= */
+@media (max-width: 900px) and (orientation: landscape) {
+  .hero-section {
+    padding: 40px 0.5rem 10px;
+    min-height: 60vh;
+  }
+  .brand-name {
+    font-size: 1rem;
+  }
+  .brand-subtitle {
+    font-size: 0.6rem;
+  }
+}
+/* =========================
+   Garantir que imagens e grids nunca ultrapassem a largura da tela
+========================= */
+img, .hero-content, .container, .results-carousel {
+  max-width: 100vw;
+  width: 100%;
+  box-sizing: border-box;
+}
+/* =========================
+   Melhorar contraste e acessibilidade de textos
+========================= */
+.brand-name, .section-title, .brand-subtitle, .footer p {
+  text-shadow: 0 2px 8px #000, 0 1px 2px #222;
+}
+.nav-menu li a {
+  outline: 2px solid transparent;
+  transition: outline 0.2s;
+}
+.nav-menu li a:focus {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+/* =========================================================
+   2. RESPONSIVIDADE UNIFICADA
+   Todas as regras de responsividade em um único bloco por breakpoint.
+========================================================= */
+@media (max-width: 1200px) {
+  .container { max-width: 98vw; padding: 0 1.5rem; }
+  .navigation { padding: 1rem 1.5rem; }
+  .hero-content { max-width: 90vw; }
+  /* Removido bloco inválido de propriedades soltas */
+}
+
+@media (max-width: 768px) {
+  .container { max-width: 95vw; padding: 0 0.5rem; }
+  .navigation {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0;
+    padding: 0.5rem 0.5rem;
+  }
+  .logo img { height: 40px; margin-left: 0; }
+  .hero-section { padding: 120px 1rem 40px; background-attachment: scroll; }
+  .brand-name { font-size: clamp(1.5rem, 7vw, 2.2rem); --brand-spacing: 0.24rem; }
+  .brand-subtitle { font-size: 0.8rem; letter-spacing: 0.28rem; margin-bottom: 2rem; }
+  .section-title { font-size: 1.5rem; }
+  .process-grid, .plans-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+  .results-carousel { padding: 0 20px; }
+  .carousel-btn { width: 32px; height: 32px; font-size: 1.2rem; }
+  .footer-logo { width: 50px; }
+  .whatsapp-float, .instagram-float { width: 60px; height: 60px; right: 20px; }
+  .instagram-float { bottom: 90px; }
+  .whatsapp-float { bottom: 20px; }
+}
+
+@media (max-width: 480px) {
+  .container { padding: 0 0.2rem; }
+  .hero-section { padding: 80px 0.2rem 20px; }
+  .brand-name { font-size: 1.2rem; }
+  .brand-subtitle { font-size: 0.7rem; margin-bottom: 1.2rem; }
+  .section-title { font-size: 1.1rem; }
+  .footer-logo { width: 35px; }
+  .whatsapp-float, .instagram-float { width: 40px; height: 40px; right: 8px; }
+  .instagram-float { bottom: 50px; }
+  .whatsapp-float { bottom: 8px; }
+  .process-number { width: 60px; height: 60px; }
+  .results-carousel { padding: 0 40px; }
+}
+
+@media (max-width: 375px) {
+  .brand-name { font-size: 1rem; }
+  .brand-subtitle { font-size: 0.6rem; }
+  .section-title { font-size: 0.9rem; }
+}
+ .hero-content-user {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+}
+
+.brand-name {
+  font-size: 3rem;
+  color: var(--primary);
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-shadow: 0 4px 24px rgba(0,246,255,0.18), 0 1px 2px #000;
+  margin-bottom: 0.3em;
+}
+
+.brand-subtitle {
+  font-size: 1.2rem;
+  color: #b8c7cc;
+  letter-spacing: 0.25em;
+  text-shadow: 0 2px 8px #000;
+  font-weight: 400;
+}
+@media (max-width: 900px) {
+  .menu-toggle {
+    display: flex !important;
+  }
+  .nav-menu {
+    display: none !important;
+  }
+  .nav-menu.open {
+    display: flex !important;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: 280px;
+    background: linear-gradient(180deg, rgba(7, 7, 7, 0.9), rgba(16, 24, 32, 0.9));
+    align-items: stretch;
+    padding: 90px 20px 30px;
+    gap: 0.5rem;
+    box-shadow: -4px 0 32px rgba(0, 0, 0, 0.8);
+    z-index: 1001;
+    transform: none;
+    transition: none;
+  }
+  .nav-menu li {
+    width: 100%;
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .brand-name {
+    animation: none;
+    width: auto;
+    max-width: none;
+  }
+
+  .brand-subtitle {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}

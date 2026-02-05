@@ -2,7 +2,7 @@
 =========================================================
 ETAPA 3 · INTERAÇÕES E SCRIPTS DO SITE
 Arquivo: /js/script-index.js
-Finalidade: Responsável por todas as interações, animações e navegação do site.
+Finalidade: Responsável por todas as interações, animações e navegação do site user/marca.
 
 Organização:
 - Esconde o preloader ao carregar
@@ -24,7 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initActiveMenuOnScroll();
   initResultsCarousel();
   initHeroParallax();
-  initProcessHighlightOnScroll();
 });
 
 // ETAPA 1 · Esconde o preloader ao finalizar o carregamento
@@ -194,28 +193,4 @@ function initHeroParallax() {
     heroContent.style.transform = `translateY(${scrolled * 0.5}px)`;
     heroContent.style.opacity = `${Math.max(0, 1 - scrolled / 600)}`;
   });
-}
-
-// Destaca um card de processo por vez conforme aparece na tela
-function initProcessHighlightOnScroll() {
-  const cards = document.querySelectorAll('.process-card');
-  if (!cards.length) return;
-
-  function highlightVisibleCard() {
-    let found = false;
-    cards.forEach(card => {
-      const rect = card.getBoundingClientRect();
-      // Card visível pelo menos 40% na tela
-      const visible = rect.top < window.innerHeight * 0.6 && rect.bottom > window.innerHeight * 0.2;
-      if (!found && visible) {
-        card.classList.add('highlight');
-        found = true;
-      } else {
-        card.classList.remove('highlight');
-      }
-    });
-  }
-  window.addEventListener('scroll', highlightVisibleCard);
-  window.addEventListener('resize', highlightVisibleCard);
-  highlightVisibleCard();
 }

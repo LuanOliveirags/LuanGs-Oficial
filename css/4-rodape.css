@@ -1,0 +1,74 @@
+
+/* =========================================================
+  RODAPÉ
+========================================================= */
+.footer {
+  background: #000000;
+  padding: 40px 2rem;
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.footer-logo {
+  width: 80px;
+  margin-bottom: 20px;
+}
+
+.footer p {
+  color: #ffffff;
+  font-size: 0.95rem;
+}
+
+/* =========================================================
+ANIMAÇÕES
+========================================================= */
+@keyframes slideInMenu {
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes typing {
+  0% { width: 0; }
+  100% { width: var(--brand-type-final); }
+}
+
+@keyframes subtitleReveal {
+  0% { opacity: 0; transform: translateY(14px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-whatsapp {
+  0% { box-shadow: 0 8px 30px rgba(37, 211, 102, 0.4); }
+  50% {
+    box-shadow: 0 8px 30px rgba(255, 255, 255, 0.6),
+                0 0 0 10px rgba(37, 211, 102, 0.2),
+                0 0 0 20px rgba(37, 211, 102, 0.1);
+  }
+  100% { box-shadow: 0 8px 30px rgba(37, 211, 102, 0.4); }
+}
+
+@keyframes iconPulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.9; }
+}
+
+@keyframes sweep { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@keyframes orbitPulse { 0% { transform: scale(0.98); opacity: 0.6; } 50% { transform: scale(1); opacity: 1; } 100% { transform: scale(0.98); opacity: 0.6; } }
+@keyframes breathe { 0% { opacity: 0.25; transform: scale(0.85); } 60% { opacity: 0.8; transform: scale(1); } 100% { opacity: 0.25; transform: scale(0.9); } }
+@keyframes corePulse { 0% { transform: scale(0.9); opacity: 0.7; } 50% { transform: scale(1.15); opacity: 1; } 100% { transform: scale(0.9); opacity: 0.7; } }
+@keyframes cometOrbit { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@keyframes shimmer { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }

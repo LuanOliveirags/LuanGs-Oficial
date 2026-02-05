@@ -1,0 +1,15 @@
+/* =========================================================
+   1. SEÇÕES GENÉRICAS (EXEMPLO)
+   Estilos para seções alternadas de fundo branco e preto
+========================================================= */
+.section-white {
+  background: #94f5f8;
+  color: #222;
+  padding: 80px 0;
+}
+
+.section-black {
+  background: #111;
+  color: #fff;
+  padding: 80px 0;
+}
