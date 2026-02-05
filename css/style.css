@@ -1,107 +1,4 @@
-@media (max-width: 768px) {
-  .skills-section {
-    text-align: center;
-    padding-left: 0;
-    padding-right: 0;
-  }
-  .plans-grid {
-    justify-items: center;
-  }
-  .plan-card {
-    margin-left: auto;
-    margin-right: auto;
-  }
-}
-@media (max-width: 400px) {
-  .container { padding: 0 0.5rem; }
-  .section-title { font-size: 1.3rem; }
-  .brand-name { font-size: 1.2rem; --brand-spacing: 0.12rem; }
-  .brand-subtitle { font-size: 0.7rem; letter-spacing: 0.18rem; margin-bottom: 1.2rem; }
-  .plan-card, .process-card { padding: 18px 8px; }
-  .plan-card h3, .process-card h3 { font-size: 1rem; }
-  .plan-price .amount { font-size: 2.2rem; }
-  .plan-price .currency, .plan-price .cents { font-size: 1rem; }
-  .plan-badge { font-size: 0.7rem; padding: 5px 12px; }
-  .plan-features li { font-size: 0.85rem; padding: 7px 0; }
-  .plan-button { padding: 10px; font-size: 0.95rem; }
-  .whatsapp-float, .instagram-float { width: 40px; height: 40px; right: 7px; }
-  .instagram-float { bottom: 50px; }
-  .whatsapp-float { bottom: 7px; }
-}
-
-@media (max-width: 350px) {
-  .container { padding: 0 0.2rem; }
-  .section-title { font-size: 1.05rem; }
-  .brand-name { font-size: 0.95rem; --brand-spacing: 0.08rem; }
-  .brand-subtitle { font-size: 0.55rem; letter-spacing: 0.12rem; margin-bottom: 0.7rem; }
-  .plan-card, .process-card { padding: 10px 2px; }
-  .plan-card h3, .process-card h3 { font-size: 0.8rem; }
-  .plan-price .amount { font-size: 1.3rem; }
-  .plan-price .currency, .plan-price .cents { font-size: 0.7rem; }
-  .plan-badge { font-size: 0.5rem; padding: 3px 7px; }
-  .plan-features li { font-size: 0.7rem; padding: 4px 0; }
-  .plan-button { padding: 7px; font-size: 0.8rem; }
-  .whatsapp-float, .instagram-float { width: 30px; height: 30px; right: 2px; }
-  .instagram-float { bottom: 35px; }
-  .whatsapp-float { bottom: 2px; }
-}
-/* Logo do preloader girando para frente */
-.loader-emblem img {
-  animation: preloader-logo-spin 1.6s linear infinite;
-}
-
-@keyframes preloader-logo-spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-/* Preloader Spinner (círculo girando) */
-.preloader-spinner {
-  width: 180px;
-  height: 180px;
-  border-radius: 50%;
-  border: 6px solid rgba(0,246,255,0.18);
-  border-top: 6px solid var(--primary);
-  border-bottom: 6px solid #0a0a0a;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  margin: auto;
-  z-index: 1;
-  animation: preloader-spin 1.2s linear infinite;
-  box-shadow: 0 0 32px 0 rgba(0,246,255,0.18);
-}
-
-@keyframes preloader-spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-.hero-content-thays {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 60vh;
-  text-align: center;
-}
-
-.brand-name {
-  font-size: 3rem;
-  color: var(--primary);
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  text-shadow: 0 4px 24px rgba(0,246,255,0.18), 0 1px 2px #000;
-  margin-bottom: 0.3em;
-}
-
-.brand-subtitle {
-  font-size: 1.2rem;
-  color: #b8c7cc;
-  letter-spacing: 0.25em;
-  text-shadow: 0 2px 8px #000;
-  font-weight: 400;
-}
+/* Removido duplicações e media queries redundantes. Mantidas apenas as versões completas e responsivas mais abaixo no arquivo. */
 /*
 =========================================================
 ETAPA 2 · ESTILIZAÇÃO GLOBAL DO SITE
@@ -306,6 +203,7 @@ body {
   background: linear-gradient(120deg, #ffffff, rgba(59, 209, 202, 0.2), var(--primary), #ffffff);
   background-size: 220% auto;
   -webkit-background-clip: text;
+  background-clip: text;
   color: transparent;
   animation: shimmer 4s ease-in-out infinite;
 }
@@ -505,6 +403,7 @@ body {
   color: transparent;
   background: linear-gradient(120deg, #ffffff 0%, #5ddfff 30%, #5ce7ff 60%, #00eeff 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   animation: typing 2.6s steps(12, end) 0.4s forwards;
     text-transform: none;
 
