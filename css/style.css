@@ -682,7 +682,10 @@ body {
   padding: 100px 2rem;
   background: var(--darker);
   background-color: rgb(255, 255, 255);
+
 }
+
+.section-title { color: #181818; }
 
 .results-intro {
   text-align: center;
@@ -690,11 +693,12 @@ body {
   color: var(--gray);
   max-width: 800px;
   margin: 0 auto 3rem;
-  text-align: justify;
-  text-justify: inter-word;
   line-height: 1.7;
   letter-spacing: 0.01em;
   padding: 0 0.5em;
+  color: #222222;
+
+
 }
 
 .results-carousel {
