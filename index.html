@@ -18,14 +18,14 @@
     <!-- ETAPA 1 · Pré-carregamento da identidade visual -->
     <div id="preloader">
         <div class="preloader-content">
-            <div class="loader-emblem" aria-hidden="true" style="display: flex; flex-direction: column; align-items: center; gap: 0; position: relative;">
-                <div class="preloader-spinner"></div>
-                <div style="width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle, rgba(0,246,255,0.18) 0%, rgba(0,246,255,0.04) 70%, transparent 100%); display: flex; align-items: center; justify-content: center; margin-bottom: 0.5em; animation: preloader-glow 2.2s ease-in-out infinite alternate; position: absolute; top: 0; left: 0; right: 0; bottom: 0; margin: auto; pointer-events: none;">
-                    <img src="img/logo.png" alt="Luan GS Analista de Sistemas" class="preloader-logo" style="width: 110px; max-width: 80vw; filter: drop-shadow(0 0 32px var(--primary)); opacity: 0.95; animation: preloader-fadein 1.2s; z-index: 2;">
+            <div class="loader-emblem" aria-hidden="true" style="display: flex; flex-direction: column; align-items: center; gap: 0;">
+                <div style="width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle, rgba(0,246,255,0.18) 0%, rgba(0,246,255,0.04) 70%, transparent 100%); display: flex; align-items: center; justify-content: center; margin-bottom: 0.5em; animation: preloader-glow 2.2s ease-in-out infinite alternate;">
+                    <img src="img/logo.png" alt="Luan GS Analista de Sistemas" style="width: 110px; max-width: 80vw; filter: drop-shadow(0 0 32px var(--primary)); opacity: 0.95; animation: preloader-fadein 1.2s;">
                 </div>
             </div>
             <div class="loader-text" style="text-align: center; margin-top: 0;">
-
+                <h2 style="font-size: 2.2rem; letter-spacing: 0.18em; color: var(--primary); font-weight: 700; margin-bottom: 0.1em; animation: preloader-fadein 1.5s;">LUAN GS</h2>
+                <p style="font-size: 1.1rem; color: #b8c7cc; letter-spacing: 0.25em; margin-top: 0.2em; animation: preloader-fadein 2s;">ANALISTA DE SISTEMAS</p>
             </div>
             <style>
             @keyframes preloader-glow {
@@ -44,7 +44,7 @@
     <header class="header">
         <nav class="navigation">
             <a href="#inicio" class="logo">
-                <img src="img/logo.png" width="200" height="50" alt="Thays Marsan Personal Trainer">
+                <img src="img/logo.png" width="200" height="50" alt="Luan Gs Logo">
             </a>
             <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu">
                 <span class="bar"></span>
@@ -53,7 +53,7 @@
             </button>
             <ul class="nav-menu" id="navMenu">
                 <li><a href="#inicio">Início</a></li>
-                <li><a href="#sobre">Sobre mim</a></li>
+                <li><a href="#sobre">Sobre</a></li>
                 <li><a href="#como-funciona">Como funciona</a></li>
                 <li><a href="#planos">Serviços</a></li>
                 <li><a href="#resultados">Clientes</a></li>
@@ -73,7 +73,7 @@
     </section>
 
 
-    <!-- ETAPA 4 · Apresentação da profissional -->
+    <!-- ETAPA 4 · Apresentação do profissional -->
     <section class="about-section" id="sobre">
         <div class="container">
             <h2 class="section-title">Sobre mim</h2>
@@ -130,9 +130,8 @@
                         <li>✔ Teste de desempenho pós-limpeza</li>
                         <li>✔ Garantia de 30 dias</li>
                     </ul>
-                    <a class="plan-button" style="background: var(--primary); color: #111;" href="https://api.whatsapp.com/send/?phone=5511946114970&text=Olá! Gostaria de contratar o serviço de Higienização de computador ou notebook.&type=phone_number&app_absent=0" target="_blank">Comprar agora</a>
+                    <div class="plan-button" style="background: var(--primary); color: #111;">Comprar agora</div>
                 </div>
-                <!--
                 <div class="plan-card">
                     <h3>Formatação</h3>
                     <div class="plan-price">
@@ -150,9 +149,26 @@
                         <li>✔ Suporte pós-formatação</li>
                         <li>✔ Garantia de 30 dias</li>
                     </ul>
-                    <a class="plan-button" style="background: var(--primary); color: #111;" href="https://api.whatsapp.com/send/?phone=5511946114970&text=Olá! Gostaria de contratar o serviço de Formatação.&type=phone_number&app_absent=0" target="_blank">Começar agora</a>
+                    <div class="plan-button" style="background: var(--primary); color: #111;">Começar agora</div>
                 </div>
-            -->
+                <div class="plan-card">
+                    <h3>Analise de problemas</h3>
+                    <div class="plan-price">
+                        <span class="currency">R$</span>
+                        <span class="amount">49</span>
+                        <span class="cents">,90</span>
+                    </div>
+                    <ul class="plan-features">
+                        <li>✔ Diagnóstico completo do sistema</li>
+                        <li>✔ Identificação de falhas e erros</li>
+                        <li>✔ Relatório detalhado</li>
+                        <li>✔ Recomendações de reparo</li>
+                        <li>✔ Suporte técnico inicial</li>
+                        <li>✔ Prioridade no atendimento</li>
+                        <li>✔ Atendimento remoto</li>
+                    </ul>
+                    <div class="plan-button" style="background: var(--primary); color: #111;">Começar agora</div>
+                </div>
                 <div class="plan-card">
                     <h3>Desenvolvimento de sites</h3>
                     <div class="plan-price">
@@ -172,7 +188,7 @@
                         <li>✔ Configuração completa e publicação do site</li>
                         <li>✔ 3 meses de manutenção gratuita (suporte, correções e pequenos ajustes)</li>
                     </ul>
-                    <a class="plan-button" style="background: var(--primary); color: #111;" href="https://api.whatsapp.com/send/?phone=5511946114970&text=Olá! Gostaria de solicitar orçamento para Desenvolvimento de sites.&type=phone_number&app_absent=0" target="_blank">Solicitar orçamento</a>
+                    <div class="plan-button" style="background: var(--primary); color: #111;">Solicitar orçamento</div>
                 </div>
             </div>
         </div>
@@ -194,16 +210,13 @@
                   <div class="carousel-track">
                     
                         <div class="carousel-slide active">
-                            <img src="img/Screenshot_2.png" alt="Transformação 1">
+                            <img src="img/Screenshot_1.png" alt="Landing page exemplo 1">
                         </div>
                         <div class="carousel-slide">
-                            <img src="img/Screenshot_3.png" alt="Transformação 2">
+                            <img src="img/Screenshot_2.png" alt="Landing page exemplo 2">
                         </div>
                         <div class="carousel-slide">
-                            <img src="img/Screenshot_5.png" alt="Transformação 3">
-                        </div>
-                         <div class="carousel-slide">
-                            <img src="img/Screenshot_4.png" alt="Transformação 3">
+                            <img src="img/Screenshot_3.png" alt="Landing page exemplo 3">
                         </div>
                     </div>
                 </div>
@@ -224,34 +237,31 @@
 
     <!-- ETAPA 8 · Rodapé institucional -->
     <footer class="footer">
-        <div class="footer-content" style="max-width: 900px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 24px; padding: 20px 0;">
-            <div class="footer-brand" style="display: flex; align-items: center; gap: 16px;">
-                <img src="img/logo.png" width="60" alt="Luan Gs" class="footer-logo" style="border-radius: 12px; box-shadow: 0 2px 12px var(--primary, #00f6ff);">
-                <div>
-                    <strong style="font-size: 1.2rem; color: var(--primary, #00f6ff);">Luan Gs</strong><br>
-                    <span style="font-size: 0.95rem; color: #b8c7cc;">Analista de Sistemas</span>
-                </div>
-            </div>
-            <div class="footer-contact" style="font-size: 0.98rem; color: #e0e0e0;">
-                <span style="display: block; margin-bottom: 4px;"><ion-icon name="mail-outline" style="vertical-align: middle;"></ion-icon> <a href="mailto:luanoliveirags@gmail.com" style="color: var(--primary, #00f6ff); text-decoration: underline;">luanoliveirags@gmail.com</a></span>
-                <span style="display: block;"><ion-icon name="call-outline" style="vertical-align: middle;"></ion-icon> <a href="https://api.whatsapp.com/send/?phone=5511946114970" target="_blank" style="color: var(--primary, #00f6ff); text-decoration: underline;">(11) 94611-4970</a></span>
-            </div>
-            <div class="footer-social" style="display: flex; gap: 16px;">
-                <a href="https://www.instagram.com/luanoliveirags/" target="_blank" aria-label="Instagram" style="color: #fff; font-size: 1.7rem; transition: color 0.2s;"><ion-icon name="logo-instagram"></ion-icon></a>
-                <a href="https://api.whatsapp.com/send/?phone=5511946114970" target="_blank" aria-label="WhatsApp" style="color: #fff; font-size: 1.7rem; transition: color 0.2s;"><ion-icon name="logo-whatsapp"></ion-icon></a>
-                <a href="mailto:luanoliveirags@gmail.com" aria-label="E-mail" style="color: #fff; font-size: 1.7rem; transition: color 0.2s;"><ion-icon name="mail-outline"></ion-icon></a>
-            </div>
-        </div>
-        <div style="text-align: center; color: #b8c7cc; font-size: 0.95rem; margin-top: 10px;">
-            &copy; 2020-2026 Luan Gs. Todos os direitos reservados. Desenvolvido por Luan Gs.
-        </div>
+        <img src="img/logo.png" width="50" alt="Luan Gs" class="footer-logo">
+        <p>&copy; 2020 Luan Gs - Analista de sistemas | Todos os direitos reservados</p>
+        <p> Desenvolvido por Luan Gs</p>
     </footer>
 
 
 
-        <!-- ETAPA 10 · Scripts principais (interações e animações) -->
-        <script src="js/script-index.js"></script>
-        <script src="js/highlight-section-menu.js"></script>
+    <!-- ETAPA 9 · Botões de contato flutuantes -->
+    <a href="https://api.whatsapp.com/send/?phone=5511946114970&text&type=phone_number&app_absent=0" 
+       target="_blank" 
+       class="whatsapp-float" 
+       title="Fale comigo no WhatsApp"
+       aria-label="WhatsApp">
+        <ion-icon name="logo-whatsapp"></ion-icon>
+    </a>
+    <a href="https://www.instagram.com/luanoliveirags/" 
+       target="_blank" 
+       class="instagram-float" 
+       title="Siga no Instagram"
+       aria-label="Instagram">
+        <ion-icon name="logo-instagram"></ion-icon>
+    </a>
+
+    <!-- ETAPA 10 · Scripts principais (interações e animações) -->
+    <script src="js/script-index.js"></script>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 </body>
