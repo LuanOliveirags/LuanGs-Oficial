@@ -8,135 +8,204 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Luan Gs - Analista de Sistemas</title>
+    <title>Thays Marsan - Personal Trainer</title>
     <link rel="icon" type="image/png" href="img/icon.png">
     <link rel="stylesheet" href="css/main.css">
-
-
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;400&family=Raleway:wght@300&display=swap" rel="stylesheet"/>
-    <!-- Fonte principal e folha de estilos -->
+    <link rel="stylesheet" href="css/sections/video-section.css">
 </head>
-
-<body>
-        <!-- ETAPA 1 · Pré-carregamento da identidade visual -->
-    <div id="preloader">
-        <div class="preloader-content">
-            <div class="loader-emblem" aria-hidden="true" style="display: flex; flex-direction: column; align-items: center; gap: 0;">
-                <div style="width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle, rgba(0,246,255,0.18) 0%, rgba(0,246,255,0.04) 70%, transparent 100%); display: flex; align-items: center; justify-content: center; margin-bottom: 0.5em; animation: preloader-glow 2.2s ease-in-out infinite alternate;">
-                    <img src="img/logo.png" alt="Luan GS Analista de Sistemas" style="width: 110px; max-width: 80vw; filter: drop-shadow(0 0 32px var(--primary)); opacity: 0.95; animation: preloader-fadein 1.2s;">
-                </div>
+<body>    
+        <!--
+            Preloader inspirado no logo neon
+        -->
+        <div id="preloader" aria-label="Carregando página" role="status">
+            <div class="preloader-circles">
+                <div class="preloader-circle pink"></div>
+                <div class="preloader-circle glow"></div>
+                <div class="preloader-circle white"></div>
             </div>
-            <div class="loader-text" style="text-align: center; margin-top: 0;">
-                <h2 style="font-size: 2.2rem; letter-spacing: 0.18em; color: var(--primary); font-weight: 700; margin-bottom: 0.1em; animation: preloader-fadein 1.5s;">Luan Gs</h2>
-                <p style="font-size: 1.1rem; color: #b8c7cc; letter-spacing: 0.25em; margin-top: 0.2em; animation: preloader-fadein 2s;">Analista de Sistemas</p>
+            
+            <div class="preloader-content">
+            <br>
+            <br>
+            <br>
+            <br>
+                <h2>Analista de Sistemas</h2>
+                <p>Bem-vinda ao seu espaço de tecnologia!</p>
             </div>
-            <style>
-            @keyframes preloader-glow {
-                0% { box-shadow: 0 0 32px 0 rgba(0,246,255,0.18), 0 0 0 0 transparent; }
-                100% { box-shadow: 0 0 64px 16px rgba(0,246,255,0.28), 0 0 0 0 transparent; }
-            }
-            @keyframes preloader-fadein {
-                from { opacity: 0; transform: translateY(24px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-            </style>
         </div>
-    </div>
+
     <!-- ETAPA 2 · Cabeçalho fixo com navegação -->
     <header class="header">
-        <nav class="navigation">
-            <a href="#inicio" class="logo">
-                <img src="img/logo.png" width="200" height="50" alt="user Marsan Personal Trainer">
-            </a>
-            <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu">
+        <nav class="navigation" aria-label="Navegação principal">
+            <a href="#inicio" class="logo" aria-label="Ir para o início do site"></a>
+
+            <!-- Menu Desktop -->
+            <div class="nav-menu-desktop" id="navMenuDesktop">
+                <ul class="menu-items">
+                    <li><a href="#inicio">Início</a></li>
+                    <li><a href="#para-quem-e">Para quem é</a></li>
+                    <li><a href="#sobre">Sobre</a></li>
+                    <li><a href="#como-funciona">Como funciona</a></li>
+                    <li><a href="#planos">Consultoria</a></li>
+                    <li><a href="#resultados">Resultados</a></li>
+                    <li><a href="#feedbacks">Feedbacks</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                </ul>
+            </div>
+
+            <!-- Menu Mobile -->
+            <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-controls="navMenuMobile" aria-expanded="false">
                 <span class="bar"></span>
                 <span class="bar"></span>
                 <span class="bar"></span>
             </button>
-            <ul class="nav-menu" id="navMenu">
-                <li><a href="#inicio">Início</a></li>
-                <li><a href="#sobre">Sobre</a></li>
-                <li><a href="#como-funciona">Como funciona</a></li>
-                <li><a href="#planos">Serviços</a></li>
-                <li><a href="#resultados">Clientes</a></li>
-            </ul>
+            <div class="nav-menu-mobile" id="navMenuMobile">
+                <div class="menu-brand">
+                <ul class="menu-items">
+                    <li><a href="#inicio">Início</a></li>
+                    <li><a href="#para-quem-e">Para quem é</a></li>
+                    <li><a href="#sobre">Sobre</a></li>
+                    <li><a href="#como-funciona">Como funciona</a></li>
+                    <li><a href="#planos">Consultoria</a></li>
+                    <li><a href="#resultados">Resultados</a></li>
+                    <li><a href="#feedbacks">Feedbacks</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                </ul>
+            </div>
         </nav>
-    </header>           
+        <div class="menu-overlay" id="menuOverlay"></div>
+    </header>
 
-    <!-- ETAPA 3 · Hero com destaque da marca -->
-    <section class="hero-section" id="inicio">
+    <!--
+      Etapa 1.3: Seção principal (Hero)
+      Destaque inicial com nome e subtítulo
+    -->
+    <section class="hero-section" id="inicio" aria-label="Início">
         <div class="hero-overlay"></div>
-        <div class="hero-content-user">
+        <div class="hero-content-thiago">
             <div class="hero-content">
-                <img src="img/Nome.png" alt="Luan Gs" class="brand-name" style="max-width: 50%; height: auto;" />
-                <div class="brand-subtitle">Analista de sistemas</div>
+                <!---
+                <h1 class="brand-name">Thiago Bazillio</h1>
+                <div class="brand-subtitle">Consultoria Online</div>
+            -->
+            </div>
+        </div>
+        <!-- Logo centralizado na parte inferior da hero -->
+        <div class="hero-logo-area">
+            <img src="img/logo.png" alt="Thiago Bazillio" class="hero-logo-img">
+        </div>
+        <!-- Seta centralizada para rolar para baixo -->
+        <div class="hero-scroll-arrow center">
+            <ion-icon name="chevron-down-outline"></ion-icon>
+        </div>
+        </div>
+    </section>
+    <br>
+   
+
+ <!--
+      Etapa 1.4: Seção "Para quem é"
+      Explica o público-alvo da consultoria
+    -->
+    <section class="forwho-section" id="para-quem-e" aria-label="Para quem é">
+        <div class="container">
+             <br>
+            <h2 class="section-title forwho-title">Para quem é este site?</h2>
+            <div class="forwho-cards">
+                <div class="forwho-card">
+                    <h4 class="forwho-card-title">Público 1</h4>
+                    <p>Esta seção é destinada a pessoas que buscam informações e soluções personalizadas para suas necessidades.</p>
+                </div>
+                <div class="forwho-card">
+                    <h4 class="forwho-card-title">Público 2</h4>
+                    <p>Ideal para quem deseja transformar sua rotina com acompanhamento profissional e dicas exclusivas.</p>
+                </div>
+                <div class="forwho-card">
+                    <h4 class="forwho-card-title">Público 3</h4>
+                    <p>Perfeito para quem valoriza um ambiente de apoio, motivação e desenvolvimento contínuo.</p>
+                </div>
             </div>
         </div>
     </section>
+    <br>
+    
 
 
-
-  <!-- ETAPA 4 · Apresentação do profissional -->
-    <section class="about-section" id="sobre">
+    <!--
+      Etapa 1.5: Sobre mim
+      Apresentação do treinador e sua experiência
+    -->
+    <section class="about-section" id="sobre" aria-label="Sobre mim">
         <div class="container">
-            <h2 class="section-title">Sobre mim</h2>
+            <h2 class="section-title">Quem é Luan Gs?</h2>
             <div class="about-content">
-                <p>Olá, sou o <span style="color: var(--primary); font-weight: bold;">Luan Gs</span>, analista de sistemas com mais de 10 anos de experiência em desenvolvimento de software e soluções tecnológicas. Minha missão é ajudar empresas a transformarem suas ideias em produtos digitais eficientes e inovadores.</p>
-                <p>Meu trabalho é focado em <span style="color: var(--primary); font-weight: bold;">desenvolvimento web, automação de processos, análise de sistemas e melhoria contínua</span>. Cada projeto é pensado especialmente para atender às necessidades específicas de cada cliente, garantindo qualidade e resultados excepcionais.</p>
+                <p>Olá, sou o <span style="color: var(--title-bg); font-weight: bold;">Luan Gs</span>, analista de sistemas com mais de 10 anos de experiência em desenvolvimento de software e soluções tecnológicas. Minha missão é ajudar empresas a transformarem suas ideias em produtos digitais eficientes e inovadores.</p>
+                <p>Meu trabalho é focado em <span style="color: var(--title-bg); font-weight: bold;">desenvolvimento web, automação de processos, análise de sistemas e melhoria contínua</span>. Cada projeto é pensado especialmente para atender às necessidades específicas de cada cliente, garantindo qualidade e resultados excepcionais.</p>
             </div>
         </div>
     </section>
+<br>
 
-    <!-- ETAPA 5 · Explicação do processo -->
-    <section class="process-section" id="como-funciona">
+    <!--
+      Etapa 1.7: Como funciona a consultoria
+      Explica o processo de acompanhamento e diferenciais do serviço
+    -->
+    <section class="process-section" id="como-funciona" aria-label="Como funciona">
         <div class="container">
-            <h2 class="section-title">Como funciona</h2>
+              <h2 class="section-title">Como funciona meu serviço</h2>
+            <p class="process-intro">Veja abaixo um exemplo de etapas do processo de atendimento ou funcionamento do serviço:</p>
             <div class="process-grid">
                 <div class="process-card">
-                    <div class="process-number" style="background: var(--primary); color: #111;">1</div>
-                    <h3 style="text-transform: uppercase; font-weight: bold;">Análise personalizada</h3>
+                    <div class="process-number">1</div>
+                    <h3>Análise personalizada</h3>
                     <p>Entendo os objetivos, desafios e necessidades do seu negócio para propor soluções tecnológicas sob medida.  </p>
                 </div>
                 <div class="process-card">
-                    <div class="process-number" style="background: var(--primary); color: #111;">2</div>
-                    <h3 style="text-transform: uppercase; font-weight: bold;">Proposta de solução</h3>
+                    <div class="process-number">2</div>
+                    <h3>Proposta de solução</h3>
                     <p>Você recebe um plano detalhado com as melhores estratégias, ferramentas e automações para otimizar seus processos.</p>
                 </div>
                 <div class="process-card">
-                    <div class="process-number" style="background: var(--primary); color: #111;">3</div>
-                    <h3 style="text-transform: uppercase; font-weight: bold;">Acompanhamento e suporte</h3>
+                    <div class="process-number">3</div>
+                    <h3>Acompanhamento e suporte</h3>
                     <p>Suporte contínuo, ajustes e evolução das soluções implementadas para garantir resultados e inovação constante.</p>
                 </div>
             </div>
         </div>
     </section>
+     <br>
 
-    <!-- ETAPA 6 · Oferta de consultoria -->
-    <section class="skills-section" id="planos">
+    <!--
+      Etapa 1.9: Planos de consultoria
+      Apresenta o plano disponível e benefícios
+    -->
+    <section class="skills-section" id="planos" aria-label="Planos de consultoria">
         <div class="container">
             <h2 class="section-title">Serviços</h2>
             <div class="plans-grid">
-                <div class="plan-card featured destaque-mais-vendido" style="box-shadow: 0 0 60px 10px var(--primary);">
-                    <div class="plan-badge" style="background: var(--primary); color: #111;">MAIS VENDIDO</div>
-                    <h3>Higienização de computador ou notebook</h3>
+                <div class="plan-card featured destaque-mais-vendido">
+                    <div class="plan-badge">MAIS VENDIDO</div>
+                    <h3 class="plan-title-personalizado">Higienização de computador ou notebook</h3>
                     <div class="plan-price">
                         <span class="currency">R$</span>
                         <span class="amount">149</span>
                         <span class="cents">,90</span>
                     </div>
                     <ul class="plan-features">
-                        <li>✔ Troca de pasta térmica</li>
-                        <li>✔ Limpeza interna completa</li>
-                        <li>✔ Remoção de poeira e sujeira</li>
-                        <li>✔ Verificação de ventoinhas</li>
-                        <li>✔ Otimização do sistema de refrigeração</li>
-                        <li>✔ Teste de desempenho pós-limpeza</li>
-                        <li>✔ Garantia de 30 dias</li>
+                        <li>Troca de pasta térmica</li>
+                        <li>Limpeza interna completa</li>
+                        <li>Remoção de poeira e sujeira</li>
+                        <li>Verificação de ventoinhas</li>
+                        <li>Otimização do sistema de refrigeração</li>
+                        <li>Teste de desempenho pós-limpeza</li>
+                        <li>Garantia de 30 dias</li>
                     </ul>
                     <a class="plan-button" style="background: var(--primary); color: #111;" href="https://api.whatsapp.com/send/?phone=5511946114970&text=Olá! Gostaria de contratar o serviço de Higienização de computador ou notebook.&type=phone_number&app_absent=0" target="_blank">Comprar agora</a>
                 </div>
-                <div class="plan-card">
-                    <h3>Formatação</h3>
+
+
+                <div class="plan-card featured destaque-mais-vendido"> 
+                    <h3 class="plan-title-personalizado">Formatação</h3>
                     <div class="plan-price">
                         <span class="currency">R$</span>
                         <span class="amount">79</span>
@@ -154,13 +223,17 @@
                     </ul>
                     <a class="plan-button" style="background: var(--primary); color: #111;" href="https://api.whatsapp.com/send/?phone=5511946114970&text=Olá! Gostaria de contratar o serviço de Formatação.&type=phone_number&app_absent=0" target="_blank">Começar agora</a>
                 </div>
-                <div class="plan-card">
-                    <h3>Analise de problemas</h3>
+
+
+                <div class="plan-card featured destaque-mais-vendido"> 
+                    <h3 class="plan-title-personalizado">Analise de problemas</h3>
                     <div class="plan-price">
                         <span class="currency">R$</span>
                         <span class="amount">49</span>
                         <span class="cents">,90</span>
                     </div>
+
+
                     <ul class="plan-features">
                         <li>✔ Diagnóstico completo do sistema</li>
                         <li>✔ Identificação de falhas e erros</li>
@@ -172,8 +245,9 @@
                     </ul>
                     <a class="plan-button" style="background: var(--primary); color: #111;" href="https://api.whatsapp.com/send/?phone=5511946114970&text=Olá! Gostaria de contratar o serviço de Análise de problemas.&type=phone_number&app_absent=0" target="_blank">Começar agora</a>
                 </div>
-                <div class="plan-card">
-                    <h3>Desenvolvimento de sites</h3>
+
+                <div class="plan-card featured destaque-mais-vendido"> 
+                    <h3 class="plan-title-personalizado">Desenvolvimento de sites</h3>
                     <div class="plan-price">
                         <span class="currency">R$</span>
                         <span class="amount">1000</span>
@@ -193,66 +267,206 @@
                     </ul>
                     <a class="plan-button" style="background: var(--primary); color: #111;" href="https://api.whatsapp.com/send/?phone=5511946114970&text=Olá! Gostaria de solicitar orçamento para Desenvolvimento de sites.&type=phone_number&app_absent=0" target="_blank">Solicitar orçamento</a>
                 </div>
+                
+    </section>
+    <br>
+
+
+    <!--
+      Etapa 1.10: Resultados de alunas
+      Galeria de imagens de resultados reais
+    -->
+    <section class="portfolio-section" id="resultados" aria-label="Resultados de alunas">
+        <div class="container">
+            <h2 class="section-title">Projetos</h2>
+            <p class="results-intro">Confira abaixo alguns exemplos de landing pages desenvolvidas por mim, que trouxeram satisfação e resultados positivos para meus clientes. Cada projeto é pensado para destacar o negócio do cliente, com design moderno, performance e foco em conversão.</p>
+            <div class="portfolio-grid">
+                <!-- Imagens genéricas -->
+                <div class="portfolio-item"><img class="result-img" src="img/Screenshot_1.png" alt="Exemplo 1"><div class="portfolio-overlay"><h3>Exemplo</h3></div></div>
+                <div class="portfolio-item"><img class="result-img" src="img/Screenshot_2.png" alt="Exemplo 2"><div class="portfolio-overlay"><h3>Exemplo</h3></div></div>
+                <div class="portfolio-item"><img class="result-img" src="img/Screenshot_3.png" alt="Exemplo 3"><div class="portfolio-overlay"><h3>Exemplo</h3></div></div>
+            </div>
+            <!-- Modal para expandir imagem dos resultados -->
+            <div id="result-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); justify-content:center; align-items:center; z-index:9999;">
+                <span id="result-modal-close" style="position:absolute; top:32px; right:48px; font-size:2.5em; color:#fff; cursor:pointer; font-weight:bold;">&times;</span>
+                <img id="result-modal-img" src="" alt="Resultado expandido" style="max-width:90vw; max-height:80vh; border-radius:18px; box-shadow:0 4px 32px rgba(209,59,123,0.18);">
             </div>
         </div>
-        <br>
     </section>
+        <br>
 
-    <!-- ETAPA 7 · Prova social com resultados -->
-    <section class="portfolio-section" id="resultados">
+
+    <!--
+      Etapa 1.11: Feedbacks de alunas
+      Carrossel de feedbacks reais, controlado por JS
+    -->
+    <section class="portfolio-feedbacks-section" id="feedbacks" aria-label="Feedbacks de alunas">
         <div class="container">
-            <h2 class="section-title">Clientes</h2>
-            <p class="results-intro">Confira abaixo alguns exemplos de landing pages desenvolvidas por mim, que trouxeram satisfação e resultados positivos para meus clientes. Cada projeto é pensado para destacar o negócio do cliente, com design moderno, performance e foco em conversão.</p>
-            
-            <!-- Carrossel de Resultados -->
-            <div class="results-carousel">
-                <button class="carousel-btn carousel-prev" aria-label="Anterior">
-                    <span>‹</span>
+            <h2 class="section-title">O que dizem nossos clientes</h2>
+            <p class="results-intro">Espaço para depoimentos, avaliações ou feedbacks genéricos sobre o serviço/produto.</p>
+            <br>
+            <div class="feedback-orbit" id="feedbackOrbit">
+                <button class="feedback-arrow" id="feedbackPrev" type="button" aria-label="Mostrar feedback anterior">
+                    <span>&larr;</span>
                 </button>
-                
-                <div class="carousel-container">
-                  <div class="carousel-track">
-                    
-                        <div class="carousel-slide active">
-                            <img src="img/Screenshot_1.png" alt="Landing page exemplo 1">
-                        </div>
-                        <div class="carousel-slide">
-                            <img src="img/Screenshot_2.png" alt="Landing page exemplo 2">
-                        </div>
-                        <div class="carousel-slide">
-                            <img src="img/Screenshot_3.png" alt="Landing page exemplo 3">
-                        </div>
-                        <div class="carousel-slide">
-                            <img src="img/Screenshot_4.png" alt="Landing page exemplo 4">
-                        </div>
+                <div class="feedback-deck" id="feedbackDeck" aria-live="polite">
+                    <!-- Cartas preenchidas via JS -->
+                </div>
+                <button class="feedback-arrow" id="feedbackNext" type="button" aria-label="Mostrar próximo feedback">
+                    <span>&rarr;</span>
+                </button>
+            </div>
+            <!-- Modal para expandir imagem -->
+            <div id="feedback-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); justify-content:center; align-items:center; z-index:9999;">
+                <span id="feedback-modal-close" style="position:absolute; top:32px; right:48px; font-size:2.5em; color:#fff; cursor:pointer; font-weight:bold;">&times;</span>
+                <img id="feedback-modal-img" src="" alt="Feedback expandido" style="max-width:90vw; max-height:80vh; border-radius:18px; box-shadow:0 4px 32px rgba(209,59,123,0.18);">
+            </div>
+        </div>
+    </section>
+    <br>
+
+
+<!-- ETAPA 5.1 · Seção de Vídeo Destaque -->
+<!--
+    <section class="video-section" id="video">
+        <div class="container">
+            <h2 class="section-title">Veja na prática</h2>
+            <div class="video-wrapper">
+                <video controls poster="img/video-thumb.jpg" class="main-video" id="mainVideo">
+                    <source src="videos/Mito ou verdade 1.mp4" type="video/mp4">
+                    Seu navegador não suporta o elemento <code>video</code>.
+                </video>
+                <div class="video-controls">
+                    <button class="video-btn active" data-src="videos/Mito ou verdade 1.mp4">Parte 1</button>
+                    <button class="video-btn" data-src="videos/Mito ou verdade 2.mp4">Parte 2</button>
+                </div>
+                <div class="video-caption">
+                    <p>Mito ou verdade?</p>
+                </div>
+            </div>
+        </div>
+    </section>
+-->
+
+    <!--
+      Etapa 1.12: Dúvidas frequentes (FAQ)
+      Perguntas e respostas comuns sobre a consultoria
+    -->
+    <section class="faq-section" id="faq" aria-label="Dúvidas frequentes">
+        <div class="container">
+            <h2 class="section-title">Perguntas Frequentes</h2>
+            <div class="faq-grid">
+                <!-- Cada card é controlado por JS para abrir/fechar -->
+                <div class="faq-card" data-faq>
+                    <div class="faq-question">
+                        <h3>Pergunta genérica 1?</h3>
+                    </div>
+                    <div class="faq-answer" style="display: none;">
+                        <p>Resposta genérica para a dúvida mais comum dos visitantes.</p>
                     </div>
                 </div>
-                
-                <button class="carousel-btn carousel-next" aria-label="Próximo">
-                    <span>›</span>
-                </button>
-                
-                <div class="carousel-dots">
-                    <span class="dot active" data-slide="0"></span>
-                    <span class="dot" data-slide="1"></span>
-                    <span class="dot" data-slide="2"></span>
-                    <span class="dot" data-slide="3"></span>
+                <div class="faq-card" data-faq>
+                    <div class="faq-question">
+                        <h3>Pergunta genérica 2?</h3>
+                    </div>
+                    <div class="faq-answer" style="display: none;">
+                        <p>Outra resposta genérica para exemplificar o funcionamento do FAQ.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
+        <br>
 
 
-    <!-- ETAPA 8 · Rodapé institucional -->
+
+
+
+
+    <!--
+      Etapa 1.13: Rodapé (Footer)
+      Informações institucionais, navegação e contatos
+    -->
     <footer class="footer">
-        <img src="img/logo.png" width="50" alt="Luan Gs" class="footer-logo">
-        <p>&copy; 2020 Luan Gs - Analista de sistemas | Todos os direitos reservados</p>
-        <p> Desenvolvido por Luan Gs</p>
+        <div class="footer-container">
+            <div class="footer-top">
+                <div class="footer-brand">
+                    <img src="img/logo.png" alt="Thays Marsan" class="footer-logo">
+                    <!-- Botões de contato ao lado do logo -->
+                    <div class="footer-social">
+                        <a href="/" target="_blank" class="footer-instagram" title="Siga no Instagram" aria-label="Instagram">
+                            <ion-icon name="logo-instagram" style="font-size:2.5em;color:var(--brand-accent);"></ion-icon>
+                        </a>
+                        <a href="." target="_blank" class="footer-whatsapp" title="Fale comigo no WhatsApp" aria-label="WhatsApp">
+                            <ion-icon name="logo-whatsapp" style="font-size:2.5em;color:#25d366;"></ion-icon>
+                        </a>
+                    </div>
+                    <p class="footer-tagline">Analista de Sistemas</p>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Menu Rápido</h4>
+                        <ul>
+                            <li><a href="#inicio">Início</a></li>
+                            <li><a href="#sobre">Sobre</a></li>
+                            <li><a href="#como-funciona">Como Funciona</a></li>
+                            <li><a href="#planos">Consultoria</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Conteúdos</h4>
+                        <ul>
+                            <li><a href="#resultados">Resultados</a></li>
+                            <li><a href="#feedbacks">Feedbacks</a></li>
+                            <li><a href="#faq">FAQ</a></li>
+                            <li><a href="#diferenciais">Diferenciais</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Fale Comigo</h4>
+                        <ul>
+                            <li><a href="mailto:luanoliveirags@gmail.com">luanoliveirags@gmail.com</a></li>
+                            <li><a href="https://" target="_blank">WhatsApp</a></li>
+                            <li><a href="https://" target="_blank">Instagram</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-divider"></div>
+            <div class="footer-bottom">
+                <p class="footer-copyright">&copy; 2026 Luan Gs - Analista de sistemas | Todos os direitos reservados</p>
+                <p class="footer-dev">Desenvolvido por <a href="https://www.instagram.com/luanoliveirags/" target="_blank">Luan Gs</a></p>
+            </div>
+        </div>
     </footer>
 
-        <!-- ETAPA 10 · Scripts principais (interações e animações) -->
-        <script src="js/script-index.js"></script>
+
+        <!-- Botões flutuantes removidos, agora estão no rodapé -->
+
+
+    <!--
+      Etapa 1.15: Scripts finais
+      Carrega scripts JS principais e ícones
+    -->
+    <script type="module" src="js/main.js"></script>
+     <script src="js/video.js"></script>
+     <script src="js/components/preloader.js"></script>
+        <script src="js/components/carousel-feedback.js"></script>
+        <script src="js/sections/resultados.js"></script>
+      
+
+
+    <!-- Modal de imagem em tela cheia é controlado por JS -->
+ <div id="modal-imagem" style="display:none;position:fixed;z-index:99999;top:0;left:0;width:100vw;height:100vh;background:rgba(10,10,10,0.97);align-items:center;justify-content:center;transition:opacity 0.3s;pointer-events:auto;">
+        <span id="fechar-modal-imagem" style="position:absolute;top:30px;right:40px;font-size:3rem;color:var(--title-bg);cursor:pointer;font-family:sans-serif;z-index:20001;user-select:none;">&times;</span>
+        <button id="seta-esquerda-modal" style="position:absolute;left:30px;top:50%;transform:translateY(-50%);background:none;border:none;color:transparent;font-size:4rem;cursor:pointer;z-index:20001;user-select:none;">&#8592;</button>
+        <img id="imagem-modal-grande" src="" alt="Imagem expandida" style="max-width:90vw;max-height:85vh;border-radius:18px;box-shadow:0 0 40px var(--brand-accent),0 0 80px #000b;object-fit:contain;">
+        <button id="seta-direita-modal" style="position:absolute;right:30px;top:50%;transform:translateY(-50%);background:none;border:none;color:transparent;font-size:4rem;cursor:pointer;z-index:20001;user-select:none;">&#8594;</button>
+    </div>
+    </div>
+    <!-- Ícones do Ionicons -->
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 </body>
 </html>
+

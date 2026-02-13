@@ -1,74 +1,295 @@
+/* =====================================================
+   FOOTER BASE
+===================================================== */
 
-/* =========================================================
-  RODAPÉ
-========================================================= */
 .footer {
-  background: #000000;
-  padding: 40px 2rem;
+  padding: 50px 0;
+  border-radius: 30px;
+  box-shadow: 0 4px 32px var(--brand-accent);
+  border: 3px solid var(--brand-accent);
+  background-color: var(--neutral-900);
+  color: rgba(0, 0, 0, 0.658);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+/* Linha superior decorativa */
+.footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--neutral-900), var(--brand-accent), transparent);
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* =====================================================
+   FOOTER TOP (BRAND + LINKS)
+===================================================== */
+
+.footer-top {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 60px;
+  margin-bottom: 40px;
+}
+
+/* ---------- BRAND ---------- */
+
+.footer-brand {
   text-align: center;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .footer-logo {
-  width: 80px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
+  animation: float 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 10px var(--brand-accent));
+  width: 250px;
+  max-width: 90vw;
+  height: auto;
+  transition: width 0.3s;
 }
 
-.footer p {
-  color: #ffffff;
+.footer-brand h3 {
+  color: var(--neutral-100);
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 15px 0 10px;
+  letter-spacing: 0.5px;
+}
+
+.footer-tagline {
+  color: var(--brand-accent);
   font-size: 0.95rem;
+  font-weight: 500;
+  margin: 0;
 }
 
-/* =========================================================
-ANIMAÇÕES
-========================================================= */
-@keyframes slideInMenu {
-  to {
-    opacity: 1;
-    transform: translateX(0);
+/* =====================================================
+   SOCIAL ICONS
+===================================================== */
+
+.footer-social {
+  display: flex;
+  gap: 18px;
+  margin: 10px auto;
+}
+
+.footer-social a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--neutral-900) 60%, var(--neutral-900) 100%);
+  box-shadow: 0 2px 12px var(--neutral-900);
+  transition: box-shadow 0.2s, transform 0.2s;
+  border: 2px solid transparent;
+}
+
+/* Ícones específicos */
+.footer-social a.footer-instagram ion-icon {
+  color: var(--brand-accent);
+  font-size: 2em;
+  transition: color 0.2s;
+}
+
+.footer-social a.footer-whatsapp ion-icon {
+  color:var(--neutral-900);
+  font-size: 2em;
+  transition: color 0.2s;
+}
+
+/* Hover */
+.footer-social a:hover {
+  box-shadow: 0 4px 24px var(--neutral-900);
+  transform: scale(1.12);
+  border-color: var(--brand-accent);
+}
+
+.footer-social a.footer-instagram:hover ion-icon {
+  color: var(--neutral-100);
+  background: radial-gradient(circle at 60% 40%, var(--brand-accent) 60%, var(--brand-accent) 100%);
+  border-radius: 50%;
+}
+
+.footer-social a.footer-whatsapp:hover ion-icon {
+  color: var(--neutral-100);
+  background: radial-gradient(circle at 60% 40%, var(--brand-accent) 60%, var(--brand-accent) 100%);
+  border-radius: 50%;
+}
+
+/* =====================================================
+   FOOTER LINKS (COLUNAS)
+===================================================== */
+
+.footer-links {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+}
+
+.footer-column h4 {
+  color: var(--neutral-100);
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.footer-column h4::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--brand-accent), var(--brand-accent));
+}
+
+.footer-column ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-column ul li {
+  margin-bottom: 12px;
+}
+
+.footer-column ul li a {
+  color:var(--neutral-100);
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: color 0.3s ease, padding-left 0.3s ease;
+  display: inline-block;
+}
+
+.footer-column ul li a:hover {
+  color: var(--brand-accent);
+  padding-left: 5px;
+}
+
+/* =====================================================
+   FOOTER DIVIDER + BOTTOM
+===================================================== */
+
+.footer-divider {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  margin: 40px 0 30px;
+}
+
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.footer-copyright,
+.footer-dev {
+  color:  var(--neutral-100);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.footer-dev a {
+  color: var(--brand-accent);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.footer-dev a:hover {
+  color: var(--surface-light);
+}
+
+/* Texto padrão */
+.footer p {
+  color: var(--brand-accent);
+  font-size: 0.95rem;
+  font-weight: 300;
+}
+
+/* =====================================================
+   RESPONSIVIDADE
+===================================================== */
+
+/* Logo */
+@media (max-width: 520px) {
+  .footer-logo {
+    width: 150px !important;
+    margin-bottom: 18px !important;
+    max-width: 95vw;
   }
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+@media (min-width: 1024px) {
+  .footer-logo {
+    width: 180px;
   }
 }
 
-@keyframes typing {
-  0% { width: 0; }
-  100% { width: var(--brand-type-final); }
-}
-
-@keyframes subtitleReveal {
-  0% { opacity: 0; transform: translateY(14px); }
-  100% { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes pulse-whatsapp {
-  0% { box-shadow: 0 8px 30px rgba(37, 211, 102, 0.4); }
-  50% {
-    box-shadow: 0 8px 30px rgba(255, 255, 255, 0.6),
-                0 0 0 10px rgba(37, 211, 102, 0.2),
-                0 0 0 20px rgba(37, 211, 102, 0.1);
+/* Tablet */
+@media (max-width: 768px) {
+  .footer {
+    padding: 50px 1.5rem 25px;
   }
-  100% { box-shadow: 0 8px 30px rgba(37, 211, 102, 0.4); }
+
+  .footer-top {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .footer-links {
+    display: none;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    text-align: center;
+  }
 }
 
-@keyframes iconPulse {
-  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-  50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.9; }
-}
+/* Mobile pequeno */
+@media (max-width: 520px) {
+  .footer {
+    padding: 40px 1rem 20px;
+  }
 
-@keyframes sweep { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-@keyframes orbitPulse { 0% { transform: scale(0.98); opacity: 0.6; } 50% { transform: scale(1); opacity: 1; } 100% { transform: scale(0.98); opacity: 0.6; } }
-@keyframes breathe { 0% { opacity: 0.25; transform: scale(0.85); } 60% { opacity: 0.8; transform: scale(1); } 100% { opacity: 0.25; transform: scale(0.9); } }
-@keyframes corePulse { 0% { transform: scale(0.9); opacity: 0.7; } 50% { transform: scale(1.15); opacity: 1; } 100% { transform: scale(0.9); opacity: 0.7; } }
-@keyframes cometOrbit { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-@keyframes shimmer { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
+  .footer-links {
+    display: none;
+  }
+
+  .footer-brand h3 {
+    font-size: 1.3rem;
+  }
+
+  .footer-tagline {
+    font-size: 0.85rem;
+  }
+
+  .footer-copyright,
+  .footer-dev {
+    font-size: 0.85rem;
+  }
+}

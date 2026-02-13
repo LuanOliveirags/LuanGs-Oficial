@@ -1,0 +1,88 @@
+/* Destaques com active-highlight */
+.portfolio-item.active-highlight {
+  box-shadow: 0 0 32px var(--brand-accent), 0 0 18px var(--brand-accent);
+  transform: translateY(-6px) scale(1.07);
+  z-index: 2;
+  border: 2px solid var(--brand-accent);
+  background: var(--brand-accent);
+  transition: box-shadow 0.4s, transform 0.4s, border 0.4s, background 0.4s;
+  position: relative;
+}
+.diferenciais-list li.active-highlight {
+  box-shadow: 0 0 32px var(--brand-accent), 0 0 18px var(--brand-accent);
+  transform: translateY(-6px) scale(1.07);
+  z-index: 2;
+  border: 2px solid var(--brand-accent);
+  background: var(--brand-accent);
+  color: var(--neutral-100) !important;
+  transition: box-shadow 0.4s, transform 0.4s, border 0.4s, background 0.4s, color 0.4s;
+  position: relative;
+}
+.process-card.active-highlight {
+  box-shadow: 0 0 32px var(--brand-accent), 0 0 18px var(--brand-accent);
+  transform: translateY(-6px) scale(1.07);
+  z-index: 2;
+  border: 2px solid var(--brand-accent);
+  background: var(--neutral-900);
+  transition: box-shadow 0.4s, transform 0.4s, border 0.4s, background 0.4s;
+}
+/* ===== MODAL DE IMAGEM EM TELA CHEIA ===== */
+#modal-imagem {
+  display: none;
+  position: fixed;
+  z-index: 99999;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: var(--brand-accent);
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s;
+  pointer-events: auto;
+}
+#modal-imagem[style*="display: flex"] {
+  display: flex !important;
+}
+#modal-imagem img {
+  max-width: 90vw;
+  max-height: 85vh;
+  border-radius: 18px;
+  box-shadow: 0 0 40px var(--brand-accent);
+  object-fit: contain;
+}
+#fechar-modal-imagem {
+  position: absolute;
+  top: 30px;
+  right: 40px;
+  font-size: 3rem;
+  color: var(--brand-accent);
+  cursor: pointer;
+  font-family: sans-serif;
+  z-index: 20001;
+  user-select: none;
+  transition: color 0.2s;
+}
+#fechar-modal-imagem:hover {
+  color: var(--brand-accent);
+}
+/* ===== VARIÁVEIS E RESET ===== */
+
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Montserrat', 'Raleway', sans-serif;
+  background-color: var(--neutral-100);
+  color: var(--brand-accent);
+  line-height: 1.6;
+  overflow-x: hidden;
+}

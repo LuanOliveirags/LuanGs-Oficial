@@ -1,0 +1,45 @@
+/* ===== ABOUT SECTION ===== */
+.about-section {
+  background: var(--neutral-100);
+  padding: 50px 0;
+  border-radius: 30px;
+  box-shadow: 0 4px 32px var(--effect-shadow-soft);
+  border: 3px solid var(--border-subtle);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.about-section .about-content {
+  margin: 0 auto;
+  font-size: 1.15rem;
+  color: var(--neutral-800);
+  line-height: 1.7;
+  background: var(--surface-white);
+  border-radius: 18px;
+  box-shadow: 0 2px 12px var(--effect-shadow-glow);
+  padding: 24px;
+}
+
+.about-section .about-content p {
+  text-align: center;
+  margin: 0 auto;
+  color: var(--neutral-900);
+}
+
+.about-section .about-content strong {
+  color: var(--brand-primary);
+}
+
+/* Espaçamento melhorado para parágrafos do sobre mim */
+.about-content p {
+  margin-bottom: 1.7rem;
+  font-size: 1.13rem;
+  color: var(--neutral-800);
+  font-family: 'Montserrat', Arial, sans-serif;
+  line-height: 1.85;
+  text-align: center;
+}
+
+.about-content strong {
+  color: var(--brand-primary);
+  font-weight: 600;
+}

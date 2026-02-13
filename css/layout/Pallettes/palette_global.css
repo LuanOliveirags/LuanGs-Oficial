@@ -1,0 +1,75 @@
+/* ==================================================
+   SISTEMA DE CORES · DESIGN SYSTEM
+   Estrutura profissional e escalável
+   ================================================== */
+
+   
+:root {
+
+  /* ==================================================
+    Cor principal site: 
+    ================================================== */
+	  --brand-accent: #00fde8c5;
+	  	  --title-bg: #ca00fdc5;
+		    --surface-menu: #221e21be;
+
+
+
+  /* ==================================================
+     EFFECTS planos
+     ================================================== */
+	 
+    --letter-bg-p: #ffffffd4;
+	--letter-bg-p-secund: var(--brand-accent);
+	--border-bg-p: var(--brand-accent);
+	--border-bg-p-secund: #000000;
+
+  /* ==================================================
+     BRAND COLORS (Identidade da Marca)
+     ================================================== */
+
+  --brand-primary: #ffffff;
+  --brand-primary-strong: #ffffff;
+  --brand-secondary: #B36326;
+  --brand-secondary-soft: #B9937B73;
+  
+  /* ==================================================
+     NEUTRAL COLORS (Escala Base)
+     ================================================== */
+
+  --neutral-100: #FFFFFF;
+  --neutral-200: #F8F8F8;
+  --neutral-800: #222222;  /* Novo: texto secundário */
+  --neutral-900: #000000;
+
+  --neutral-brown-800: #714329;
+
+  /* ==================================================
+     SURFACE COLORS (Fundos e Containers)
+     ================================================== */
+
+  --surface-light: #F5D1B6;
+  --surface-card: #B9937B73;
+  --surface-white: #FFFFFF; /* Novo token semântico */
+
+  /* ==================================================
+     BORDERS
+     ================================================== */
+
+  --border-subtle: rgba(208, 167, 199, 0.2);
+  --border-soft: rgba(208,185,167,0.07); /* Novo (era #D0B9A711) */
+
+  /* ==================================================
+     EFFECTS (Sombras e Glow)
+     ================================================== */
+
+  --effect-glow: #FFB6D5;
+  --effect-shadow-dark: rgba(0,0,0,0.65);
+  --effect-shadow-soft: rgba(208,185,167,0.07); /* Novo */
+  --effect-shadow-glow: rgba(255,182,213,0.13); /* Novo */
+
+
+
+
+}
+

@@ -1,6 +1,41 @@
-@import url('base/style.css');
-@import url('responsive/responsive.css');
-@import url('components/preloader.css');
-@import url('base/sec_generic.css');
-@import url('layout/header_hero.css');
-@import url('layout/rodape.css');
+/* Ordem obrigatória: base, layout, components, sections, responsivo */
+@import url("base/style.css");
+@import url("base/sec_generic.css");
+@import url("layout/header.css");
+@import url("sections/01_hero.css");
+@import url("layout/Pallettes/palette_global.css");
+@import url("layout/menu.css");
+@import url("layout/rodape.css");
+@import url("components/preloader.css");
+@import url("components/modal_img.css");
+@import url("sections/05_comofunciona.css");
+@import url("sections/02_consultoria.css");
+@import url("sections/06_diferenciais.css");
+@import url("sections/10_faq.css");
+@import url("sections/09_feedback.css");
+@import url("sections/07_planos.css");
+@import url("sections/08_resultados.css");
+@import url("sections/04_simetria.css");
+@import url("sections/03_sobre.css");
+@import url("base/responsive.css");
+
+/* Titles de todas as seções */
+
+/* As cores agora são controladas exclusivamente pelo arquivo layout/palette.css */
+
+
+.section-title {
+  color: var(--title-bg);
+  font-size: 1.5rem;
+  font-weight:500;
+  text-align: center;
+  margin-bottom: 2rem;
+  letter-spacing: 1.3px;
+  text-shadow: 0 2px 12px var(--neutral-900), 0 1px 0 var(--neutral-100);
+  position: relative;
+  z-index: 2;
+}
+
+section, .section-title, .container, .about-content, .forwho-section, .process-section, .faq-section, .results-carousel, .plans-grid, .feedback-deck {
+  text-align: center;
+}

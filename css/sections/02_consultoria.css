@@ -1,0 +1,130 @@
+/* ===== PARA QUEM É ESSA CONSULTORIA ===== */
+.forwho-section {
+  background: var(--neutral-100);
+  padding: 50px 0;
+  border-radius: 30px;
+  box-shadow: 0 4px 32px var(--neutral-100);
+  border: 3px solid var(--brand-accent);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.forwho-section:hover {
+  border-color: var(--brand-accent);
+  box-shadow: 0 8px 32px var(--brand-accent);
+}
+
+.forwho-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  margin-bottom: 2.2rem;
+}
+  
+.forwho-card {
+  background: var(--neutral-100);
+  border-radius: 18px;
+  box-shadow: 0 0 18px 0 var(--brand-accent);
+  padding: 1.7rem 1.5rem 1.2rem 1.3rem;
+  min-width: 250px;
+  max-width: 300px;
+  color: var(--neutral-900);
+  font-size: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Montserrat', Arial, sans-serif;
+  transition: box-shadow 0.3s, transform 0.3s;
+  position: relative;
+  text-align: center;
+}
+
+.forwho-card-title {
+  color: var(--title-bg);
+  font-size: 1.13rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.5px;
+  text-transform: none;
+}
+
+.forwho-card:hover {
+  box-shadow: 0 0 32px var(--brand-accent);
+  transform: translateY(-6px) scale(1.04);
+}
+
+.forwho-card.active-highlight {
+  box-shadow: 0 0 32px var(--title-bg);
+  transform: translateY(-6px) scale(1.07);
+  z-index: 2;
+  border: 2px solid var(--title-bg);
+  background: var(--brand-accent);
+  transition: box-shadow 0.4s, transform 0.4s, border 0.4s, background 0.4s;
+}
+
+.forwho-bad-modern.active-highlight,
+.forwho-good-modern.active-highlight {
+  box-shadow: 0 0 32px var(--neutral-brown-800), 0 0 18px var(--brand-accent);
+  transform: translateY(-6px) scale(1.07);
+  z-index: 2;
+  border: 2px solid var(--neutral-100);
+  background: var(--neutral-900);
+  transition: box-shadow 0.4s, transform 0.4s, border 0.4s, background 0.4s;
+}
+
+.forwho-icon {
+  display: none;
+}
+
+.forwho-diferenciais-modern {
+  display: flex;
+  gap: 2.5rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.forwho-bad-modern,
+.forwho-good-modern {
+  background: var(--neutral-900);
+  border-radius: 14px;
+  box-shadow: 0 0 12px var(--neutral-100);
+  padding: 1.2rem 1.1rem 1.1rem 1.1rem;
+  min-width: 220px;
+  max-width: 270px;
+  color: var(--neutral-100);
+  font-size: 1.01rem;
+  font-family: 'Montserrat', Arial, sans-serif;
+}
+
+.forwho-bad-title,
+.forwho-good-title {
+  color: var(--neutral-100);
+  font-size: 1.08rem;
+  font-weight: 600;
+  margin-bottom: 0.7rem;
+}
+
+.forwho-bad-modern ul,
+.forwho-good-modern ul {
+  padding-left: 1.1rem;
+  margin: 0;
+}
+
+.forwho-bad-modern li,
+.forwho-good-modern li {
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+.section-title {
+  color: var(--neutral-900);
+  font-size: 1.7rem;
+  font-weight: 500;
+  text-align: center;
+  margin-bottom: 2rem;
+  letter-spacing: 1.5px;
+  text-shadow: 0 2px 12px var(--brand-accent), 0 1px 0 var(--neutral-100);
+  position: relative;
+  z-index: 2;
+}
