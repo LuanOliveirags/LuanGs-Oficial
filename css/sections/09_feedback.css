@@ -1,6 +1,15 @@
 /* =====================================================
    FEEDBACK CAROUSEL - CONTAINER PRINCIPAL
 ===================================================== */
+.portfolio-feedbacks-section{
+    background: var(--neutral-900);
+  padding: 50px 0;
+  border-radius: 30px;
+  box-shadow: 0 4px 32px var(--effect-shadow-soft);
+  border: 3px solid var(--title-bg);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
 
 .feedback-orbit {
   display: flex;
@@ -13,6 +22,7 @@
   transition:
     border-color 0.3s,
     box-shadow 0.3s;
+    
 }
 
 

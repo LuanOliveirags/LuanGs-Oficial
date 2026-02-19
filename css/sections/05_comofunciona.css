@@ -1,18 +1,18 @@
 /* ===== PROCESS SECTION ===== */
 .process-section {
   padding: 100px 2rem;
-  background: var(--neutral-100);
+  background: var(--neutral-900);
   padding: 50px 0;
   border-radius: 30px;
   transition: border-color 0.3s, box-shadow 0.3s;
-  border: 3px solid var(--border-subtle);
+  border: 3px solid var(--title-bg);
 
 }
 
 .process-intro {
   text-align: center;
   font-size: 1.1rem;
-  color: var(--neutral-900);
+  color: var(--neutral-100);
   margin: -2rem auto 0;
   line-height: 1.6;
 }

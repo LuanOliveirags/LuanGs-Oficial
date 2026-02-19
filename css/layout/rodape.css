@@ -237,7 +237,7 @@
 /* Logo */
 @media (max-width: 520px) {
   .footer-logo {
-    width: 150px !important;
+    width: 250px !important;
     margin-bottom: 18px !important;
     max-width: 95vw;
   }

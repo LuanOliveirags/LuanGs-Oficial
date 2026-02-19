@@ -9,9 +9,11 @@
   /* ==================================================
     Cor principal site: 
     ================================================== */
-	  --brand-accent: #00fde8af;
-	  	  --title-bg: #ca00fdc5;
-		    --surface-menu: #567774be;
+	  --brand-accent: #f384e19f;
+	  	  --title-bg: #bb4883;
+		    --surface-menu: #221e21be;
+                --bottom-bg: #ffffff;
+            --bottom-bg2: #000000;
 
 
 

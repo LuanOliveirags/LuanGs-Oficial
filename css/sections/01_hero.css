@@ -33,9 +33,10 @@
   bottom: 100px;
   z-index: 3;
   pointer-events: none;
+  
 }
 .hero-logo-img {
-  width: 200px;
+  width: 320px;
   max-width: 98vw;
   filter: drop-shadow(0 0 18px var(--brand-accent));
   opacity: 0.98;

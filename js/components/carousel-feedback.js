@@ -19,10 +19,11 @@ export function initCarouselFeedback() {
 //   3.5 Auto-slide e navegação
 // ====================================================
 const feedbackPrints = [
-  'img/screenshot_1.png',
-  'img/screenshot_2.png',
-  'img/screenshot_3.png',
-  'img/screenshot_4.png',
+  'img/Screenshot_1.png',
+  'img/Screenshot_2.png',
+  'img/Screenshot_3.png',
+  'img/Screenshot_4.png',
+  'img/Screenshot_5.png',
 ];
 
 document.addEventListener('DOMContentLoaded', initFeedbackGallery);

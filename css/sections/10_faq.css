@@ -1,12 +1,12 @@
 /* ===== FAQ SECTION ===== */
 .faq-section {
   padding: 90px 2rem;
-  background: linear-gradient(135deg, var(--neutral-100) 0%, var(--neutral-100) 100%);
+  background: var(--bottom-bg);
   position: relative;
   padding: 50px 0;
   border-radius: 30px;
   box-shadow: 0 4px 32px var(--border-subtle);
-  border: 3px solid var(--border-subtle);
+  border: 3px solid var(--title-bg);
   transition: border-color 0.3s, box-shadow 0.3s;
 }
 

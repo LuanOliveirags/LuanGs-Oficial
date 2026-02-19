@@ -1,22 +1,23 @@
 /* ===== ABOUT SECTION ===== */
 .about-section {
-  background: var(--neutral-100);
+  background: var(--bottom-bg);
   padding: 50px 0;
   border-radius: 30px;
   box-shadow: 0 4px 32px var(--effect-shadow-soft);
-  border: 3px solid var(--border-subtle);
+  border: 3px solid var(--title-bg);
   transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 .about-section .about-content {
   margin: 0 auto;
   font-size: 1.15rem;
-  color: var(--neutral-800);
+  color: var(--neutral-100);
   line-height: 1.7;
   background: var(--surface-white);
   border-radius: 18px;
   box-shadow: 0 2px 12px var(--effect-shadow-glow);
   padding: 24px;
+      background: var(--bottom-bg);
 }
 
 .about-section .about-content p {

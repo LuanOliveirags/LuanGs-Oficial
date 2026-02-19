@@ -3,36 +3,17 @@
    Estrutura profissional e escalável
    ================================================== */
 
-   
 :root {
-
-  /* ==================================================
-    Cor principal site: 
-    ================================================== */
-	  --brand-accent: #00fde8af;
-	  	  --title-bg: #ca00fdc5;
-		    --surface-menu: #567774be;
-
-
-
-  /* ==================================================
-     EFFECTS planos
-     ================================================== */
-	 
-    --letter-bg-p: #ffffffd4;
-	--letter-bg-p-secund: var(--brand-accent);
-	--border-bg-p: var(--brand-accent);
-	--border-bg-p-secund: #000000;
 
   /* ==================================================
      BRAND COLORS (Identidade da Marca)
      ================================================== */
 
-  --brand-primary: #ffffff;
-  --brand-primary-strong: #ffffff;
+  --brand-primary: #D0B9A7;
+  --brand-primary-strong: #B9937B;
   --brand-secondary: #B36326;
-  --brand-secondary-soft: #B9937B73;
-  
+  --brand-accent: #F06B06;
+
   /* ==================================================
      NEUTRAL COLORS (Escala Base)
      ================================================== */
@@ -48,15 +29,17 @@
      SURFACE COLORS (Fundos e Containers)
      ================================================== */
 
+  --surface-default: #D0B9A7;
   --surface-light: #F5D1B6;
   --surface-card: #B9937B73;
+  --surface-menu: #D0B9A7D4;
   --surface-white: #FFFFFF; /* Novo token semântico */
 
   /* ==================================================
      BORDERS
      ================================================== */
 
-  --border-subtle: rgba(208, 167, 199, 0.2);
+  --border-subtle: rgba(208,185,167,0.2);
   --border-soft: rgba(208,185,167,0.07); /* Novo (era #D0B9A711) */
 
   /* ==================================================
@@ -68,8 +51,4 @@
   --effect-shadow-soft: rgba(208,185,167,0.07); /* Novo */
   --effect-shadow-glow: rgba(255,182,213,0.13); /* Novo */
 
-
-
-
 }
-
