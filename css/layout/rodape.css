@@ -54,7 +54,7 @@
   margin-bottom: 10px;
   animation: float 3s ease-in-out infinite;
   filter: drop-shadow(0 0 10px var(--brand-accent));
-  width: 250px;
+  width: 200px;
   max-width: 90vw;
   height: auto;
   transition: width 0.3s;
@@ -237,7 +237,7 @@
 /* Logo */
 @media (max-width: 520px) {
   .footer-logo {
-    width: 250px !important;
+    width: 200px !important;
     margin-bottom: 18px !important;
     max-width: 95vw;
   }

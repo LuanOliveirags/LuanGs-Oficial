@@ -213,27 +213,18 @@
   .nav-menu-mobile {
     display: flex;
     flex-direction: column;
-    align-items: center;
     position: fixed;
     top: 0;
     right: 0;
     width: 100%;
     max-width: 340px;
-    height: 100vh;
+    height: 90vh;
     background: var(--surface-menu);
-    box-shadow: 0 8px 32px 0 var(--title-bg), 0 1.5px 24px 0 var(--brand-accent);
     border-left: 2.5px solid var(--brand-accent);
     border-radius: 22px 0 0 22px;
-    outline: 2px solid var(--brand-accent);
-    outline-offset: -8px;
-    backdrop-filter: blur(24px) saturate(140%);
-    transform: translateX(100%) scale(0.98);
     opacity: 0;
-    transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s, box-shadow 0.3s;
     overflow-y: auto;
     z-index: 1001;
-    border-top: 1.5px solid var(--brand-accent);
-    border-bottom: 1.5px solid var(--brand-accent);
     padding-top: 32px;
     padding-bottom: 32px;
   }
@@ -241,18 +232,15 @@
   .nav-menu-mobile.open {
     transform: translateX(0) scale(1);
     opacity: 1;
-    box-shadow: 0 8px 48px 0 var(--title-bg), 0 2px 32px 0 var(--brand-accent);
-    animation: menuGlassFadeIn 0.7s cubic-bezier(0.4,0,0.2,1);
   }
   @keyframes menuGlassFadeIn {
     from { opacity: 0; transform: translateX(100%) scale(0.95); }
-    to { opacity: 1; transform: translateX(0) scale(1); }
   }
 
   .nav-menu-mobile .menu-items {
     list-style: none;
     margin: 0;
-    padding: 0 0 0 0;
+    padding: 0;
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -266,8 +254,7 @@
     border-radius: 16px;
     overflow: hidden;
     background: transparent;
-    width: 90%;
-    display: flex;
+    width: 100%;
     justify-content: center;
   }
 
@@ -277,33 +264,25 @@
 
   .nav-menu-mobile .menu-items li a {
     display: block;
-    color: #fff;
+    color: var(--neutral-100);
     font-size: 1.15rem;
     font-weight: 500;
     border-radius: 16px;
-    background: linear-gradient(90deg, var(--title-bg) 0%, var(--neutral-900) 100%);
+    background: linear-gradient(90deg, var(--title-bg) 0%, var(--brand-accent) 100%);
     margin-bottom: 0;
     letter-spacing: 1.2px;
     padding: 15px 32px;
-    transition: background 0.25s, color 0.25s, box-shadow 0.25s, padding 0.25s, filter 0.2s;
-    position: relative;
-    border: none;
-    outline: none;
-    text-align: center;
-    text-shadow: 0 2px 8px var(--title-bg);
-    width: 100%;
-    box-shadow: 0 1px 8px 0 var(--title-bg);
+
   }
 
   .nav-menu-mobile .menu-items li a:hover,
   .nav-menu-mobile .menu-items li a:focus {
     color: var(--brand-accent);
-    background: linear-gradient(90deg, var(--neutral-100) 0%, var(--brand-accent) 100%);
-    box-shadow: 0 2px 24px 0 var(--brand-accent), 0 1.5px 12px 0 var(--neutral-100);
+    background: linear-gradient(90deg, var(--neutral-900) 0%, var(--brand-accent) 100%);
+    box-shadow: 0 2px 24px 0 var(--title-bg), 0 1.5px 12px 0 var(--neutral-900);
     padding-left: 38px;
     font-weight: 700;
     letter-spacing: 1.5px;
-    filter: brightness(1.12) saturate(1.3);
   }
 /* Botão de fechar estilizado */
 .nav-menu-mobile .menu-close-btn {
