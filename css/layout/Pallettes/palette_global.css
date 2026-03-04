@@ -132,5 +132,47 @@
   --plans-c4-icon-glow:        rgba(156, 111, 255, 0.45);
   --plans-c4-btn-shadow:       rgba(156, 111, 255, 0.38);
 
-}
+  /* ==================================================
+     SEÇÃO FEEDBACKS — Cores & Efeitos
+     ================================================== */
 
+  --fb-bg:                    #0a0a14;
+  --fb-dot-grid:              rgba(68, 56, 231, 0.14);
+  --fb-glow-inner:            rgba(0, 253, 232, 0.08);
+  --fb-glow-outer:            rgba(68, 56, 231, 0.10);
+
+  --fb-intro-text:            rgba(255, 255, 255, 0.45);
+
+  --fb-card-bg:               rgba(255, 255, 255, 0.04);
+  --fb-card-border:           rgba(255, 255, 255, 0.10);
+  --fb-card-border-active:    rgba(0, 253, 232, 0.40);
+  --fb-card-glow:             rgba(68, 56, 231, 0.20);
+  --fb-card-glow-active:      rgba(0, 253, 232, 0.22);
+  --fb-card-stripe-from:      #00fde8;
+  --fb-card-stripe-to:        #4438e7;
+
+  --fb-img-shadow:            rgba(0, 0, 0, 0.55);
+
+  --fb-arrow-bg:              rgba(255, 255, 255, 0.06);
+  --fb-arrow-border:          rgba(255, 255, 255, 0.12);
+  --fb-arrow-color:           rgba(255, 255, 255, 0.80);
+  --fb-arrow-hover-bg:        rgba(0, 253, 232, 0.15);
+  --fb-arrow-hover-border:    rgba(0, 253, 232, 0.50);
+  --fb-arrow-hover-color:     #00fde8;
+  --fb-arrow-hover-glow:      rgba(0, 253, 232, 0.25);
+
+  --fb-dot-inactive:          rgba(255, 255, 255, 0.20);
+  --fb-dot-active:            #00fde8;
+  --fb-dot-active-glow:       rgba(0, 253, 232, 0.50);
+
+  --fb-progress-track:        rgba(255, 255, 255, 0.08);
+  --fb-progress-fill-from:    #00fde8;
+  --fb-progress-fill-to:      #4438e7;
+  --fb-progress-glow:         rgba(0, 253, 232, 0.35);
+
+  --fb-modal-bg:              rgba(0, 0, 0, 0.88);
+  --fb-modal-img-shadow:      rgba(0, 253, 232, 0.18);
+  --fb-modal-close-color:     rgba(255, 255, 255, 0.80);
+  --fb-modal-close-hover:     #00fde8;
+
+}

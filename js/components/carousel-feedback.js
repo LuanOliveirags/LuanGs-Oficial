@@ -138,20 +138,15 @@ function initFeedbackGallery() {
   const openFeedbackModal = (src) => {
     if (!modal || !modalImg) return;
     modalImg.src = src;
-    modal.style.display = 'flex';
-    modal.style.opacity = '0';
-    requestAnimationFrame(() => {
-      modal.style.opacity = '1';
-    });
+    modal.classList.add('is-open');
   };
 
   const closeModal = () => {
     if (!modal) return;
-    modal.style.opacity = '0';
+    modal.classList.remove('is-open');
     setTimeout(() => {
-      modal.style.display = 'none';
       if (modalImg) modalImg.src = '';
-    }, 250);
+    }, 300);
   };
 
   if (modal && modalClose) {
@@ -160,7 +155,7 @@ function initFeedbackGallery() {
       if (event.target === modal) closeModal();
     });
     document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && modal.style.display === 'flex') {
+      if (event.key === 'Escape' && modal.classList.contains('is-open')) {
         closeModal();
       }
     });
