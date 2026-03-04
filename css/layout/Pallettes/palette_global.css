@@ -175,4 +175,36 @@
   --fb-modal-close-color:     rgba(255, 255, 255, 0.80);
   --fb-modal-close-hover:     #00fde8;
 
+  /* ==================================================
+     SEÇÃO FAQ — Cores & Efeitos
+     ================================================== */
+
+  --faq-bg:                   #0a0a14;
+  --faq-dot-grid:             rgba(68, 56, 231, 0.12);
+  --faq-glow-top:             rgba(68, 56, 231, 0.12);
+  --faq-glow-top-outer:       rgba(0, 253, 232, 0.06);
+
+  --faq-intro-text:           rgba(255, 255, 255, 0.45);
+
+  --faq-card-bg:              rgba(255, 255, 255, 0.04);
+  --faq-card-border:          rgba(255, 255, 255, 0.09);
+  --faq-card-border-active:   rgba(0, 253, 232, 0.45);
+  --faq-card-glow:            rgba(68, 56, 231, 0.16);
+  --faq-card-glow-active:     rgba(0, 253, 232, 0.20);
+  --faq-card-stripe-from:     #00fde8;
+  --faq-card-stripe-to:       #4438e7;
+
+  --faq-number-color:         rgba(0, 253, 232, 0.18);
+  --faq-question-text:        #ffffff;
+  --faq-question-text-active: #00fde8;
+  --faq-answer-text:          rgba(255, 255, 255, 0.72);
+  --faq-answer-border:        rgba(255, 255, 255, 0.07);
+  --faq-answer-strong:        #00fde8;
+  --faq-bullet:               #00fde8;
+
+  --faq-icon-bg:              rgba(255, 255, 255, 0.06);
+  --faq-icon-bg-active:       rgba(0, 253, 232, 0.12);
+  --faq-icon-color:           rgba(255, 255, 255, 0.55);
+  --faq-icon-color-active:    #00fde8;
+
 }
