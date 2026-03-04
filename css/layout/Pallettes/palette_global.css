@@ -76,8 +76,61 @@
   --effect-shadow-panel:  rgba(0, 0, 0, 0.35); /* Sombra do painel lateral  */
   --effect-shadow-light:  rgba(0, 0, 0, 0.20); /* Sombra leve (botão fechar)*/
 
+  /* ==================================================
+     SEÇÃO PLANOS — Cores & Efeitos
+     ================================================== */
 
+  /* Fundo */
+  --plans-bg:                  #0a0a14;
+  --plans-bg-btn-dark:         #0a0a20;
 
+  /* Cards */
+  --plans-card-bg:             rgba(255, 255, 255, 0.04);
+  --plans-card-border:         rgba(255, 255, 255, 0.10);
+
+  /* Texto */
+  --plans-text-white:          #ffffff;
+  --plans-text-subtitle:       rgba(255, 255, 255, 0.42);
+  --plans-text-muted:          rgba(255, 255, 255, 0.55);
+  --plans-text-faint:          rgba(255, 255, 255, 0.50);
+  --plans-text-dimmed:         rgba(255, 255, 255, 0.38);
+  --plans-feature-text:        rgba(255, 255, 255, 0.72);
+  --plans-feature-border-top:  rgba(255, 255, 255, 0.08);
+  --plans-feature-border:      rgba(255, 255, 255, 0.06);
+  --plans-shimmer:             rgba(255, 255, 255, 0.22);
+
+  /* Efeitos de fundo */
+  --plans-dot-glow:            rgba(68, 56, 231, 0.18);
+  --plans-center-glow-inner:   rgba(68, 56, 231, 0.14);
+  --plans-center-glow-outer:   rgba(0, 253, 232, 0.06);
+
+  /* Card 1 — Ciano → Azul */
+  --plans-c1-from:             #00fde8;
+  --plans-c1-to:               #4438e7;
+  --plans-c1-glow:             rgba(0, 253, 232, 0.22);
+  --plans-c1-icon-glow:        rgba(0, 253, 232, 0.35);
+  --plans-c1-btn-shadow:       rgba(68, 56, 231, 0.35);
+
+  /* Card 2 — Azul → Roxo */
+  --plans-c2-from:             #4438e7;
+  --plans-c2-to:               #9c6fff;
+  --plans-c2-glow:             rgba(68, 56, 231, 0.30);
+  --plans-c2-icon-glow:        rgba(68, 56, 231, 0.45);
+  --plans-c2-btn-shadow:       rgba(68, 56, 231, 0.40);
+
+  /* Card 3 — Verde → Ciano */
+  --plans-c3-from:             #00e5a0;
+  --plans-c3-to:               #00fde8;
+  --plans-c3-glow:             rgba(0, 229, 160, 0.22);
+  --plans-c3-icon-glow:        rgba(0, 229, 160, 0.45);
+  --plans-c3-btn-shadow:       rgba(0, 229, 160, 0.35);
+
+  /* Card 4 — Roxo → Rosa */
+  --plans-c4-from:             #9c6fff;
+  --plans-c4-to:               #ff6bcb;
+  --plans-c4-glow:             rgba(156, 111, 255, 0.28);
+  --plans-c4-icon-glow:        rgba(156, 111, 255, 0.45);
+  --plans-c4-btn-shadow:       rgba(156, 111, 255, 0.38);
 
 }
 
