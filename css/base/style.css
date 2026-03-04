@@ -6,7 +6,7 @@
   box-shadow: 0 2px 24px rgba(0, 0, 0, 0.05);
 }
 
-.about-section .section-title { color: #000000; }
+/* .about-section .section-title — removido: cor centralizada em palette_global.css */
 
 .about-content p {
   max-width: 700px;
@@ -102,7 +102,7 @@
   box-shadow: 0 -40px 80px rgba(0, 0, 0, 0.15);
 }
 
-.skills-section .section-title { color: #ffffff; }
+/* .skills-section .section-title — removido: cor centralizada em palette_global.css */
 
 .plans-grid {
   display: grid;
@@ -221,7 +221,7 @@
 
 }
 
-.section-title { color: #181818; }
+/* .section-title global — removido: centralizado em main.css */
 
 .results-intro {
   text-align: center;

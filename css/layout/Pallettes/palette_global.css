@@ -7,6 +7,16 @@
 :root {
 
   /* ==================================================
+     TÍTULOS DE SEÇÃO GLOBAL
+     ================================================== */
+
+  --section-title-color:      #ffffff;
+  --section-title-size:       1.7rem;
+  --section-title-weight:     700;
+  --section-title-accent:     #00fde8;  --section-title-line-from:  #00fde8;
+  --section-title-line-to:    #4438e7;
+  --section-title-glow:       rgba(0, 253, 232, 0.18);
+  /* ==================================================
     Cor principal site: 
     ================================================== */
 	  --brand-accent: #00fde8af;

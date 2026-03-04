@@ -25,15 +25,27 @@
 
 
 .section-title {
-  color: var(--title-bg);
-  font-size: 1.5rem;
-  font-weight:500;
+  color: var(--section-title-color);
+  font-size: var(--section-title-size);
+  font-weight: var(--section-title-weight);
   text-align: center;
-  margin-bottom: 2rem;
-  letter-spacing: 1.3px;
-  text-shadow: 0 2px 12px var(--neutral-900), 0 1px 0 var(--neutral-100);
+  margin-bottom: 2.5rem;
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 40px var(--section-title-glow);
   position: relative;
   z-index: 2;
+  line-height: 1.2;
+}
+
+.section-title::after {
+  content: '';
+  display: block;
+  width: 56px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--section-title-line-from), var(--section-title-line-to));
+  border-radius: 999px;
+  margin: 14px auto 0;
+  box-shadow: 0 0 12px var(--section-title-glow);
 }
 
 section, .section-title, .container, .about-content, .forwho-section, .process-section, .faq-section, .results-carousel, .plans-grid, .feedback-deck {
