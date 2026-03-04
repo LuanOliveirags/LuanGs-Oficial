@@ -245,4 +245,92 @@
   --footer-dev-link:          #00fde8;
   --footer-dev-link-hover:    #4438e7;
 
+  /* ==================================================
+     SEÇÃO SOBRE — Cores & Efeitos
+     ================================================== */
+
+  --sobre-bg:                 #0a0a14;
+  --sobre-dot-grid:           rgba(68, 56, 231, 0.10);
+  --sobre-glow-from:          rgba(68, 56, 231, 0.14);
+  --sobre-glow-to:            rgba(0, 253, 232, 0.06);
+
+  --sobre-card-bg:            rgba(255, 255, 255, 0.04);
+  --sobre-card-border:        rgba(255, 255, 255, 0.09);
+  --sobre-stripe-from:        #4438e7;
+  --sobre-stripe-to:          #00fde8;
+
+  --sobre-badge-bg:           rgba(0, 253, 232, 0.10);
+  --sobre-badge-border:       rgba(0, 253, 232, 0.30);
+  --sobre-badge-color:        #00fde8;
+
+  --sobre-title:              #ffffff;
+  --sobre-title-accent-from:  #00fde8;
+  --sobre-title-accent-to:    #4438e7;
+  --sobre-text:               rgba(255, 255, 255, 0.68);
+  --sobre-text-strong:        #00fde8;
+
+  --sobre-avatar-from:        #4438e7;
+  --sobre-avatar-to:          #00fde8;
+  --sobre-avatar-glow:        rgba(68, 56, 231, 0.40);
+  --sobre-avatar-text:        #ffffff;
+
+  --sobre-stat-num-from:      #00fde8;
+  --sobre-stat-num-to:        #4438e7;
+  --sobre-stat-label:         rgba(255, 255, 255, 0.50);
+  --sobre-stat-divider:       rgba(255, 255, 255, 0.08);
+
+  --sobre-skill-bg:           rgba(255, 255, 255, 0.05);
+  --sobre-skill-border:       rgba(255, 255, 255, 0.10);
+  --sobre-skill-color:        rgba(255, 255, 255, 0.72);
+  --sobre-skill-hover-bg:     rgba(0, 253, 232, 0.10);
+  --sobre-skill-hover-border: rgba(0, 253, 232, 0.40);
+  --sobre-skill-hover-color:  #00fde8;
+
+  --sobre-cta-from:           #00fde8;
+  --sobre-cta-to:             #4438e7;
+  --sobre-cta-color:          #0a0a14;
+  --sobre-cta-shadow:         rgba(68, 56, 231, 0.40);
+
+  /* ==================================================
+     SEÇÃO COMO FUNCIONA — Cores & Efeitos
+     ================================================== */
+
+  --cf-bg:                    #0a0a14;
+  --cf-dot-grid:              rgba(68, 56, 231, 0.10);
+  --cf-glow-from:             rgba(68, 56, 231, 0.14);
+  --cf-glow-to:               rgba(0, 253, 232, 0.06);
+
+  --cf-intro:                 rgba(255, 255, 255, 0.55);
+
+  --cf-card-bg:               rgba(255, 255, 255, 0.04);
+  --cf-card-border:           rgba(255, 255, 255, 0.09);
+  --cf-card-border-active:    rgba(0, 253, 232, 0.40);
+  --cf-card-glow:             rgba(0, 253, 232, 0.10);
+  --cf-stripe-1-from:         #4438e7;
+  --cf-stripe-1-to:           #9c6fff;
+  --cf-stripe-2-from:         #00fde8;
+  --cf-stripe-2-to:           #4438e7;
+  --cf-stripe-3-from:         #00e5a0;
+  --cf-stripe-3-to:           #00fde8;
+
+  --cf-num-from:              #4438e7;
+  --cf-num-to:                #9c6fff;
+  --cf-num-2-from:            #00fde8;
+  --cf-num-2-to:              #4438e7;
+  --cf-num-3-from:            #00e5a0;
+  --cf-num-3-to:              #00fde8;
+  --cf-num-bg:                rgba(255, 255, 255, 0.05);
+  --cf-num-border:            rgba(255, 255, 255, 0.10);
+
+  --cf-title:                 #ffffff;
+  --cf-text:                  rgba(255, 255, 255, 0.62);
+  --cf-text-strong:           #00fde8;
+
+  --cf-connector:             rgba(255, 255, 255, 0.08);
+  --cf-connector-dot:         rgba(0, 253, 232, 0.50);
+
+  --cf-deco-num-1:            rgba(68, 56, 231, 0.07);
+  --cf-deco-num-2:            rgba(0, 253, 232, 0.06);
+  --cf-deco-num-3:            rgba(0, 229, 160, 0.06);
+
 }
