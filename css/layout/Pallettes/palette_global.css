@@ -207,4 +207,42 @@
   --faq-icon-color:           rgba(255, 255, 255, 0.55);
   --faq-icon-color-active:    #00fde8;
 
+  /* ==================================================
+     RODAPÉ — Cores & Efeitos
+     ================================================== */
+
+  --footer-bg:                #07070f;
+  --footer-dot-grid:          rgba(68, 56, 231, 0.10);
+  --footer-glow-from:         rgba(68, 56, 231, 0.10);
+  --footer-glow-to:           rgba(0, 253, 232, 0.05);
+
+  --footer-cta-bg:            rgba(255, 255, 255, 0.04);
+  --footer-cta-border:        rgba(255, 255, 255, 0.09);
+  --footer-cta-label:         #ffffff;
+  --footer-cta-sub:           rgba(255, 255, 255, 0.48);
+  --footer-cta-btn-from:      #00fde8;
+  --footer-cta-btn-to:        #4438e7;
+  --footer-cta-btn-shadow:    rgba(68, 56, 231, 0.40);
+  --footer-cta-btn-color:     #0a0a14;
+
+  --footer-heading:           #ffffff;
+  --footer-heading-line:      #00fde8;
+  --footer-text:              rgba(255, 255, 255, 0.55);
+  --footer-tagline:           rgba(0, 253, 232, 0.85);
+  --footer-link:              rgba(255, 255, 255, 0.55);
+  --footer-link-hover:        #00fde8;
+
+  --footer-social-bg:         rgba(255, 255, 255, 0.06);
+  --footer-social-border:     rgba(255, 255, 255, 0.10);
+  --footer-social-hover-bg:   rgba(0, 253, 232, 0.12);
+  --footer-social-hover-border: rgba(0, 253, 232, 0.50);
+  --footer-social-hover-glow: rgba(0, 253, 232, 0.20);
+  --footer-social-ig:         #00fde8;
+  --footer-social-wa:         #25d366;
+
+  --footer-divider:           rgba(255, 255, 255, 0.07);
+  --footer-copyright:         rgba(255, 255, 255, 0.35);
+  --footer-dev-link:          #00fde8;
+  --footer-dev-link-hover:    #4438e7;
+
 }
