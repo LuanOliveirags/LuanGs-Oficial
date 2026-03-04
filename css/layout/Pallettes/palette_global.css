@@ -343,4 +343,51 @@
   --cf-deco-num-2:            rgba(0, 253, 232, 0.06);
   --cf-deco-num-3:            rgba(0, 229, 160, 0.06);
 
+  /* ==================================================
+     PRELOADER — Cores & Efeitos
+     ================================================== */
+
+  --pl-bg:                    #0a0a14;
+  --pl-dot-grid:              rgba(68, 56, 231, 0.12);
+  --pl-glow-inner:            rgba(68, 56, 231, 0.22);
+  --pl-glow-outer:            rgba(0, 253, 232, 0.06);
+
+  /* Rings */
+  --pl-ring-1-color:          #00fde8;
+  --pl-ring-1-fade:           rgba(0, 253, 232, 0.25);
+  --pl-ring-1-glow:           rgba(0, 253, 232, 0.40);
+
+  --pl-ring-2-color:          #9c6fff;
+  --pl-ring-2-fade:           rgba(156, 111, 255, 0.22);
+  --pl-ring-2-glow:           rgba(156, 111, 255, 0.35);
+
+  --pl-ring-3-color:          #00e5a0;
+  --pl-ring-3-fade:           rgba(0, 229, 160, 0.20);
+  --pl-ring-3-glow:           rgba(0, 229, 160, 0.30);
+
+  /* Core */
+  --pl-core-bg:               rgba(0, 253, 232, 0.05);
+  --pl-core-border:           rgba(0, 253, 232, 0.35);
+  --pl-core-glow:             rgba(0, 253, 232, 0.55);
+  --pl-initial-from:          #00fde8;
+  --pl-initial-to:            #9c6fff;
+
+  /* Text */
+  --pl-name-from:             #ffffff;
+  --pl-name-mid:              #00fde8;
+  --pl-name-to:               #9c6fff;
+  --pl-role-color:            rgba(255, 255, 255, 0.45);
+
+  /* Loading dots */
+  --pl-dot-active:            #00fde8;
+  --pl-dot-shadow:            rgba(0, 253, 232, 0.55);
+
+  /* Corner marks */
+  --pl-corner-color:          rgba(0, 253, 232, 0.38);
+
+  /* Particles */
+  --pl-particle-1:            #00fde8;
+  --pl-particle-2:            #9c6fff;
+  --pl-particle-3:            #00e5a0;
+
 }
