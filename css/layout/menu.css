@@ -7,184 +7,133 @@
   top: 0;
   width: 100%;
   background: transparent;
-  backdrop-filter: none;
-  border-bottom: none;
   z-index: 1000;
-  box-shadow: none;
+  transition: background 0.35s ease,
+              border-bottom 0.35s ease,
+              box-shadow 0.35s ease;
+}
+
+.header.scrolled {
+  background: var(--menu-header-scrolled-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--menu-header-scrolled-border);
+  box-shadow: 0 4px 30px var(--menu-header-scrolled-shadow);
 }
 
 .navigation {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  padding: 1.5rem 2rem;
+  padding: 1rem 2rem;
   max-width: 1400px;
   margin: 0 auto;
 }
 
 /* =====================================================
-   MENU TOGGLE (HAMBURGUER BUTTON)
+   MENU TOGGLE (HAMBURGUER)
 ===================================================== */
 
 .menu-toggle {
-  display: none; /* Ativado apenas no mobile */
+  display: none;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 50px;
-  height: 50px;
+  width: 44px;
+  height: 44px;
   cursor: pointer;
-  background: var( --neutral-900);
+  background: var(--menu-toggle-bg);
   border-radius: 12px;
-  border: 2px solid var(--brand-accent);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  z-index: 1002;
-  backdrop-filter: blur(10px);
-}
-
-/* Barras do botão */
-.menu-toggle .bar {
-  width: 2px;
-  height: 3px;
-  background: var(--brand-accent);
-  border-radius: 3px;
+  border: 1.5px solid var(--menu-toggle-border);
   transition: all 0.3s ease;
   position: relative;
+  z-index: 1002;
+  backdrop-filter: blur(12px);
+}
+
+.menu-toggle .bar {
+  width: 20px;
+  height: 2px;
+  background: var(--menu-toggle-bar);
+  border-radius: 2px;
+  transition: all 0.32s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .menu-toggle .bar:nth-child(1) { margin-bottom: 5px; }
 .menu-toggle .bar:nth-child(3) { margin-top: 5px; }
 
-/* Animação X */
-.menu-toggle.active .bar:nth-child(1) {
-  transform: translateY(8px) rotate(45deg);
-}
-.menu-toggle.active .bar:nth-child(2) {
-  opacity: 0;
-  transform: scale(0);
-}
-.menu-toggle.active .bar:nth-child(3) {
-  transform: translateY(-8px) rotate(-45deg);
-}
+/* X ao abrir */
+.menu-toggle.active .bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.menu-toggle.active .bar:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.menu-toggle.active .bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
-/* Hover */
 .menu-toggle:hover {
-  background: var( --neutral-900);
-  border-color: var(--brand-accent);
-  box-shadow: 0 0 25px var(--brand-accent);
-  transform: scale(1.05);
+  box-shadow: 0 0 20px var(--menu-toggle-glow);
+  border-color: var(--menu-bar-from);
+  transform: scale(1.06);
 }
 
 /* =====================================================
-   BRAND (LOGO + NOME)
+   BRAND (MOBILE DRAWER HEADER)
 ===================================================== */
 
+/* Estilos globais de base — detalhes aplicados dentro do @media mobile */
 .menu-brand {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 40px 25px 25px;
-  border-bottom: 1px solid var(--brand-accent);
-  text-align: center;
+  gap: 0.4rem;
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
-.menu-logo {
-  background-image: url('');
-  background-size: contain;
-  background-repeat: no-repeat;
-  width: 150px;
-  max-width: 90vw;
+.menu-brand-core {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: var(--menu-brand-core-bg);
+  border: 1.5px solid var(--menu-brand-core-border);
+  box-shadow: 0 0 22px var(--menu-brand-glow);
+  margin-bottom: 0.2rem;
+}
+
+.menu-brand-logo {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+  display: block;
 }
 
 .menu-brand-name {
-  font-size: 2rem;
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-size: 1.02rem;
   font-weight: 700;
-  letter-spacing: 1.2px;
-  color: #fff;
-  margin-bottom: 0.2em;
-  text-shadow: 0 2px 12px var(--brand-accent);
+  color: var(--menu-brand-name);
+  letter-spacing: 0.05em;
+  margin: 0;
 }
 
 .menu-brand-subtitle {
-  font-size: 1rem;
-  color: #fff;
-  opacity: 0.7;
-  letter-spacing: 2.5px;
-  margin-top: 0.2em;
+  font-size: 0.66rem;
+  color: var(--menu-brand-sub);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
   font-weight: 400;
+  margin: 0;
 }
 
 /* =====================================================
-   MENU ITEMS (GLOBAL)
+   MENU ITEMS — Reset global (estilo real por contexto)
 ===================================================== */
 
-.menu-items li {
-  opacity: 0;
-  transform: translateX(30px);
-  animation: slideInMenu 0.5s ease forwards;
+.menu-items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
-
-.menu-items li a {
-  display: block;
-  color: #fff;
-  text-decoration: none;
-  font-weight: 400;
-  padding: 15px 0;
-  transition: all 0.3s ease;
-  letter-spacing: 0.8px;
-  border-bottom: 1px solid var( --neutral-900);
-  position: relative;
-}
-
-/* Linha animada */
-.menu-items li a::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--brand-accent), var( --neutral-900));
-  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.menu-items li a:hover {
-  color: var( --neutral-900);
-  transform: translateX(10px);
-  padding-left: 10px;
-}
-
-.menu-items li a:hover::before {
-  width: 100%;
-}
-
-/* Animação */
-@keyframes slideInMenu {
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-/* Delay animação */
-.nav-menu.open .menu-items li:nth-child(1) { animation-delay: 0.1s; }
-.nav-menu.open .menu-items li:nth-child(2) { animation-delay: 0.15s; }
-.nav-menu.open .menu-items li:nth-child(3) { animation-delay: 0.2s; }
-.nav-menu.open .menu-items li:nth-child(4) { animation-delay: 0.25s; }
-.nav-menu.open .menu-items li:nth-child(5) { animation-delay: 0.3s; }
-.nav-menu.open .menu-items li:nth-child(6) { animation-delay: 0.35s; }
-.nav-menu.open .menu-items li:nth-child(7) { animation-delay: 0.4s; }
-.nav-menu.open .menu-items li:nth-child(8) { animation-delay: 0.45s; }
-.nav-menu.open .menu-items li:nth-child(9) { animation-delay: 0.5s; }
-.nav-menu.open .menu-items li:nth-child(10){ animation-delay: 0.55s; }
-
-/* =====================================================
-   MENU MOBILE
-===================================================== */
 
 /* =====================================================
    OVERLAY DO MENU MOBILE
@@ -194,8 +143,9 @@
   display: none;
   position: fixed;
   inset: 0;
-  background: var(--effect-overlay-bg);
-  backdrop-filter: blur(4px);
+  background: var(--menu-overlay-bg);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   z-index: 1000;
   opacity: 0;
   transition: opacity 0.35s ease;
@@ -214,50 +164,13 @@
 
   .menu-toggle {
     display: flex;
-    width: 44px;
-    height: 44px;
-    border-radius: 14px;
-    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 0 0 0 var(--brand-accent);
-  }
-
-  .menu-toggle:hover {
-    box-shadow: 0 0 18px 4px color-mix(in srgb, var(--brand-accent) 40%, transparent);
-  }
-
-  .menu-toggle .bar {
-    width: 22px;
-    height: 2px;
-    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  /* Animação X aprimorada */
-  .menu-toggle.active .bar:nth-child(1) {
-    transform: translateY(7px) rotate(45deg);
-    background: var(--brand-accent);
-  }
-  .menu-toggle.active .bar:nth-child(2) {
-    opacity: 0;
-    transform: scaleX(0);
-  }
-  .menu-toggle.active .bar:nth-child(3) {
-    transform: translateY(-7px) rotate(-45deg);
-    background: var(--brand-accent);
   }
 
   .navigation {
-    padding: 0.5rem 1rem;
+    padding: 0.6rem 1.2rem;
   }
 
-  .header {
-    background: transparent;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid color-mix(in srgb, var(--brand-accent) 35%, transparent);
-    box-shadow: 0 2px 20px var(--effect-shadow-dark);
-  }
-
-  /* ── Painel lateral ── */
+  /* ── Drawer lateral ── */
   .nav-menu-mobile {
     display: flex;
     flex-direction: column;
@@ -265,130 +178,157 @@
     top: 0;
     right: 0;
     width: 85%;
-    max-width: 320px;
+    max-width: 310px;
     height: 100dvh;
-    background: linear-gradient(
-      160deg,
-      color-mix(in srgb, var(--surface-menu) 95%, var(--brand-accent) 5%) 0%,
-      var(--surface-menu) 60%
-    );
-    backdrop-filter: blur(22px);
-    -webkit-backdrop-filter: blur(22px);
-    border-left: 1.5px solid color-mix(in srgb, var(--brand-accent) 50%, transparent);
+    background: var(--menu-drawer-bg);
+    border-left: 1.5px solid var(--menu-drawer-border);
     border-radius: 24px 0 0 24px;
-    box-shadow:
-      -8px 0 40px var(--effect-shadow-panel),
-      inset 1px 0 0 color-mix(in srgb, var(--brand-accent) 20%, transparent);
+    box-shadow: -10px 0 60px var(--menu-drawer-shadow);
     opacity: 0;
-    transform: translateX(100%) scale(0.97);
+    transform: translateX(100%);
     overflow-y: auto;
     overflow-x: hidden;
     z-index: 1001;
-    padding: 72px 20px 40px;
+    padding-bottom: 2.5rem;
     transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1),
                 opacity   0.35s ease;
     will-change: transform, opacity;
   }
 
-  .nav-menu-mobile.open {
-    transform: translateX(0) scale(1);
-    opacity: 1;
+  /* Grade de pontos */
+  .nav-menu-mobile::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, var(--menu-drawer-dot) 1px, transparent 1px);
+    background-size: 28px 28px;
+    border-radius: 24px 0 0 24px;
+    z-index: 0;
+    pointer-events: none;
   }
 
-  /* Barra decorativa no topo */
-  .nav-menu-mobile::before {
+  /* Barra gradiente no topo */
+  .nav-menu-mobile::after {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, transparent, var(--brand-accent), transparent);
+    background: linear-gradient(90deg, var(--menu-bar-from), var(--menu-bar-to));
     border-radius: 24px 0 0 0;
+    z-index: 5;
+  }
+
+  .nav-menu-mobile.open {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  /* ── Botão fechar ── */
+  .menu-close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 10;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: var(--menu-close-bg);
+    border: 1.5px solid var(--menu-close-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    color: var(--menu-close-icon);
+  }
+
+  .menu-close-btn svg { pointer-events: none; }
+
+  .menu-close-btn:hover {
+    background: var(--menu-bar-from);
+    border-color: var(--menu-bar-from);
+    color: #0a0a14;
+    transform: rotate(90deg);
+    box-shadow: 0 0 16px var(--menu-item-hover-glow);
+  }
+
+  /* ── Brand header ── */
+  .menu-brand {
+    position: relative;
+    z-index: 2;
+    padding: 3.2rem 1.6rem 1.5rem;
+    text-align: center;
+    border-bottom: 1px solid var(--menu-brand-divider);
   }
 
   /* ── Lista de itens ── */
   .nav-menu-mobile .menu-items {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    width: 100%;
+    position: relative;
+    z-index: 2;
+    padding: 1.4rem 1.2rem;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    align-items: stretch;
+    gap: 8px;
     counter-reset: menu-counter;
   }
 
   .nav-menu-mobile .menu-items li {
     counter-increment: menu-counter;
-    border-bottom: none;
-    margin: 0;
-    border-radius: 14px;
-    overflow: hidden;
-    background: transparent;
-    width: 100%;
     opacity: 0;
-    transform: translateX(28px);
+    transform: translateX(24px);
     transition: opacity 0.35s ease, transform 0.35s ease;
   }
 
-  /* Entrada escalonada ao abrir */
-  .nav-menu-mobile.open .menu-items li:nth-child(1)  { opacity: 1; transform: none; transition-delay: 0.06s; }
-  .nav-menu-mobile.open .menu-items li:nth-child(2)  { opacity: 1; transform: none; transition-delay: 0.10s; }
-  .nav-menu-mobile.open .menu-items li:nth-child(3)  { opacity: 1; transform: none; transition-delay: 0.14s; }
-  .nav-menu-mobile.open .menu-items li:nth-child(4)  { opacity: 1; transform: none; transition-delay: 0.18s; }
-  .nav-menu-mobile.open .menu-items li:nth-child(5)  { opacity: 1; transform: none; transition-delay: 0.22s; }
-  .nav-menu-mobile.open .menu-items li:nth-child(6)  { opacity: 1; transform: none; transition-delay: 0.26s; }
-  .nav-menu-mobile.open .menu-items li:nth-child(7)  { opacity: 1; transform: none; transition-delay: 0.30s; }
-  .nav-menu-mobile.open .menu-items li:nth-child(8)  { opacity: 1; transform: none; transition-delay: 0.34s; }
-  .nav-menu-mobile.open .menu-items li:nth-child(9)  { opacity: 1; transform: none; transition-delay: 0.38s; }
-  .nav-menu-mobile.open .menu-items li:nth-child(10) { opacity: 1; transform: none; transition-delay: 0.42s; }
-
-  .nav-menu-mobile .menu-items li:last-child { margin-bottom: 0; }
+  /* Entrada escalonada */
+  .nav-menu-mobile.open .menu-items li:nth-child(1) { opacity: 1; transform: none; transition-delay: 0.07s; }
+  .nav-menu-mobile.open .menu-items li:nth-child(2) { opacity: 1; transform: none; transition-delay: 0.11s; }
+  .nav-menu-mobile.open .menu-items li:nth-child(3) { opacity: 1; transform: none; transition-delay: 0.15s; }
+  .nav-menu-mobile.open .menu-items li:nth-child(4) { opacity: 1; transform: none; transition-delay: 0.19s; }
+  .nav-menu-mobile.open .menu-items li:nth-child(5) { opacity: 1; transform: none; transition-delay: 0.23s; }
+  .nav-menu-mobile.open .menu-items li:nth-child(6) { opacity: 1; transform: none; transition-delay: 0.27s; }
+  .nav-menu-mobile.open .menu-items li:nth-child(7) { opacity: 1; transform: none; transition-delay: 0.31s; }
+  .nav-menu-mobile.open .menu-items li:nth-child(8) { opacity: 1; transform: none; transition-delay: 0.35s; }
 
   .nav-menu-mobile .menu-items li a {
     display: flex;
     align-items: center;
-    gap: 14px;
-    color: var(--neutral-100);
-    font-size: 1.05rem;
+    gap: 12px;
+    color: var(--menu-item-color);
+    font-size: 0.95rem;
     font-weight: 500;
-    border-radius: 14px;
-    background: color-mix(in srgb, var(--neutral-100) 5%, transparent);
-    border: 1px solid color-mix(in srgb, var(--brand-accent) 20%, transparent);
-    letter-spacing: 0.8px;
-    padding: 14px 20px;
-    transition: background 0.25s ease,
-                border-color 0.25s ease,
-                box-shadow 0.25s ease,
-                padding-left 0.25s ease,
-                color 0.25s ease;
+    padding: 12px 16px;
+    border-radius: 13px;
+    text-decoration: none;
+    background: var(--menu-item-bg);
+    border: 1px solid var(--menu-item-border);
+    letter-spacing: 0.4px;
     position: relative;
     overflow: hidden;
+    transition: all 0.25s ease;
   }
 
-  /* Numeração decorativa */
+  /* Número prefixo */
   .nav-menu-mobile .menu-items li a::before {
     content: counter(menu-counter, decimal-leading-zero);
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     font-weight: 700;
-    color: var(--brand-accent);
-    opacity: 0.6;
-    letter-spacing: 0;
+    color: var(--menu-num-color);
     flex-shrink: 0;
-    transition: opacity 0.25s ease;
+    letter-spacing: 0;
+    transition: color 0.25s ease;
   }
 
-  /* Barra lateral esquerda */
+  /* Barra lateral no hover */
   .nav-menu-mobile .menu-items li a::after {
     content: '';
     position: absolute;
     left: 0;
-    top: 20%;
-    height: 60%;
+    top: 15%;
+    height: 70%;
     width: 3px;
-    background: var(--brand-accent);
+    background: linear-gradient(180deg, var(--menu-bar-from), var(--menu-bar-to));
     border-radius: 0 3px 3px 0;
     transform: scaleY(0);
     transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -397,172 +337,97 @@
 
   .nav-menu-mobile .menu-items li a:hover,
   .nav-menu-mobile .menu-items li a:focus {
-    color: var(--neutral-100);
-    background: color-mix(in srgb, var(--brand-accent) 18%, transparent);
-    border-color: color-mix(in srgb, var(--brand-accent) 55%, transparent);
-    box-shadow: 0 4px 20px color-mix(in srgb, var(--brand-accent) 20%, transparent),
-                inset 0 0 20px color-mix(in srgb, var(--brand-accent) 6%, transparent);
-    padding-left: 26px;
-    font-weight: 600;
-    letter-spacing: 1px;
+    color: var(--menu-item-hover-color);
+    background: var(--menu-item-hover-mobile-bg);
+    border-color: var(--menu-item-hover-mobile-border);
+    box-shadow: 0 4px 22px var(--menu-item-hover-glow);
+    padding-left: 22px;
   }
 
   .nav-menu-mobile .menu-items li a:hover::after,
-  .nav-menu-mobile .menu-items li a:focus::after {
-    transform: scaleY(1);
-  }
+  .nav-menu-mobile .menu-items li a:focus::after { transform: scaleY(1); }
 
   .nav-menu-mobile .menu-items li a:hover::before,
-  .nav-menu-mobile .menu-items li a:focus::before {
-    opacity: 1;
-  }
-
-  /* ── Botão de fechar ── */
-  .nav-menu-mobile .menu-close-btn {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    width: 40px;
-    height: 40px;
-    background: color-mix(in srgb, var(--brand-accent) 12%, transparent);
-    border: 1.5px solid color-mix(in srgb, var(--brand-accent) 50%, transparent);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 1100;
-    transition: background 0.25s ease,
-                box-shadow 0.25s ease,
-                border-color 0.25s ease,
-                transform 0.25s ease;
-    box-shadow: 0 2px 10px var(--effect-shadow-light);
-  }
-
-  .nav-menu-mobile .menu-close-btn:hover {
-    background: var(--brand-accent);
-    border-color: var(--brand-accent);
-    transform: rotate(90deg) scale(1.08);
-    box-shadow: 0 4px 20px color-mix(in srgb, var(--brand-accent) 40%, transparent);
-  }
-
-  .nav-menu-mobile .menu-close-btn svg,
-  .nav-menu-mobile .menu-close-btn i {
-    color: var(--neutral-100);
-    font-size: 1.1rem;
-    pointer-events: none;
-    transition: color 0.2s ease;
-  }
-
-  .nav-menu-mobile .menu-close-btn:hover svg,
-  .nav-menu-mobile .menu-close-btn:hover i {
-    color: var(--neutral-900);
-  }
+  .nav-menu-mobile .menu-items li a:focus::before { color: var(--menu-bar-from); }
 }
 
-/* ── Esconde menu mobile no desktop ── */
+/* ── Esconde mobile no desktop ── */
 @media (min-width: 769px) {
-  .nav-menu-mobile {
-    display: none !important;
-  }
-  .menu-overlay {
-    display: none !important;
-  }
+  .nav-menu-mobile { display: none !important; }
+  .menu-overlay    { display: none !important; }
 }
 
 /* =====================================================
-   MENU DESKTOP
+   MENU DESKTOP — Pill Flutuante Neon
 ===================================================== */
 
 .nav-menu-desktop .menu-items {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: flex-start;
-  gap: 4px;
-  background: transparent;
-  padding: 4px;
-  border-radius: 14px;
-  border: 1px solid color-mix(in srgb, var(--brand-accent) 30%, transparent);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  background: color-mix(in srgb, var(--brand-accent) 8%, transparent);
+  gap: 2px;
+  background: var(--menu-pill-bg);
+  border: 1px solid var(--menu-pill-border);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-radius: 50px;
+  padding: 5px;
+  box-shadow: 0 8px 32px var(--menu-pill-shadow);
 }
 
 .nav-menu-desktop .menu-items li {
+  list-style: none;
+  position: relative;
   opacity: 1;
   transform: none;
   animation: none;
-  list-style: none;
-  position: relative;
 }
 
 .nav-menu-desktop .menu-items li a {
-  position: relative;
-  display: inline-block;
-  color: var(--neutral-100);
-  font-size: 0.875rem;
+  display: block;
+  color: var(--menu-item-color);
+  font-size: 0.82rem;
   font-weight: 500;
-  padding: 0.45rem 0.9rem;
-  letter-spacing: 0.4px;
-  border-radius: 10px;
+  padding: 0.42rem 1rem;
+  border-radius: 50px;
+  text-decoration: none;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  position: relative;
   transition: color 0.25s ease,
               background 0.25s ease,
               box-shadow 0.25s ease;
-  overflow: hidden;
 }
 
-/* Brilho de fundo no hover */
-.nav-menu-desktop .menu-items li a::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--brand-accent);
-  border-radius: 10px;
-  opacity: 0;
-  transform: scale(0.85);
-  transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: -1;
-}
-
-/* Linha inferior animada */
+/* Sublinhado gradiente fixo no hover */
 .nav-menu-desktop .menu-items li a::after {
   content: '';
   position: absolute;
-  bottom: 4px;
+  bottom: 5px;
   left: 50%;
-  width: 0;
+  transform: translateX(-50%) scaleX(0);
+  width: 50%;
   height: 2px;
-  background: var(--neutral-100);
+  background: linear-gradient(90deg, var(--menu-bar-from), var(--menu-bar-to));
   border-radius: 2px;
-  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              left   0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center;
 }
 
 .nav-menu-desktop .menu-items li a:hover,
 .nav-menu-desktop .menu-items li a:focus {
-  color: var(--neutral-900);
-  box-shadow: 0 2px 14px color-mix(in srgb, var(--brand-accent) 35%, transparent);
-}
-
-.nav-menu-desktop .menu-items li a:hover::before,
-.nav-menu-desktop .menu-items li a:focus::before {
-  opacity: 1;
-  transform: scale(1);
+  color: var(--menu-item-hover-color);
+  background: var(--menu-item-hover-bg);
+  box-shadow: 0 0 18px var(--menu-item-hover-glow);
 }
 
 .nav-menu-desktop .menu-items li a:hover::after,
 .nav-menu-desktop .menu-items li a:focus::after {
-  width: 40%;
-  left: 30%;
+  transform: translateX(-50%) scaleX(1);
 }
 
-.nav-menu-desktop .menu-toggle {
-  display: none !important;
-}
+.nav-menu-desktop .menu-toggle { display: none !important; }
 
 @media (max-width: 768px) {
-  .nav-menu-desktop {
-    display: none !important;
-  }
+  .nav-menu-desktop { display: none !important; }
 }

@@ -41,6 +41,9 @@ function initMenuMobile() {
       }
     });
     menuOverlay.addEventListener('click', closeMenu);
+    // Botão de fechar dentro do drawer
+    const menuCloseBtn = document.getElementById('menuClose');
+    if (menuCloseBtn) menuCloseBtn.addEventListener('click', closeMenu);
     menuLinks.forEach(link => {
       link.addEventListener('click', closeMenu);
     });

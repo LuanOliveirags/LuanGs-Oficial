@@ -390,4 +390,65 @@
   --pl-particle-2:            #9c6fff;
   --pl-particle-3:            #00e5a0;
 
+  /* ==================================================
+     MENU / NAVEGAÇÃO — Cores & Efeitos
+     ================================================== */
+
+  /* Header scrolled */
+  --menu-header-scrolled-bg:      rgba(8, 8, 18, 0.82);
+  --menu-header-scrolled-border:  rgba(0, 253, 232, 0.15);
+  --menu-header-scrolled-shadow:  rgba(0, 0, 0, 0.45);
+
+  /* Desktop pill */
+  --menu-pill-bg:                 rgba(10, 10, 22, 0.72);
+  --menu-pill-border:             rgba(0, 253, 232, 0.22);
+  --menu-pill-shadow:             rgba(0, 0, 0, 0.35);
+
+  /* Desktop item */
+  --menu-item-color:              rgba(255, 255, 255, 0.80);
+  --menu-item-hover-color:        #ffffff;
+  --menu-item-hover-bg:           rgba(0, 253, 232, 0.13);
+  --menu-item-hover-glow:         rgba(0, 253, 232, 0.20);
+
+  /* Gradient accent */
+  --menu-bar-from:                #00fde8;
+  --menu-bar-to:                  #4438e7;
+
+  /* Toggle button */
+  --menu-toggle-bg:               rgba(10, 10, 22, 0.88);
+  --menu-toggle-border:           rgba(0, 253, 232, 0.50);
+  --menu-toggle-bar:              #00fde8;
+  --menu-toggle-glow:             rgba(0, 253, 232, 0.32);
+
+  /* Overlay */
+  --menu-overlay-bg:              rgba(4, 4, 12, 0.78);
+
+  /* Drawer */
+  --menu-drawer-bg:               #090912;
+  --menu-drawer-border:           rgba(0, 253, 232, 0.28);
+  --menu-drawer-dot:              rgba(68, 56, 231, 0.12);
+  --menu-drawer-shadow:           rgba(0, 0, 0, 0.55);
+
+  /* Brand (mobile header) */
+  --menu-brand-from:              #00fde8;
+  --menu-brand-to:                #9c6fff;
+  --menu-brand-core-bg:           rgba(0, 253, 232, 0.06);
+  --menu-brand-core-border:       rgba(0, 253, 232, 0.30);
+  --menu-brand-glow:              rgba(0, 253, 232, 0.40);
+  --menu-brand-name:              #ffffff;
+  --menu-brand-sub:               rgba(255, 255, 255, 0.42);
+  --menu-brand-divider:           rgba(255, 255, 255, 0.07);
+
+  /* Close button */
+  --menu-close-bg:                rgba(255, 255, 255, 0.05);
+  --menu-close-border:            rgba(255, 255, 255, 0.12);
+  --menu-close-icon:              rgba(255, 255, 255, 0.70);
+
+  /* Mobile items */
+  --menu-item-bg:                 rgba(255, 255, 255, 0.04);
+  --menu-item-border:             rgba(255, 255, 255, 0.08);
+  --menu-item-hover-mobile-bg:    rgba(0, 253, 232, 0.09);
+  --menu-item-hover-mobile-border:rgba(0, 253, 232, 0.38);
+  --menu-num-color:               rgba(0, 253, 232, 0.52);
+
 }
