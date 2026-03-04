@@ -6,7 +6,7 @@
   position: fixed;
   top: 0;
   width: 100%;
-  background: transparent;
+  background: rgba(0, 0, 0, 0.795);
   z-index: 1000;
   transition: background 0.35s ease,
               border-bottom 0.35s ease,
@@ -23,11 +23,32 @@
 
 .navigation {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
   max-width: 1400px;
   margin: 0 auto;
+}
+
+/* Logo na barra */
+.logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.logo .hero-logo-img {
+  height: 45px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.logo:hover .hero-logo-img {
+  opacity: 0.85;
+  transform: scale(1.04);
 }
 
 /* =====================================================
