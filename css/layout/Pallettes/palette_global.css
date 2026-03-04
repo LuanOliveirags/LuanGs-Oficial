@@ -68,6 +68,14 @@
   --effect-shadow-soft: rgba(208,185,167,0.07); /* Novo */
   --effect-shadow-glow: rgba(255,182,213,0.13); /* Novo */
 
+  /* ==================================================
+     OVERLAY / PANEL SHADOWS
+     Usado em: css/layout/menu.css
+     ================================================== */
+  --effect-overlay-bg:    rgba(0, 0, 0, 0.55); /* Overlay do menu mobile    */
+  --effect-shadow-panel:  rgba(0, 0, 0, 0.35); /* Sombra do painel lateral  */
+  --effect-shadow-light:  rgba(0, 0, 0, 0.20); /* Sombra leve (botão fechar)*/
+
 
 
 
