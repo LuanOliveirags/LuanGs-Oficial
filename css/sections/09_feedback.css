@@ -244,22 +244,31 @@
 
 .feedback-modal-close {
   position: absolute;
-  top: 28px;
-  right: 40px;
-  font-size: 2rem;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  font-size: 1.5rem;
   line-height: 1;
-  color: var(--fb-modal-close-color);
+  color: #fff;
+  background: rgba(0, 0, 0, 0.55);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  border-radius: 50%;
   cursor: pointer;
   font-weight: 700;
-  transition: color 0.2s, transform 0.2s;
-  background: none;
-  border: none;
-  padding: 0;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 10000;
+  transition: background 0.2s, transform 0.2s, border-color 0.2s;
 }
 
 .feedback-modal-close:hover {
-  color: var(--fb-modal-close-hover);
-  transform: scale(1.15) rotate(90deg);
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.7);
+  transform: scale(1.12) rotate(90deg);
 }
 
 .feedback-modal-img {
