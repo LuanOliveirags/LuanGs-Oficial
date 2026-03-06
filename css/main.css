@@ -12,7 +12,6 @@
 @import url("sections/07_faq.css");
 @import url("sections/06_feedback.css");
 @import url("sections/04_planos.css");
-@import url("sections/05_resultados.css");
 @import url("sections/02_sobre.css");
 @import url("base/responsive.css");
 
@@ -45,6 +44,6 @@
   box-shadow: 0 0 12px var(--section-title-glow);
 }
 
-section, .section-title, .container, .about-content, .forwho-section, .process-section, .faq-section, .results-carousel, .plans-grid, .feedback-deck {
+section, .section-title, .container, .about-content, .process-section, .faq-section, .plans-grid, .feedback-deck {
   text-align: center;
 }
