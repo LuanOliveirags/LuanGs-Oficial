@@ -6,7 +6,7 @@
   position: relative;
   background: var(--footer-bg);
   padding: 0;
-  border-radius: 32px 32px 0 0;
+  border-radius: 10px;
   overflow: hidden;
   isolation: isolate;
 }
