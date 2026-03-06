@@ -61,7 +61,7 @@
   justify-content: center;
   gap: 24px;
   width: 100%;
-  max-width: 680px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 40px 0 20px;
 }
@@ -99,8 +99,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 16px;
   flex: 1;
-  max-width: 520px;
+  max-width: 920px;
   min-height: 380px;
   opacity: 1;
   transition: opacity 0.3s ease;
@@ -274,26 +275,38 @@
   100% { opacity: 1; transform: scale(1); }
 }
 
-/* ── Responsive ── */
-@media (max-width: 900px) {
-  .feedback-orbit {
-    gap: 14px;
-    max-width: 100%;
-    padding: 28px 0 16px;
+/* ── Desktop: 3 cards ── */
+@media (min-width: 769px) {
+  .feedback-card {
+    flex: 1;
+    min-width: 0;
+    min-height: 280px;
+    opacity: 0.5;
+    transform: scale(0.87) translateY(6px);
+    cursor: pointer;
+    transition: transform 0.45s cubic-bezier(.22,.68,0,1.2),
+                box-shadow 0.4s ease,
+                border-color 0.4s ease,
+                opacity 0.4s ease;
   }
 
-  .feedback-arrow {
-    width: 44px;
-    height: 44px;
-    font-size: 1.1rem;
+  .feedback-card.active {
+    flex: 1.8;
+    min-height: 380px;
+    opacity: 1;
+    transform: translateY(-6px) scale(1.015);
+    cursor: zoom-in;
   }
 
-  .feedback-deck {
-    max-width: 100%;
+  .feedback-card.prev:hover,
+  .feedback-card.next:hover {
+    opacity: 0.75;
+    transform: scale(0.90) translateY(3px);
   }
 }
 
-@media (max-width: 520px) {
+/* ── Mobile: 1 card + swipe ── */
+@media (max-width: 768px) {
   .portfolio-feedbacks-section {
     padding: 44px 0.75rem 52px;
     border-radius: 16px;
@@ -312,6 +325,7 @@
     width: 100%;
     max-width: 100%;
     min-height: 320px;
+    gap: 0;
   }
 
   .feedback-card {

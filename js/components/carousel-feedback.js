@@ -1,23 +1,18 @@
 // carousel-feedback.js - carrossel de feedbacks
 
 export function initCarouselFeedback() {
-  // Lógica do carrossel de feedbacks
+  // stub para compatibilidade com import
 }
+
 // ====================================================
-// carousel-feedback.js - Carrossel de feedbacks de alunas
-// Objetivo: Exibir prints de feedbacks em carrossel interativo com barra de progresso e modal
+// carousel-feedback.js - Carrossel de feedbacks
 //
-// Etapa 3: Scripts e interações
-// - Cada função está comentada para facilitar manutenção
-// - Não altere a lógica sem necessidade
-//
-// Principais funções:
-//   3.1 Inicialização do carrossel
-//   3.2 Renderização dos cards
-//   3.3 Barra de progresso e dots
-//   3.4 Modal de imagem ampliada
-//   3.5 Auto-slide e navegação
+// Funcionalidades:
+//   Desktop: 3 fotos simultâneas, card central em destaque
+//   Mobile:  1 foto por vez, navegação por swipe
+//   Modal:   imagem expandida com swipe e botão fechar
 // ====================================================
+
 const feedbackPrints = [
   'img/Screenshot_1.png',
   'img/Screenshot_2.png',
@@ -27,16 +22,16 @@ const feedbackPrints = [
 document.addEventListener('DOMContentLoaded', initFeedbackGallery);
 
 function initFeedbackGallery() {
-  const deck = document.getElementById('feedbackDeck');
-  const prevBtn = document.getElementById('feedbackPrev');
-  const nextBtn = document.getElementById('feedbackNext');
-  const modal = document.getElementById('feedback-modal');
+  const deck     = document.getElementById('feedbackDeck');
+  const prevBtn  = document.getElementById('feedbackPrev');
+  const nextBtn  = document.getElementById('feedbackNext');
+  const modal    = document.getElementById('feedback-modal');
   const modalImg = document.getElementById('feedback-modal-img');
   const modalClose = document.getElementById('feedback-modal-close');
 
   if (!deck || !prevBtn || !nextBtn) return;
 
-  // Criar barra de progresso
+  // ── Barra de progresso ──────────────────────────────
   const progressContainer = document.createElement('div');
   progressContainer.className = 'feedback-progress-container';
   progressContainer.innerHTML = `
@@ -45,71 +40,70 @@ function initFeedbackGallery() {
     </div>
     <div class="feedback-progress-dots" id="feedbackProgressDots"></div>
   `;
-  document.querySelector('.portfolio-feedbacks-section .container').appendChild(progressContainer);
+  document.querySelector('.portfolio-feedbacks-section .container')
+    .appendChild(progressContainer);
 
   const progressFill = document.getElementById('feedbackProgressFill');
   const progressDots = document.getElementById('feedbackProgressDots');
 
-  // Criar dots de progresso
-  feedbackPrints.forEach((_, index) => {
+  feedbackPrints.forEach((_, i) => {
     const dot = document.createElement('div');
-    dot.className = 'feedback-progress-dot';
-    if (index === 0) dot.classList.add('active');
-    dot.addEventListener('click', () => goToIndex(index));
+    dot.className = 'feedback-progress-dot' + (i === 0 ? ' active' : '');
+    dot.addEventListener('click', () => goToIndex(i));
     progressDots.appendChild(dot);
   });
 
+  // ── Estado ──────────────────────────────────────────
   let currentIndex = 0;
-  let autoSlide = null;
+  let modalIndex   = 0;
+  let autoSlide    = null;
 
-  const total = feedbackPrints.length;
+  const total     = feedbackPrints.length;
+  const normalize = (i) => (i + total) % total;
+  const isMobile  = () => window.matchMedia('(max-width: 768px)').matches;
 
-  const normalize = (index) => (index + total) % total;
-
-  const createCardMarkup = (src, altText) => {
+  // ── Criação de card ─────────────────────────────────
+  const createCard = (index, role) => {
     const article = document.createElement('article');
-    article.className = 'feedback-card active';
+    article.className   = `feedback-card ${role}`;
+    article.dataset.role  = role;
+    article.dataset.index = String(index);
     article.innerHTML = `
       <div class="feedback-card__image">
-        <img src="${src}" alt="${altText}" loading="lazy">
+        <img src="${feedbackPrints[index]}"
+             alt="Print de feedback ${index + 1}"
+             loading="lazy">
       </div>
     `;
     return article;
   };
 
+  // ── Renderização ────────────────────────────────────
   const renderDeck = () => {
-    // Fade out
     deck.style.opacity = '0';
-    
     setTimeout(() => {
       deck.innerHTML = '';
-      const card = createCardMarkup(
-        feedbackPrints[currentIndex],
-        `Print de feedback ${currentIndex + 1}`
-      );
-      deck.appendChild(card);
-      
-      // Atualizar barra de progresso
+      if (isMobile()) {
+        deck.appendChild(createCard(currentIndex, 'active'));
+      } else {
+        deck.appendChild(createCard(normalize(currentIndex - 1), 'prev'));
+        deck.appendChild(createCard(currentIndex, 'active'));
+        deck.appendChild(createCard(normalize(currentIndex + 1), 'next'));
+      }
       updateProgress();
-      
-      // Fade in
-      setTimeout(() => {
-        deck.style.opacity = '1';
-      }, 50);
-    }, 300);
+      setTimeout(() => { deck.style.opacity = '1'; }, 30);
+    }, 280);
   };
 
   const updateProgress = () => {
-    const percentage = ((currentIndex + 1) / total) * 100;
-    if (progressFill) progressFill.style.width = percentage + '%';
-    
-    // Atualizar dots
-    const dots = progressDots.querySelectorAll('.feedback-progress-dot');
-    dots.forEach((dot, index) => {
-      dot.classList.toggle('active', index === currentIndex);
+    const pct = ((currentIndex + 1) / total) * 100;
+    if (progressFill) progressFill.style.width = pct + '%';
+    progressDots.querySelectorAll('.feedback-progress-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === currentIndex);
     });
   };
 
+  // ── Navegação ───────────────────────────────────────
   const goToIndex = (index) => {
     currentIndex = normalize(index);
     renderDeck();
@@ -127,39 +121,94 @@ function initFeedbackGallery() {
   prevBtn.addEventListener('click', showPrev);
   nextBtn.addEventListener('click', showNext);
 
-  deck.addEventListener('click', (event) => {
-    const img = event.target.closest('.feedback-card__image img');
-    if (!img) return;
-    openFeedbackModal(img.getAttribute('src'));
+  // ── Clique no deck ──────────────────────────────────
+  deck.addEventListener('click', (e) => {
+    const card = e.target.closest('.feedback-card');
+    if (!card) return;
+    const role = card.dataset.role;
+    if (!isMobile()) {
+      if (role === 'prev') { showPrev(); return; }
+      if (role === 'next') { showNext(); return; }
+    }
+    if (role === 'active') openModal(currentIndex);
   });
 
-  const openFeedbackModal = (src) => {
+  // ── Swipe no deck ───────────────────────────────────
+  let tStartX = 0, tStartY = 0;
+
+  deck.addEventListener('touchstart', (e) => {
+    tStartX = e.touches[0].clientX;
+    tStartY = e.touches[0].clientY;
+  }, { passive: true });
+
+  deck.addEventListener('touchend', (e) => {
+    const dx = e.changedTouches[0].clientX - tStartX;
+    const dy = e.changedTouches[0].clientY - tStartY;
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+      dx < 0 ? showNext() : showPrev();
+    }
+  }, { passive: true });
+
+  // ── Modal ───────────────────────────────────────────
+  const openModal = (index) => {
     if (!modal || !modalImg) return;
-    modalImg.src = src;
+    modalIndex = normalize(index);
+    modalImg.src = feedbackPrints[modalIndex];
     modal.classList.add('is-open');
   };
 
   const closeModal = () => {
     if (!modal) return;
     modal.classList.remove('is-open');
+    setTimeout(() => { if (modalImg) modalImg.src = ''; }, 300);
+  };
+
+  const navigateModal = (direction) => {
+    modalIndex = normalize(modalIndex + direction);
+    modalImg.style.opacity = '0';
     setTimeout(() => {
-      if (modalImg) modalImg.src = '';
-    }, 300);
+      modalImg.src = feedbackPrints[modalIndex];
+      modalImg.style.opacity = '1';
+    }, 200);
   };
 
   if (modal && modalClose) {
+    modalImg.style.transition = 'opacity 0.2s ease';
+
     modalClose.addEventListener('click', closeModal);
-    modal.addEventListener('click', (event) => {
-      if (event.target === modal) closeModal();
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
     });
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && modal.classList.contains('is-open')) {
-        closeModal();
+    document.addEventListener('keydown', (e) => {
+      if (!modal.classList.contains('is-open')) return;
+      if (e.key === 'Escape')      closeModal();
+      if (e.key === 'ArrowLeft')   navigateModal(-1);
+      if (e.key === 'ArrowRight')  navigateModal(1);
+    });
+
+    // Swipe no modal
+    let mStartX = 0, mStartY = 0;
+    modal.addEventListener('touchstart', (e) => {
+      mStartX = e.touches[0].clientX;
+      mStartY = e.touches[0].clientY;
+    }, { passive: true });
+    modal.addEventListener('touchend', (e) => {
+      const dx = e.changedTouches[0].clientX - mStartX;
+      const dy = e.changedTouches[0].clientY - mStartY;
+      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+        navigateModal(dx < 0 ? 1 : -1);
       }
-    });
+    }, { passive: true });
   }
 
-  // Inicialização
+  // ── Re-render ao redimensionar ──────────────────────
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(renderDeck, 200);
+  });
+
+  // ── Init ────────────────────────────────────────────
   deck.style.transition = 'opacity 0.3s ease';
   renderDeck();
   restartAutoSlide();
