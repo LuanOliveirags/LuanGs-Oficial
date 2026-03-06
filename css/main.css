@@ -1,6 +1,4 @@
 /* Ordem obrigatória: base, layout, components, sections, responsivo */
-@import url("base/style.css");
-@import url("base/sec_generic.css");
 @import url("layout/header.css");
 @import url("sections/01_hero.css");
 @import url("layout/Pallettes/palette_global.css");
