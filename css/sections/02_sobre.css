@@ -32,10 +32,7 @@
   translate: -50% 0;
   width: 80%;
   height: 600px;
-  background: radial-gradient(ellipse at center,
-    var(--sobre-glow-from) 0%,
-    var(--sobre-glow-to) 55%,
-    transparent 75%);
+  background: radial-gradient(circle at center, var(--sobre-top-glow) 0%, transparent 80%);
   z-index: 0;
   pointer-events: none;
 }
@@ -438,4 +435,10 @@
   .about-avatar-ring { width: 110px; height: 110px; }
   .about-stat-num { font-size: 1.2rem; }
   .about-title { font-size: 1.75rem; }
+}
+
+/* Título da seção em fundo branco */
+.about-section .section-title {
+  color: #0a0a14;
+  text-shadow: none;
 }

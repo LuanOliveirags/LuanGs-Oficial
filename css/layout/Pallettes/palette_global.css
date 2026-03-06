@@ -91,22 +91,22 @@
      ================================================== */
 
   /* Fundo */
-  --plans-bg:                  #0a0a14;
+  --plans-bg:                  #ffffff;
   --plans-bg-btn-dark:         #0a0a20;
 
   /* Cards */
-  --plans-card-bg:             rgba(255, 255, 255, 0.04);
-  --plans-card-border:         rgba(255, 255, 255, 0.10);
+  --plans-card-bg:             rgba(0, 0, 0, 0.04);
+  --plans-card-border:         rgba(0, 0, 0, 0.10);
 
   /* Texto */
-  --plans-text-white:          #ffffff;
-  --plans-text-subtitle:       rgba(255, 255, 255, 0.42);
-  --plans-text-muted:          rgba(255, 255, 255, 0.55);
-  --plans-text-faint:          rgba(255, 255, 255, 0.50);
-  --plans-text-dimmed:         rgba(255, 255, 255, 0.38);
-  --plans-feature-text:        rgba(255, 255, 255, 0.72);
-  --plans-feature-border-top:  rgba(255, 255, 255, 0.08);
-  --plans-feature-border:      rgba(255, 255, 255, 0.06);
+  --plans-text-white:          #0a0a14;
+  --plans-text-subtitle:       rgba(0, 0, 0, 0.45);
+  --plans-text-muted:          rgba(0, 0, 0, 0.55);
+  --plans-text-faint:          rgba(0, 0, 0, 0.50);
+  --plans-text-dimmed:         rgba(0, 0, 0, 0.40);
+  --plans-feature-text:        rgba(0, 0, 0, 0.68);
+  --plans-feature-border-top:  rgba(0, 0, 0, 0.08);
+  --plans-feature-border:      rgba(0, 0, 0, 0.06);
   --plans-shimmer:             rgba(255, 255, 255, 0.22);
 
   /* Efeitos de fundo */
@@ -189,33 +189,33 @@
      SEÇÃO FAQ — Cores & Efeitos
      ================================================== */
 
-  --faq-bg:                   #0a0a14;
+  --faq-bg:                   #ffffff;
   --faq-dot-grid:             rgba(68, 56, 231, 0.12);
   --faq-glow-top:             rgba(68, 56, 231, 0.12);
   --faq-glow-top-outer:       rgba(0, 253, 232, 0.06);
 
-  --faq-intro-text:           rgba(255, 255, 255, 0.45);
+  --faq-intro-text:           rgba(0, 0, 0, 0.55);
 
-  --faq-card-bg:              rgba(255, 255, 255, 0.04);
-  --faq-card-border:          rgba(255, 255, 255, 0.09);
+  --faq-card-bg:              rgba(0, 0, 0, 0.03);
+  --faq-card-border:          rgba(0, 0, 0, 0.10);
   --faq-card-border-active:   rgba(0, 253, 232, 0.45);
   --faq-card-glow:            rgba(68, 56, 231, 0.16);
   --faq-card-glow-active:     rgba(0, 253, 232, 0.20);
   --faq-card-stripe-from:     #00fde8;
   --faq-card-stripe-to:       #4438e7;
 
-  --faq-number-color:         rgba(0, 253, 232, 0.18);
-  --faq-question-text:        #ffffff;
-  --faq-question-text-active: #00fde8;
-  --faq-answer-text:          rgba(255, 255, 255, 0.72);
-  --faq-answer-border:        rgba(255, 255, 255, 0.07);
-  --faq-answer-strong:        #00fde8;
-  --faq-bullet:               #00fde8;
+  --faq-number-color:         rgba(68, 56, 231, 0.22);
+  --faq-question-text:        #0a0a14;
+  --faq-question-text-active: #4438e7;
+  --faq-answer-text:          rgba(0, 0, 0, 0.68);
+  --faq-answer-border:        rgba(0, 0, 0, 0.08);
+  --faq-answer-strong:        #4438e7;
+  --faq-bullet:               #4438e7;
 
-  --faq-icon-bg:              rgba(255, 255, 255, 0.06);
-  --faq-icon-bg-active:       rgba(0, 253, 232, 0.12);
-  --faq-icon-color:           rgba(255, 255, 255, 0.55);
-  --faq-icon-color-active:    #00fde8;
+  --faq-icon-bg:              rgba(0, 0, 0, 0.05);
+  --faq-icon-bg-active:       rgba(68, 56, 231, 0.10);
+  --faq-icon-color:           rgba(0, 0, 0, 0.50);
+  --faq-icon-color-active:    #4438e7;
 
   /* ==================================================
      RODAPÉ — Cores & Efeitos
@@ -259,13 +259,13 @@
      SEÇÃO SOBRE — Cores & Efeitos
      ================================================== */
 
-  --sobre-bg:                 #0a0a14;
+  --sobre-bg:                 #ffffff;
   --sobre-dot-grid:           rgba(68, 56, 231, 0.10);
   --sobre-glow-from:          rgba(68, 56, 231, 0.14);
   --sobre-glow-to:            rgba(0, 253, 232, 0.06);
 
-  --sobre-card-bg:            rgba(255, 255, 255, 0.04);
-  --sobre-card-border:        rgba(255, 255, 255, 0.09);
+  --sobre-card-bg:            rgba(0, 0, 0, 0.04);
+  --sobre-card-border:        rgba(0, 0, 0, 0.10);
   --sobre-stripe-from:        #4438e7;
   --sobre-stripe-to:          #00fde8;
 
@@ -273,11 +273,11 @@
   --sobre-badge-border:       rgba(0, 253, 232, 0.30);
   --sobre-badge-color:        #00fde8;
 
-  --sobre-title:              #ffffff;
+  --sobre-title:              #0a0a14;
   --sobre-title-accent-from:  #00fde8;
   --sobre-title-accent-to:    #4438e7;
-  --sobre-text:               rgba(255, 255, 255, 0.68);
-  --sobre-text-strong:        #00fde8;
+  --sobre-text:               rgba(0, 0, 0, 0.65);
+  --sobre-text-strong:        #4438e7;
 
   --sobre-avatar-from:        #4438e7;
   --sobre-avatar-to:          #00fde8;
@@ -286,12 +286,12 @@
 
   --sobre-stat-num-from:      #00fde8;
   --sobre-stat-num-to:        #4438e7;
-  --sobre-stat-label:         rgba(255, 255, 255, 0.50);
-  --sobre-stat-divider:       rgba(255, 255, 255, 0.08);
+  --sobre-stat-label:         rgba(0, 0, 0, 0.52);
+  --sobre-stat-divider:       rgba(0, 0, 0, 0.10);
 
-  --sobre-skill-bg:           rgba(255, 255, 255, 0.05);
-  --sobre-skill-border:       rgba(255, 255, 255, 0.10);
-  --sobre-skill-color:        rgba(255, 255, 255, 0.72);
+  --sobre-skill-bg:           rgba(0, 0, 0, 0.04);
+  --sobre-skill-border:       rgba(0, 0, 0, 0.12);
+  --sobre-skill-color:        rgba(0, 0, 0, 0.68);
   --sobre-skill-hover-bg:     rgba(0, 253, 232, 0.10);
   --sobre-skill-hover-border: rgba(0, 253, 232, 0.40);
   --sobre-skill-hover-color:  #00fde8;

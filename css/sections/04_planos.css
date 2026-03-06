@@ -347,3 +347,17 @@
   .plan-price .amount { font-size: 3rem; }
   .plan-price .cents { font-size: 1.3rem; }
 }
+
+/* Título da seção e textos de badge/botão em fundo branco */
+.skills-section .section-title {
+  color: #0a0a14;
+  text-shadow: none;
+}
+
+.plan-badge {
+  color: #ffffff;
+}
+
+.plan-button {
+  color: #ffffff;
+}
