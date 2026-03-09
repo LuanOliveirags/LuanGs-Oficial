@@ -9,7 +9,37 @@ import { initFaq } from '../sections/faq.js';
 import { initResultados } from '../sections/resultados.js';
 import { initFeedbacks } from '../sections/feedbacks.js';
 
+// Sincroniza os canais RGB (*-ch) a partir das cores primitivas da paleta.
+// Usa parsing nativo do browser — funciona com qualquer formato CSS (hex, rgb, named…).
+// Roda após window.load para garantir que todos os @import do CSS estejam resolvidos.
+function syncColorChannels() {
+  const run = () => {
+    const root = document.documentElement;
+    const tmp = document.createElement('div');
+    tmp.style.cssText = 'position:absolute;visibility:hidden;pointer-events:none';
+    document.body.appendChild(tmp);
+
+    ['cyan', 'indigo', 'purple', 'green'].forEach(name => {
+      const value = getComputedStyle(root).getPropertyValue(`--${name}`).trim();
+      tmp.style.color = value;
+      const rgb = getComputedStyle(tmp).color; // sempre "rgb(r, g, b)"
+      const m = /^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/.exec(rgb);
+      if (m) root.style.setProperty(`--${name}-ch`, `${m[1]}, ${m[2]}, ${m[3]}`);
+    });
+
+    document.body.removeChild(tmp);
+  };
+
+  // window.load garante que os @import do CSS estejam todos resolvidos
+  if (document.readyState === 'complete') {
+    run();
+  } else {
+    window.addEventListener('load', run, { once: true });
+  }
+}
+
 export function initApp() {
+  syncColorChannels();
   initMenu();
   initHeader();
   initPreloader();

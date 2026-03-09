@@ -3,8 +3,23 @@
    Estrutura profissional e escalável
    ================================================== */
 
-   
 :root {
+
+  /* ==================================================
+     PRIMITIVAS — altere aqui para refletir em todo o site
+     ================================================== */
+
+  --cyan:   #2deefc;   /* Cor primária   */
+  --indigo: #4438e7;   /* Cor secundária */
+  --purple: #9c6fff;   /* Cor terciária  */
+  --green:  #00e5a0;   /* Cor quaternária */
+  --dark:   #0a0a14;   /* Fundo escuro   */
+
+  /* Canais RGB — permitem usar rgba(var(--X-ch), opacidade) */
+  --cyan-ch:    0, 253, 232;
+  --indigo-ch:  68, 56, 231;
+  --purple-ch:  156, 111, 255;
+  --green-ch:   0, 229, 160;
 
   /* ==================================================
      TÍTULOS DE SEÇÃO GLOBAL
@@ -13,70 +28,23 @@
   --section-title-color:      #ffffff;
   --section-title-size:       1.7rem;
   --section-title-weight:     700;
-  --section-title-accent:     #00fde8;  --section-title-line-from:  #00fde8;
-  --section-title-line-to:    #4438e7;
-  --section-title-glow:       rgba(0, 253, 232, 0.18);
+  --section-title-line-from:  var(--cyan);
+  --section-title-line-to:    var(--indigo);
+  --section-title-glow:       rgba(var(--cyan-ch), 0.18);
+
   /* ==================================================
-    Cor principal site: 
+    Cor principal site:
     ================================================== */
-	  --brand-accent: #00fde8af;
-	  	  --title-bg: #4438e7c5;
-		    --surface-menu: #567774be;
+  --brand-accent: var(--cyan);
 
 
 
-  /* ==================================================
-     EFFECTS planos
-     ================================================== */
-	 
-    --letter-bg-p: #ffffffd4;
-	--letter-bg-p-secund: var(--brand-accent);
-	--border-bg-p: var(--brand-accent);
-	--border-bg-p-secund: #000000;
-
-  /* ==================================================
-     BRAND COLORS (Identidade da Marca)
-     ================================================== */
-
-  --brand-primary: #ffffff;
-  --brand-primary-strong: #ffffff;
-  --brand-secondary: #B36326;
-  --brand-secondary-soft: #B9937B73;
-  
   /* ==================================================
      NEUTRAL COLORS (Escala Base)
      ================================================== */
 
   --neutral-100: #FFFFFF;
-  --neutral-200: #F8F8F8;
-  --neutral-800: #222222;  /* Novo: texto secundário */
   --neutral-900: #000000;
-
-  --neutral-brown-800: #714329;
-
-  /* ==================================================
-     SURFACE COLORS (Fundos e Containers)
-     ================================================== */
-
-  --surface-light: #F5D1B6;
-  --surface-card: #B9937B73;
-  --surface-white: #FFFFFF; /* Novo token semântico */
-
-  /* ==================================================
-     BORDERS
-     ================================================== */
-
-  --border-subtle: rgba(208, 167, 199, 0.2);
-  --border-soft: rgba(208,185,167,0.07); /* Novo (era #D0B9A711) */
-
-  /* ==================================================
-     EFFECTS (Sombras e Glow)
-     ================================================== */
-
-  --effect-glow: #FFB6D5;
-  --effect-shadow-dark: rgba(0,0,0,0.65);
-  --effect-shadow-soft: rgba(208,185,167,0.07); /* Novo */
-  --effect-shadow-glow: rgba(255,182,213,0.13); /* Novo */
 
   /* ==================================================
      OVERLAY / PANEL SHADOWS
@@ -92,14 +60,14 @@
 
   /* Fundo */
   --plans-bg:                  #ffffff;
-  --plans-bg-btn-dark:         #0a0a20;
+  --plans-bg-btn-dark:         var(--dark);
 
   /* Cards */
   --plans-card-bg:             rgba(0, 0, 0, 0.04);
   --plans-card-border:         rgba(0, 0, 0, 0.10);
 
   /* Texto */
-  --plans-text-white:          #0a0a14;
+  --plans-text-white:          var(--dark);
   --plans-text-subtitle:       rgba(0, 0, 0, 0.45);
   --plans-text-muted:          rgba(0, 0, 0, 0.55);
   --plans-text-faint:          rgba(0, 0, 0, 0.50);
@@ -110,285 +78,285 @@
   --plans-shimmer:             rgba(255, 255, 255, 0.22);
 
   /* Efeitos de fundo */
-  --plans-dot-glow:            rgba(68, 56, 231, 0.18);
-  --plans-center-glow-inner:   rgba(68, 56, 231, 0.14);
-  --plans-center-glow-outer:   rgba(0, 253, 232, 0.06);
+  --plans-dot-glow:            rgba(var(--indigo-ch), 0.18);
+  --plans-center-glow-inner:   rgba(var(--indigo-ch), 0.14);
+  --plans-center-glow-outer:   rgba(var(--cyan-ch), 0.06);
 
   /* Card 1 — Ciano → Azul */
-  --plans-c1-from:             #00fde8;
-  --plans-c1-to:               #4438e7;
-  --plans-c1-glow:             rgba(0, 253, 232, 0.22);
-  --plans-c1-icon-glow:        rgba(0, 253, 232, 0.35);
-  --plans-c1-btn-shadow:       rgba(68, 56, 231, 0.35);
+  --plans-c1-from:             var(--cyan);
+  --plans-c1-to:               var(--indigo);
+  --plans-c1-glow:             rgba(var(--cyan-ch), 0.22);
+  --plans-c1-icon-glow:        rgba(var(--cyan-ch), 0.35);
+  --plans-c1-btn-shadow:       rgba(var(--indigo-ch), 0.35);
 
   /* Card 2 — Azul → Roxo */
-  --plans-c2-from:             #4438e7;
-  --plans-c2-to:               #9c6fff;
-  --plans-c2-glow:             rgba(68, 56, 231, 0.30);
-  --plans-c2-icon-glow:        rgba(68, 56, 231, 0.45);
-  --plans-c2-btn-shadow:       rgba(68, 56, 231, 0.40);
+  --plans-c2-from:             var(--indigo);
+  --plans-c2-to:               var(--purple);
+  --plans-c2-glow:             rgba(var(--indigo-ch), 0.30);
+  --plans-c2-icon-glow:        rgba(var(--indigo-ch), 0.45);
+  --plans-c2-btn-shadow:       rgba(var(--indigo-ch), 0.40);
 
   /* Card 3 — Verde → Ciano */
-  --plans-c3-from:             #00e5a0;
-  --plans-c3-to:               #00fde8;
-  --plans-c3-glow:             rgba(0, 229, 160, 0.22);
-  --plans-c3-icon-glow:        rgba(0, 229, 160, 0.45);
-  --plans-c3-btn-shadow:       rgba(0, 229, 160, 0.35);
+  --plans-c3-from:             var(--green);
+  --plans-c3-to:               var(--cyan);
+  --plans-c3-glow:             rgba(var(--green-ch), 0.22);
+  --plans-c3-icon-glow:        rgba(var(--green-ch), 0.45);
+  --plans-c3-btn-shadow:       rgba(var(--green-ch), 0.35);
 
   /* Card 4 — Roxo → Rosa */
-  --plans-c4-from:             #9c6fff;
+  --plans-c4-from:             var(--purple);
   --plans-c4-to:               #ff6bcb;
-  --plans-c4-glow:             rgba(156, 111, 255, 0.28);
-  --plans-c4-icon-glow:        rgba(156, 111, 255, 0.45);
-  --plans-c4-btn-shadow:       rgba(156, 111, 255, 0.38);
+  --plans-c4-glow:             rgba(var(--purple-ch), 0.28);
+  --plans-c4-icon-glow:        rgba(var(--purple-ch), 0.45);
+  --plans-c4-btn-shadow:       rgba(var(--purple-ch), 0.38);
 
   /* ==================================================
      SEÇÃO FEEDBACKS — Cores & Efeitos
      ================================================== */
 
-  --fb-bg:                    #0a0a14;
-  --fb-dot-grid:              rgba(68, 56, 231, 0.14);
-  --fb-glow-inner:            rgba(0, 253, 232, 0.08);
-  --fb-glow-outer:            rgba(68, 56, 231, 0.10);
+  --fb-bg:                    var(--dark);
+  --fb-dot-grid:              rgba(var(--indigo-ch), 0.14);
+  --fb-glow-inner:            rgba(var(--cyan-ch), 0.08);
+  --fb-glow-outer:            rgba(var(--indigo-ch), 0.10);
 
   --fb-intro-text:            rgba(255, 255, 255, 0.45);
 
   --fb-card-bg:               rgba(255, 255, 255, 0.04);
   --fb-card-border:           rgba(255, 255, 255, 0.10);
-  --fb-card-border-active:    rgba(0, 253, 232, 0.40);
-  --fb-card-glow:             rgba(68, 56, 231, 0.20);
-  --fb-card-glow-active:      rgba(0, 253, 232, 0.22);
-  --fb-card-stripe-from:      #00fde8;
-  --fb-card-stripe-to:        #4438e7;
+  --fb-card-border-active:    rgba(var(--cyan-ch), 0.40);
+  --fb-card-glow:             rgba(var(--indigo-ch), 0.20);
+  --fb-card-glow-active:      rgba(var(--cyan-ch), 0.22);
+  --fb-card-stripe-from:      var(--cyan);
+  --fb-card-stripe-to:        var(--indigo);
 
   --fb-img-shadow:            rgba(0, 0, 0, 0.55);
 
   --fb-arrow-bg:              rgba(255, 255, 255, 0.06);
   --fb-arrow-border:          rgba(255, 255, 255, 0.12);
   --fb-arrow-color:           rgba(255, 255, 255, 0.80);
-  --fb-arrow-hover-bg:        rgba(0, 253, 232, 0.15);
-  --fb-arrow-hover-border:    rgba(0, 253, 232, 0.50);
-  --fb-arrow-hover-color:     #00fde8;
-  --fb-arrow-hover-glow:      rgba(0, 253, 232, 0.25);
+  --fb-arrow-hover-bg:        rgba(var(--cyan-ch), 0.15);
+  --fb-arrow-hover-border:    rgba(var(--cyan-ch), 0.50);
+  --fb-arrow-hover-color:     var(--cyan);
+  --fb-arrow-hover-glow:      rgba(var(--cyan-ch), 0.25);
 
   --fb-dot-inactive:          rgba(255, 255, 255, 0.20);
-  --fb-dot-active:            #00fde8;
-  --fb-dot-active-glow:       rgba(0, 253, 232, 0.50);
+  --fb-dot-active:            var(--cyan);
+  --fb-dot-active-glow:       rgba(var(--cyan-ch), 0.50);
 
   --fb-progress-track:        rgba(255, 255, 255, 0.08);
-  --fb-progress-fill-from:    #00fde8;
-  --fb-progress-fill-to:      #4438e7;
-  --fb-progress-glow:         rgba(0, 253, 232, 0.35);
+  --fb-progress-fill-from:    var(--cyan);
+  --fb-progress-fill-to:      var(--indigo);
+  --fb-progress-glow:         rgba(var(--cyan-ch), 0.35);
 
   --fb-modal-bg:              rgba(0, 0, 0, 0.88);
-  --fb-modal-img-shadow:      rgba(0, 253, 232, 0.18);
+  --fb-modal-img-shadow:      rgba(var(--cyan-ch), 0.18);
   --fb-modal-close-color:     rgba(255, 255, 255, 0.80);
-  --fb-modal-close-hover:     #00fde8;
+  --fb-modal-close-hover:     var(--cyan);
 
   /* ==================================================
      SEÇÃO FAQ — Cores & Efeitos
      ================================================== */
 
   --faq-bg:                   #ffffff;
-  --faq-dot-grid:             rgba(68, 56, 231, 0.12);
-  --faq-glow-top:             rgba(68, 56, 231, 0.12);
-  --faq-glow-top-outer:       rgba(0, 253, 232, 0.06);
+  --faq-dot-grid:             rgba(var(--indigo-ch), 0.12);
+  --faq-glow-top:             rgba(var(--indigo-ch), 0.12);
+  --faq-glow-top-outer:       rgba(var(--cyan-ch), 0.06);
 
   --faq-intro-text:           rgba(0, 0, 0, 0.55);
 
   --faq-card-bg:              rgba(0, 0, 0, 0.03);
   --faq-card-border:          rgba(0, 0, 0, 0.10);
-  --faq-card-border-active:   rgba(0, 253, 232, 0.45);
-  --faq-card-glow:            rgba(68, 56, 231, 0.16);
-  --faq-card-glow-active:     rgba(0, 253, 232, 0.20);
-  --faq-card-stripe-from:     #00fde8;
-  --faq-card-stripe-to:       #4438e7;
+  --faq-card-border-active:   rgba(var(--cyan-ch), 0.45);
+  --faq-card-glow:            rgba(var(--indigo-ch), 0.16);
+  --faq-card-glow-active:     rgba(var(--cyan-ch), 0.20);
+  --faq-card-stripe-from:     var(--cyan);
+  --faq-card-stripe-to:       var(--indigo);
 
-  --faq-number-color:         rgba(68, 56, 231, 0.22);
-  --faq-question-text:        #0a0a14;
-  --faq-question-text-active: #4438e7;
+  --faq-number-color:         rgba(var(--indigo-ch), 0.22);
+  --faq-question-text:        var(--dark);
+  --faq-question-text-active: var(--indigo);
   --faq-answer-text:          rgba(0, 0, 0, 0.68);
   --faq-answer-border:        rgba(0, 0, 0, 0.08);
-  --faq-answer-strong:        #4438e7;
-  --faq-bullet:               #4438e7;
+  --faq-answer-strong:        var(--indigo);
+  --faq-bullet:               var(--indigo);
 
   --faq-icon-bg:              rgba(0, 0, 0, 0.05);
-  --faq-icon-bg-active:       rgba(68, 56, 231, 0.10);
+  --faq-icon-bg-active:       rgba(var(--indigo-ch), 0.10);
   --faq-icon-color:           rgba(0, 0, 0, 0.50);
-  --faq-icon-color-active:    #4438e7;
+  --faq-icon-color-active:    var(--indigo);
 
   /* ==================================================
      RODAPÉ — Cores & Efeitos
      ================================================== */
 
   --footer-bg:                #07070f;
-  --footer-dot-grid:          rgba(68, 56, 231, 0.10);
-  --footer-glow-from:         rgba(68, 56, 231, 0.10);
-  --footer-glow-to:           rgba(0, 253, 232, 0.05);
+  --footer-dot-grid:          rgba(var(--indigo-ch), 0.10);
+  --footer-glow-from:         rgba(var(--indigo-ch), 0.10);
+  --footer-glow-to:           rgba(var(--cyan-ch), 0.05);
 
   --footer-cta-bg:            rgba(255, 255, 255, 0.04);
   --footer-cta-border:        rgba(255, 255, 255, 0.09);
   --footer-cta-label:         #ffffff;
   --footer-cta-sub:           rgba(255, 255, 255, 0.48);
-  --footer-cta-btn-from:      #00fde8;
-  --footer-cta-btn-to:        #4438e7;
-  --footer-cta-btn-shadow:    rgba(68, 56, 231, 0.40);
-  --footer-cta-btn-color:     #0a0a14;
+  --footer-cta-btn-from:      var(--cyan);
+  --footer-cta-btn-to:        var(--indigo);
+  --footer-cta-btn-shadow:    rgba(var(--indigo-ch), 0.40);
+  --footer-cta-btn-color:     var(--dark);
 
   --footer-heading:           #ffffff;
-  --footer-heading-line:      #00fde8;
+  --footer-heading-line:      var(--cyan);
   --footer-text:              rgba(255, 255, 255, 0.55);
-  --footer-tagline:           rgba(0, 253, 232, 0.85);
+  --footer-tagline:           rgba(var(--cyan-ch), 0.85);
   --footer-link:              rgba(255, 255, 255, 0.55);
-  --footer-link-hover:        #00fde8;
+  --footer-link-hover:        var(--cyan);
 
   --footer-social-bg:         rgba(255, 255, 255, 0.06);
   --footer-social-border:     rgba(255, 255, 255, 0.10);
-  --footer-social-hover-bg:   rgba(0, 253, 232, 0.12);
-  --footer-social-hover-border: rgba(0, 253, 232, 0.50);
-  --footer-social-hover-glow: rgba(0, 253, 232, 0.20);
-  --footer-social-ig:         #00fde8;
+  --footer-social-hover-bg:   rgba(var(--cyan-ch), 0.12);
+  --footer-social-hover-border: rgba(var(--cyan-ch), 0.50);
+  --footer-social-hover-glow: rgba(var(--cyan-ch), 0.20);
+  --footer-social-ig:         var(--cyan);
   --footer-social-wa:         #25d366;
 
   --footer-divider:           rgba(255, 255, 255, 0.07);
   --footer-copyright:         rgba(255, 255, 255, 0.35);
-  --footer-dev-link:          #00fde8;
-  --footer-dev-link-hover:    #4438e7;
+  --footer-dev-link:          var(--cyan);
+  --footer-dev-link-hover:    var(--indigo);
 
   /* ==================================================
      SEÇÃO SOBRE — Cores & Efeitos
      ================================================== */
 
   --sobre-bg:                 #ffffff;
-  --sobre-dot-grid:           rgba(68, 56, 231, 0.10);
-  --sobre-glow-from:          rgba(68, 56, 231, 0.14);
-  --sobre-glow-to:            rgba(0, 253, 232, 0.06);
+  --sobre-dot-grid:           rgba(var(--indigo-ch), 0.10);
+  --sobre-glow-from:          rgba(var(--indigo-ch), 0.14);
+  --sobre-glow-to:            rgba(var(--cyan-ch), 0.06);
 
   --sobre-card-bg:            rgba(0, 0, 0, 0.04);
   --sobre-card-border:        rgba(0, 0, 0, 0.10);
-  --sobre-stripe-from:        #4438e7;
-  --sobre-stripe-to:          #00fde8;
+  --sobre-stripe-from:        var(--indigo);
+  --sobre-stripe-to:          var(--cyan);
 
-  --sobre-badge-bg:           rgba(0, 253, 232, 0.10);
-  --sobre-badge-border:       rgba(0, 253, 232, 0.30);
-  --sobre-badge-color:        #00fde8;
+  --sobre-badge-bg:           rgba(var(--cyan-ch), 0.10);
+  --sobre-badge-border:       rgba(var(--cyan-ch), 0.30);
+  --sobre-badge-color:        var(--cyan);
 
-  --sobre-title:              #0a0a14;
-  --sobre-title-accent-from:  #00fde8;
-  --sobre-title-accent-to:    #4438e7;
+  --sobre-title:              var(--dark);
+  --sobre-title-accent-from:  var(--cyan);
+  --sobre-title-accent-to:    var(--indigo);
   --sobre-text:               rgba(0, 0, 0, 0.65);
-  --sobre-text-strong:        #4438e7;
+  --sobre-text-strong:        var(--indigo);
 
-  --sobre-avatar-from:        #4438e7;
-  --sobre-avatar-to:          #00fde8;
-  --sobre-avatar-glow:        rgba(68, 56, 231, 0.40);
+  --sobre-avatar-from:        var(--indigo);
+  --sobre-avatar-to:          var(--cyan);
+  --sobre-avatar-glow:        rgba(var(--indigo-ch), 0.40);
   --sobre-avatar-text:        #ffffff;
 
-  --sobre-stat-num-from:      #00fde8;
-  --sobre-stat-num-to:        #4438e7;
+  --sobre-stat-num-from:      var(--cyan);
+  --sobre-stat-num-to:        var(--indigo);
   --sobre-stat-label:         rgba(0, 0, 0, 0.52);
   --sobre-stat-divider:       rgba(0, 0, 0, 0.10);
 
   --sobre-skill-bg:           rgba(0, 0, 0, 0.04);
   --sobre-skill-border:       rgba(0, 0, 0, 0.12);
   --sobre-skill-color:        rgba(0, 0, 0, 0.68);
-  --sobre-skill-hover-bg:     rgba(0, 253, 232, 0.10);
-  --sobre-skill-hover-border: rgba(0, 253, 232, 0.40);
-  --sobre-skill-hover-color:  #00fde8;
+  --sobre-skill-hover-bg:     rgba(var(--cyan-ch), 0.10);
+  --sobre-skill-hover-border: rgba(var(--cyan-ch), 0.40);
+  --sobre-skill-hover-color:  var(--cyan);
 
-  --sobre-cta-from:           #00fde8;
-  --sobre-cta-to:             #4438e7;
-  --sobre-cta-color:          #0a0a14;
-  --sobre-cta-shadow:         rgba(68, 56, 231, 0.40);
+  --sobre-cta-from:           var(--cyan);
+  --sobre-cta-to:             var(--indigo);
+  --sobre-cta-color:          var(--dark);
+  --sobre-cta-shadow:         rgba(var(--indigo-ch), 0.40);
 
   /* ==================================================
      SEÇÃO COMO FUNCIONA — Cores & Efeitos
      ================================================== */
 
-  --cf-bg:                    #0a0a14;
-  --cf-dot-grid:              rgba(68, 56, 231, 0.10);
-  --cf-glow-from:             rgba(68, 56, 231, 0.14);
-  --cf-glow-to:               rgba(0, 253, 232, 0.06);
+  --cf-bg:                    var(--dark);
+  --cf-dot-grid:              rgba(var(--indigo-ch), 0.10);
+  --cf-glow-from:             rgba(var(--indigo-ch), 0.14);
+  --cf-glow-to:               rgba(var(--cyan-ch), 0.06);
 
   --cf-intro:                 rgba(255, 255, 255, 0.55);
 
   --cf-card-bg:               rgba(255, 255, 255, 0.04);
   --cf-card-border:           rgba(255, 255, 255, 0.09);
-  --cf-card-border-active:    rgba(0, 253, 232, 0.40);
-  --cf-card-glow:             rgba(0, 253, 232, 0.10);
-  --cf-stripe-1-from:         #4438e7;
-  --cf-stripe-1-to:           #9c6fff;
-  --cf-stripe-2-from:         #00fde8;
-  --cf-stripe-2-to:           #4438e7;
-  --cf-stripe-3-from:         #00e5a0;
-  --cf-stripe-3-to:           #00fde8;
+  --cf-card-border-active:    rgba(var(--cyan-ch), 0.40);
+  --cf-card-glow:             rgba(var(--cyan-ch), 0.10);
+  --cf-stripe-1-from:         var(--indigo);
+  --cf-stripe-1-to:           var(--purple);
+  --cf-stripe-2-from:         var(--cyan);
+  --cf-stripe-2-to:           var(--indigo);
+  --cf-stripe-3-from:         var(--green);
+  --cf-stripe-3-to:           var(--cyan);
 
-  --cf-num-from:              #4438e7;
-  --cf-num-to:                #9c6fff;
-  --cf-num-2-from:            #00fde8;
-  --cf-num-2-to:              #4438e7;
-  --cf-num-3-from:            #00e5a0;
-  --cf-num-3-to:              #00fde8;
+  --cf-num-from:              var(--indigo);
+  --cf-num-to:                var(--purple);
+  --cf-num-2-from:            var(--cyan);
+  --cf-num-2-to:              var(--indigo);
+  --cf-num-3-from:            var(--green);
+  --cf-num-3-to:              var(--cyan);
   --cf-num-bg:                rgba(255, 255, 255, 0.05);
   --cf-num-border:            rgba(255, 255, 255, 0.10);
 
   --cf-title:                 #ffffff;
   --cf-text:                  rgba(255, 255, 255, 0.62);
-  --cf-text-strong:           #00fde8;
+  --cf-text-strong:           var(--cyan);
 
   --cf-connector:             rgba(255, 255, 255, 0.08);
-  --cf-connector-dot:         rgba(0, 253, 232, 0.50);
+  --cf-connector-dot:         rgba(var(--cyan-ch), 0.50);
 
-  --cf-deco-num-1:            rgba(68, 56, 231, 0.07);
-  --cf-deco-num-2:            rgba(0, 253, 232, 0.06);
-  --cf-deco-num-3:            rgba(0, 229, 160, 0.06);
+  --cf-deco-num-1:            rgba(var(--indigo-ch), 0.07);
+  --cf-deco-num-2:            rgba(var(--cyan-ch), 0.06);
+  --cf-deco-num-3:            rgba(var(--green-ch), 0.06);
 
   /* ==================================================
      PRELOADER — Cores & Efeitos
      ================================================== */
 
-  --pl-bg:                    #0a0a14;
-  --pl-dot-grid:              rgba(68, 56, 231, 0.12);
-  --pl-glow-inner:            rgba(68, 56, 231, 0.22);
-  --pl-glow-outer:            rgba(0, 253, 232, 0.06);
+  --pl-bg:                    var(--dark);
+  --pl-dot-grid:              rgba(var(--indigo-ch), 0.12);
+  --pl-glow-inner:            rgba(var(--indigo-ch), 0.22);
+  --pl-glow-outer:            rgba(var(--cyan-ch), 0.06);
 
   /* Rings */
-  --pl-ring-1-color:          #00fde8;
-  --pl-ring-1-fade:           rgba(0, 253, 232, 0.25);
-  --pl-ring-1-glow:           rgba(0, 253, 232, 0.40);
+  --pl-ring-1-color:          var(--cyan);
+  --pl-ring-1-fade:           rgba(var(--cyan-ch), 0.25);
+  --pl-ring-1-glow:           rgba(var(--cyan-ch), 0.40);
 
-  --pl-ring-2-color:          #9c6fff;
-  --pl-ring-2-fade:           rgba(156, 111, 255, 0.22);
-  --pl-ring-2-glow:           rgba(156, 111, 255, 0.35);
+  --pl-ring-2-color:          var(--purple);
+  --pl-ring-2-fade:           rgba(var(--purple-ch), 0.22);
+  --pl-ring-2-glow:           rgba(var(--purple-ch), 0.35);
 
-  --pl-ring-3-color:          #00e5a0;
-  --pl-ring-3-fade:           rgba(0, 229, 160, 0.20);
-  --pl-ring-3-glow:           rgba(0, 229, 160, 0.30);
+  --pl-ring-3-color:          var(--green);
+  --pl-ring-3-fade:           rgba(var(--green-ch), 0.20);
+  --pl-ring-3-glow:           rgba(var(--green-ch), 0.30);
 
   /* Core */
-  --pl-core-bg:               rgba(0, 253, 232, 0.05);
-  --pl-core-border:           rgba(0, 253, 232, 0.35);
-  --pl-core-glow:             rgba(0, 253, 232, 0.55);
-  --pl-initial-from:          #00fde8;
-  --pl-initial-to:            #9c6fff;
+  --pl-core-bg:               rgba(var(--cyan-ch), 0.05);
+  --pl-core-border:           rgba(var(--cyan-ch), 0.35);
+  --pl-core-glow:             rgba(var(--cyan-ch), 0.55);
+  --pl-initial-from:          var(--cyan);
+  --pl-initial-to:            var(--purple);
 
   /* Text */
   --pl-name-from:             #ffffff;
-  --pl-name-mid:              #00fde8;
-  --pl-name-to:               #9c6fff;
+  --pl-name-mid:              var(--cyan);
+  --pl-name-to:               var(--purple);
   --pl-role-color:            rgba(255, 255, 255, 0.45);
 
   /* Loading dots */
-  --pl-dot-active:            #00fde8;
-  --pl-dot-shadow:            rgba(0, 253, 232, 0.55);
+  --pl-dot-active:            var(--cyan);
+  --pl-dot-shadow:            rgba(var(--cyan-ch), 0.55);
 
   /* Corner marks */
-  --pl-corner-color:          rgba(0, 253, 232, 0.38);
+  --pl-corner-color:          rgba(var(--cyan-ch), 0.38);
 
   /* Particles */
-  --pl-particle-1:            #00fde8;
-  --pl-particle-2:            #9c6fff;
-  --pl-particle-3:            #00e5a0;
+  --pl-particle-1:            var(--cyan);
+  --pl-particle-2:            var(--purple);
+  --pl-particle-3:            var(--green);
 
   /* ==================================================
      MENU / NAVEGAÇÃO — Cores & Efeitos
@@ -396,45 +364,45 @@
 
   /* Header scrolled */
   --menu-header-scrolled-bg:      rgba(8, 8, 18, 0.82);
-  --menu-header-scrolled-border:  rgba(0, 253, 232, 0.15);
+  --menu-header-scrolled-border:  rgba(var(--cyan-ch), 0.15);
   --menu-header-scrolled-shadow:  rgba(0, 0, 0, 0.45);
 
   /* Desktop pill */
   --menu-pill-bg:                 rgba(10, 10, 22, 0.72);
-  --menu-pill-border:             rgba(0, 253, 232, 0.22);
+  --menu-pill-border:             rgba(var(--cyan-ch), 0.22);
   --menu-pill-shadow:             rgba(0, 0, 0, 0.35);
 
   /* Desktop item */
   --menu-item-color:              rgba(255, 255, 255, 0.80);
   --menu-item-hover-color:        #ffffff;
-  --menu-item-hover-bg:           rgba(0, 253, 232, 0.13);
-  --menu-item-hover-glow:         rgba(0, 253, 232, 0.20);
+  --menu-item-hover-bg:           rgba(var(--cyan-ch), 0.13);
+  --menu-item-hover-glow:         rgba(var(--cyan-ch), 0.20);
 
   /* Gradient accent */
-  --menu-bar-from:                #00fde8;
-  --menu-bar-to:                  #4438e7;
+  --menu-bar-from:                var(--cyan);
+  --menu-bar-to:                  var(--indigo);
 
   /* Toggle button */
   --menu-toggle-bg:               rgba(10, 10, 22, 0.88);
-  --menu-toggle-border:           rgba(0, 253, 232, 0.50);
-  --menu-toggle-bar:              #00fde8;
-  --menu-toggle-glow:             rgba(0, 253, 232, 0.32);
+  --menu-toggle-border:           rgba(var(--cyan-ch), 0.50);
+  --menu-toggle-bar:              var(--cyan);
+  --menu-toggle-glow:             rgba(var(--cyan-ch), 0.32);
 
   /* Overlay */
   --menu-overlay-bg:              rgba(4, 4, 12, 0.78);
 
   /* Drawer */
   --menu-drawer-bg:               #090912;
-  --menu-drawer-border:           rgba(0, 253, 232, 0.28);
-  --menu-drawer-dot:              rgba(68, 56, 231, 0.12);
+  --menu-drawer-border:           rgba(var(--cyan-ch), 0.28);
+  --menu-drawer-dot:              rgba(var(--indigo-ch), 0.12);
   --menu-drawer-shadow:           rgba(0, 0, 0, 0.55);
 
   /* Brand (mobile header) */
-  --menu-brand-from:              #00fde8;
-  --menu-brand-to:                #9c6fff;
-  --menu-brand-core-bg:           rgba(0, 253, 232, 0.06);
-  --menu-brand-core-border:       rgba(0, 253, 232, 0.30);
-  --menu-brand-glow:              rgba(0, 253, 232, 0.40);
+  --menu-brand-from:              var(--cyan);
+  --menu-brand-to:                var(--purple);
+  --menu-brand-core-bg:           rgba(var(--cyan-ch), 0.06);
+  --menu-brand-core-border:       rgba(var(--cyan-ch), 0.30);
+  --menu-brand-glow:              rgba(var(--cyan-ch), 0.40);
   --menu-brand-name:              #ffffff;
   --menu-brand-sub:               rgba(255, 255, 255, 0.42);
   --menu-brand-divider:           rgba(255, 255, 255, 0.07);
@@ -447,8 +415,8 @@
   /* Mobile items */
   --menu-item-bg:                 rgba(255, 255, 255, 0.04);
   --menu-item-border:             rgba(255, 255, 255, 0.08);
-  --menu-item-hover-mobile-bg:    rgba(0, 253, 232, 0.09);
-  --menu-item-hover-mobile-border:rgba(0, 253, 232, 0.38);
-  --menu-num-color:               rgba(0, 253, 232, 0.52);
+  --menu-item-hover-mobile-bg:    rgba(var(--cyan-ch), 0.09);
+  --menu-item-hover-mobile-border:rgba(var(--cyan-ch), 0.38);
+  --menu-num-color:               rgba(var(--cyan-ch), 0.52);
 
 }
