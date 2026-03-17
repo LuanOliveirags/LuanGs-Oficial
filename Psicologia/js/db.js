@@ -77,6 +77,20 @@ const DB = {
     this._save(lista);
   },
 
+  async updatePerfil(email, { nome, crp, novaSenha } = {}) {
+    const lista = this.getAll();
+    const idx   = lista.findIndex(u => u.email === email.toLowerCase().trim());
+    if (idx === -1) throw new Error("Usuário não encontrado.");
+    if (nome) lista[idx].nome = nome.trim();
+    if (crp  !== undefined) lista[idx].crp  = crp.trim();
+    if (novaSenha) {
+      if (novaSenha.length < 6) throw new Error("A senha deve ter ao menos 6 caracteres.");
+      lista[idx].senhaHash = await hashSenha(novaSenha);
+    }
+    this._save(lista);
+    return lista[idx];
+  },
+
   bloquear(email) {
     const lista = this.getAll();
     const idx   = lista.findIndex(u => u.email === email.toLowerCase().trim());

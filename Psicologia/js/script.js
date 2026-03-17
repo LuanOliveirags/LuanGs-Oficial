@@ -131,7 +131,8 @@ function fazerLogout() {
 function abrirDashboard() {
   document.getElementById("page-login").classList.add("hidden");
   document.getElementById("page-dashboard").classList.remove("hidden");
-  document.getElementById("sidebar-user").textContent = usuarioLogado.nome;
+  document.getElementById("sidebar-user-nome").textContent = usuarioLogado.nome;
+  document.getElementById("sidebar-user-crp").textContent  = usuarioLogado.crp ? `CRP ${usuarioLogado.crp}` : "";
   document.getElementById("topbar-user-name").textContent = usuarioLogado.nome;
   // Garante seção inicial visível
   document.querySelectorAll(".sec").forEach(s => { s.style.display = "none"; s.classList.remove("active"); });
@@ -144,6 +145,102 @@ function abrirDashboard() {
   document.querySelectorAll(".nav-admin").forEach(el => {
     el.style.display = usuarioLogado.role === "admin" ? "flex" : "none";
   });
+  // Exibir botão Meu Perfil apenas para não-admin
+  const btnSenha = document.getElementById("btn-alterar-senha");
+  if (btnSenha) btnSenha.style.display = usuarioLogado.role !== "admin" ? "block" : "none";
+}
+
+// ──────────────────────────────────────────────────────
+// ALTERAR SENHA
+// ──────────────────────────────────────────────────────
+function abrirModalPerfil() {
+  const u = DB.findByEmail(usuarioLogado.email);
+  document.getElementById("perfil-nome").value  = u ? u.nome  : "";
+  document.getElementById("perfil-crp").value   = u ? u.crp   : "";
+  document.getElementById("perfil-email").value = usuarioLogado.email;
+  ["perfil-senha-atual", "perfil-senha-nova", "perfil-senha-confirmar"].forEach(id => {
+    document.getElementById(id).value = "";
+  });
+  document.getElementById("perfil-error").classList.add("hidden");
+  document.getElementById("perfil-success").classList.add("hidden");
+  document.getElementById("modal-perfil-overlay").classList.remove("hidden");
+}
+
+function fecharModalPerfil() {
+  document.getElementById("modal-perfil-overlay").classList.add("hidden");
+}
+
+async function salvarPerfil() {
+  const errEl = document.getElementById("perfil-error");
+  const okEl  = document.getElementById("perfil-success");
+  errEl.classList.add("hidden");
+  okEl.classList.add("hidden");
+
+  const nome      = document.getElementById("perfil-nome").value.trim();
+  const crp       = document.getElementById("perfil-crp").value.trim();
+  const senhaAtual = document.getElementById("perfil-senha-atual").value;
+  const senhaNova  = document.getElementById("perfil-senha-nova").value;
+  const senhaCfm   = document.getElementById("perfil-senha-confirmar").value;
+
+  if (!nome) {
+    errEl.textContent = "O nome não pode ficar em branco.";
+    errEl.classList.remove("hidden");
+    return;
+  }
+
+  // Validação de senha somente se o usuário preencheu algum campo de senha
+  const querTrocarSenha = senhaAtual || senhaNova || senhaCfm;
+  if (querTrocarSenha) {
+    if (!senhaAtual) {
+      errEl.textContent = "Informe a senha atual para poder trocá-la.";
+      errEl.classList.remove("hidden");
+      return;
+    }
+    if (!senhaNova || !senhaCfm) {
+      errEl.textContent = "Preencha a nova senha e a confirmação.";
+      errEl.classList.remove("hidden");
+      return;
+    }
+    if (senhaNova.length < 6) {
+      errEl.textContent = "A nova senha deve ter pelo menos 6 caracteres.";
+      errEl.classList.remove("hidden");
+      return;
+    }
+    if (senhaNova !== senhaCfm) {
+      errEl.textContent = "As senhas não coincidem.";
+      errEl.classList.remove("hidden");
+      return;
+    }
+    const hashAtual = await hashSenha(senhaAtual);
+    const usuario   = DB.findByEmail(usuarioLogado.email);
+    if (!usuario || usuario.senhaHash !== hashAtual) {
+      errEl.textContent = "Senha atual incorreta.";
+      errEl.classList.remove("hidden");
+      return;
+    }
+  }
+
+  try {
+    const atualizado = await DB.updatePerfil(usuarioLogado.email, {
+      nome,
+      crp,
+      novaSenha: querTrocarSenha ? senhaNova : undefined
+    });
+    // Atualiza sessão com novo nome
+    usuarioLogado.nome = atualizado.nome;
+    usuarioLogado.crp  = atualizado.crp;
+    sessionStorage.setItem("neupsilin_user", JSON.stringify(usuarioLogado));
+    document.getElementById("sidebar-user-nome").textContent = usuarioLogado.nome;
+    document.getElementById("sidebar-user-crp").textContent  = usuarioLogado.crp ? `CRP ${usuarioLogado.crp}` : "";
+    document.getElementById("topbar-user-name").textContent = usuarioLogado.nome;
+
+    okEl.textContent = "Perfil atualizado com sucesso!";
+    okEl.classList.remove("hidden");
+    setTimeout(() => fecharModalPerfil(), 1800);
+  } catch (e) {
+    errEl.textContent = e.message;
+    errEl.classList.remove("hidden");
+  }
 }
 
 // ──────────────────────────────────────────────────────
@@ -205,6 +302,36 @@ function calcularIdade(nasc) {
 function salvarAvaliacao(av) {
   // Garante que a avaliação sempre carrega o email do profissional que a criou
   av.profissional.email = usuarioLogado.email;
+
+  // ── Vincula / cria paciente automaticamente ──────────────────────────────
+  const nomePac = av.paciente?.nome?.trim();
+  const nascPac = av.paciente?.nasc;
+  if (nomePac && nascPac) {
+    // Procura paciente existente do mesmo profissional com mesmo nome + nasc
+    const existing = DB_PAC.getMeus().find(p =>
+      p.nome.toLowerCase() === nomePac.toLowerCase() && p.nasc === nascPac
+    );
+    if (existing) {
+      // Apenas vincula o id do paciente à avaliação
+      av.pacienteId = existing.id;
+    } else {
+      // Cria a ficha automaticamente com os dados disponíveis
+      const sexoPac = av.paciente.sexo || "";
+      // Converte escolaridade NEUPSILIN (baixa/media/alta) → código da ficha
+      const escMap = { baixa: "fi", media: "mc", alta: "sc" };
+      const escCod = escMap[av.paciente.esc] || av.paciente.esc || "";
+      const novo = DB_PAC.create({
+        nome:  nomePac,
+        nasc:  nascPac,
+        sexo:  (sexoPac === "M" || sexoPac === "F") ? sexoPac : "",
+        esc:   escCod,
+        cpf: "", tel: "", email: "", resp: "", telResp: "", enc: "", queixa: "", obs: ""
+      });
+      av.pacienteId = novo.id;
+    }
+  }
+  // ─────────────────────────────────────────────────────────────────────────
+
   const lista = _todasAvaliacoes();
   lista.push(av);
   localStorage.setItem("neupsilin_avaliacoes", JSON.stringify(lista));
@@ -438,10 +565,8 @@ function atualizarStats() {
     const d = new Date(a.data);
     return d.getMonth() === agora.getMonth() && d.getFullYear() === agora.getFullYear();
   });
-  const pacientes = new Set(lista.map(a => a.paciente.nome.toLowerCase().trim()));
-
-  document.getElementById("stat-total").textContent     = lista.length;
-  document.getElementById("stat-pacientes").textContent = pacientes.size;
+  const pacientes = DB_PAC.getMeus();
+  document.getElementById("stat-pacientes").textContent = pacientes.length;
   document.getElementById("stat-mes").textContent       = mes.length;
 }
 
@@ -532,35 +657,13 @@ function filtrarHistorico() {
   renderizarHistorico(q);
 }
 
-function renderizarPacientes() {
-  const lista = getAvaliacoes();
-  const map = {};
-  for (const a of lista) {
-    const k = a.paciente.nome.toLowerCase().trim();
-    if (!map[k]) map[k] = { ...a.paciente, qtd: 0 };
-    map[k].qtd++;
-  }
-  const tbody = document.getElementById("tbody-pacientes");
-  const escMap = { baixa: "Baixa", media: "Média", alta: "Alta" };
-  const pacientes = Object.values(map);
-  if (!pacientes.length) {
-    tbody.innerHTML = '<tr><td colspan="4" class="empty-row">Nenhum paciente cadastrado.</td></tr>';
-    return;
-  }
-  tbody.innerHTML = pacientes.map(p => `
-    <tr>
-      <td>${p.nome}</td>
-      <td>${formatarDataBR(p.nasc)}</td>
-      <td>${escMap[p.esc]}</td>
-      <td>${p.qtd}</td>
-    </tr>`).join("");
-}
-
 // ──────────────────────────────────────────────────────
 // MODAL
 // ──────────────────────────────────────────────────────
 function abrirModal(id) {
-  const av = getAvaliacoes().find(a => a.id === id);
+  // id pode vir como string (onclick) ou número — normaliza para comparação
+  const idNum = Number(id);
+  const av = getAvaliacoes().find(a => Number(a.id) === idNum);
   if (!av) return;
   modalAvaliacaoId = id;
   if (av.tipoTeste === "WISC-IV") {

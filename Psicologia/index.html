@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="css/base/responsive.css">
   <link rel="stylesheet" href="css/neupsilin/style.css">
   <link rel="stylesheet" href="css/wisc/style.css">
+  <link rel="stylesheet" href="css/pacientes/db_pacientes.css">
   <!-- jsPDF via CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
@@ -74,8 +75,13 @@
       </a>
     </nav>
     <div class="sidebar-footer">
-      <span id="sidebar-user">—</span>
+      <div id="sidebar-user" style="line-height:1.3;text-align:center;margin-bottom:4px">
+        <span style="display:block;font-size:11px;color:var(--text-muted)">Psic&#243;logo:</span>
+        <span id="sidebar-user-nome" style="display:block;font-weight:600">—</span>
+        <span id="sidebar-user-crp"  style="display:block;font-size:11px;color:var(--text-muted)"></span>
+      </div>
       <button class="btn-logout" onclick="fazerLogout()">Sair</button>
+      <button id="btn-alterar-senha" class="btn btn-secondary" style="width:100%;margin-top:6px;font-size:12px;padding:6px" onclick="abrirModalPerfil()">&#128100; Meu Perfil</button>
       <a href="https://www.instagram.com/luanoliveirags/" target="_blank" rel="noopener noreferrer"
         style="display:block;text-align:center;font-size:11px;color:var(--text-muted);text-decoration:none;margin-top:8px;opacity:.7">
         Desenvolvido por <span style="text-decoration:underline">Luan Gs</span>
@@ -935,19 +941,175 @@
     <!-- ─── Seção: Pacientes ─── -->
     <section id="sec-pacientes" class="sec hidden">
       <div class="card">
-        <h3>Pacientes Cadastrados</h3>
-        <table class="table">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:12px">
+          <div>
+            <h3 style="margin:0">Pacientes Cadastrados</h3>
+            <p style="font-size:13px;color:var(--text-muted);margin:4px 0 0">Gerencie as fichas cadastrais dos seus pacientes</p>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input type="text" id="pac-busca" placeholder="&#128269; Buscar paciente..." oninput="renderizarPacientes()" class="input-busca" style="width:220px">
+            <button class="btn btn-primary" onclick="abrirModalPaciente()">+ Novo Paciente</button>
+          </div>
+        </div>
+        <div id="pac-empty" style="text-align:center;padding:52px 0;color:var(--text-muted)">
+          <div style="font-size:52px;margin-bottom:14px">&#128100;</div>
+          <p style="font-size:16px;font-weight:600;margin:0 0 6px">Nenhum paciente cadastrado</p>
+          <p style="font-size:13px;margin:0">Clique em “+ Novo Paciente” para começar</p>
+        </div>
+        <table class="table" id="pac-table" style="display:none">
           <thead>
-            <tr><th>Nome</th><th>Data de Nascimento</th><th>Escolaridade</th><th>Avaliações</th></tr>
+            <tr>
+              <th>Paciente</th><th>Idade</th><th>Telefone</th><th>Queixa Principal</th><th id="pac-th-prof" style="display:none">Profissional</th><th>Avaliações</th><th>Ações</th>
+            </tr>
           </thead>
-          <tbody id="tbody-pacientes">
-            <tr><td colspan="4" class="empty-row">Nenhum paciente cadastrado.</td></tr>
-          </tbody>
+          <tbody id="tbody-pacientes"></tbody>
         </table>
       </div>
     </section>
 
   </main>
+</div>
+
+<!-- Modal Selecionar Teste para Paciente -->
+<div id="modal-correcao-pac-overlay" class="modal-overlay hidden" onclick="fecharModalCorrecaoPac()">
+  <div class="modal-card" onclick="event.stopPropagation()" style="max-width:420px">
+    <div class="modal-header">
+      <h3>&#129514; Iniciar Correção</h3>
+      <button class="modal-close" onclick="fecharModalCorrecaoPac()">&#10005;</button>
+    </div>
+    <div style="padding:0 24px 8px">
+      <p id="correcao-pac-desc" style="font-size:13px;color:var(--text-muted);margin-bottom:18px"></p>
+      <p style="font-size:12px;font-weight:700;color:var(--text-muted);letter-spacing:.4px;margin:0 0 12px">SELECIONE O TESTE</p>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <button class="btn" style="justify-content:flex-start;gap:12px;padding:14px 16px;background:#f0fdf4;color:#15803d;border:1.5px solid #bbf7d0;text-align:left;font-size:14px" onclick="irParaCorrecaoPac('neupsilin-inf')">
+          <span style="font-size:20px">&#129456;</span>
+          <span><strong>NEUPSILIN-INF</strong><br><span style="font-size:12px;opacity:.8">Correção Infantil (6–12 anos)</span></span>
+        </button>
+        <button class="btn" style="justify-content:flex-start;gap:12px;padding:14px 16px;background:#eff6ff;color:#1d4ed8;border:1.5px solid #bfdbfe;text-align:left;font-size:14px" onclick="irParaCorrecaoPac('nova-avaliacao')">
+          <span style="font-size:20px">&#129504;</span>
+          <span><strong>NEUPSILIN Adulto</strong><br><span style="font-size:12px;opacity:.8">Correção Adulto (12–90 anos)</span></span>
+        </button>
+        <button class="btn" style="justify-content:flex-start;gap:12px;padding:14px 16px;background:#faf5ff;color:#6d28d9;border:1.5px solid #ddd6fe;text-align:left;font-size:14px" onclick="irParaCorrecaoPac('wisc')">
+          <span style="font-size:20px">&#129520;</span>
+          <span><strong>WISC-IV</strong><br><span style="font-size:12px;opacity:.8">Escala de Inteligência Infantil (6–16 anos)</span></span>
+        </button>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="fecharModalCorrecaoPac()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Ficha Cadastral Paciente -->
+<div id="modal-pac-overlay" class="modal-overlay hidden" onclick="fecharModalPaciente()">
+  <div class="modal-card" onclick="event.stopPropagation()" style="max-width:620px;max-height:90vh;overflow-y:auto">
+    <div class="modal-header">
+      <h3 id="modal-pac-titulo">&#128100; Nova Ficha Cadastral</h3>
+      <button class="modal-close" onclick="fecharModalPaciente()">&#10005;</button>
+    </div>
+    <div style="padding:0 24px 8px">
+      <div id="pac-err" class="alert alert-error hidden"></div>
+
+      <p class="form-section-label">&#128203; Identificação</p>
+      <div class="form-group">
+        <label>Nome Completo *</label>
+        <input type="text" id="pac-f-nome" placeholder="Nome completo do paciente">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group" style="margin:0">
+          <label>Data de Nascimento *</label>
+          <input type="date" id="pac-f-nasc">
+        </div>
+        <div class="form-group" style="margin:0">
+          <label>Sexo</label>
+          <select id="pac-f-sexo">
+            <option value="">Não informado</option>
+            <option value="M">Masculino</option>
+            <option value="F">Feminino</option>
+            <option value="O">Outro</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+        <div class="form-group" style="margin:0">
+          <label>CPF</label>
+          <input type="text" id="pac-f-cpf" placeholder="000.000.000-00" maxlength="14">
+        </div>
+        <div class="form-group" style="margin:0">
+          <label>Escolaridade</label>
+          <select id="pac-f-esc">
+            <option value="">Não informada</option>
+            <option value="ne">Não alfabetizado</option>
+            <option value="fi">Fundamental Incompleto</option>
+            <option value="fc">Fundamental Completo</option>
+            <option value="mi">Médio Incompleto</option>
+            <option value="mc">Médio Completo</option>
+            <option value="si">Superior Incompleto</option>
+            <option value="sc">Superior Completo</option>
+            <option value="pg">Pós-graduação</option>
+          </select>
+        </div>
+      </div>
+
+      <hr style="border:none;border-top:1px solid var(--border);margin:18px 0 14px">
+      <p class="form-section-label">&#128222; Contato</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group" style="margin:0">
+          <label>Telefone</label>
+          <input type="text" id="pac-f-tel" placeholder="(00) 00000-0000" maxlength="15">
+        </div>
+        <div class="form-group" style="margin:0">
+          <label>E-mail</label>
+          <input type="email" id="pac-f-email" placeholder="paciente@email.com">
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+        <div class="form-group" style="margin:0">
+          <label>Responsável (se menor)</label>
+          <input type="text" id="pac-f-resp" placeholder="Nome do responsável">
+        </div>
+        <div class="form-group" style="margin:0">
+          <label>Tel. Responsável</label>
+          <input type="text" id="pac-f-tel-resp" placeholder="(00) 00000-0000" maxlength="15">
+        </div>
+      </div>
+
+      <hr style="border:none;border-top:1px solid var(--border);margin:18px 0 14px">
+      <p class="form-section-label">&#129658; Dados Clínicos</p>
+      <div class="form-group">
+        <label>Encaminhado por</label>
+        <input type="text" id="pac-f-enc" placeholder="Profissional ou instituição de referência">
+      </div>
+      <div class="form-group">
+        <label>Queixa Principal</label>
+        <textarea id="pac-f-queixa" rows="3" placeholder="Descreva a queixa principal do paciente..." style="resize:vertical"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Observações</label>
+        <textarea id="pac-f-obs" rows="2" placeholder="Informações adicionais relevantes..." style="resize:vertical"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="fecharModalPaciente()">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarPaciente()">&#128190; Salvar Ficha</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Ver Ficha do Paciente -->
+<div id="modal-ver-pac-overlay" class="modal-overlay hidden" onclick="fecharVerPaciente()">
+  <div class="modal-card" onclick="event.stopPropagation()" style="max-width:640px;max-height:90vh;overflow-y:auto">
+    <div class="modal-header">
+      <h3>&#128203; Ficha do Paciente</h3>
+      <button class="modal-close" onclick="fecharVerPaciente()">&#10005;</button>
+    </div>
+    <div id="modal-ver-pac-body" style="padding:0 24px 16px"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="fecharVerPaciente()">Fechar</button>
+      <button class="btn btn-primary" id="btn-editar-pac-ficha">&#9999;&#65039; Editar Ficha</button>
+    </div>
+  </div>
 </div>
 
 <!-- Modal de usuário (criar / editar) -->
@@ -1003,6 +1165,57 @@
   </div>
 </div>
 
+<!-- Modal Alterar Senha -->
+<div id="modal-perfil-overlay" class="modal-overlay hidden" onclick="fecharModalPerfil()">
+  <div class="modal-card" onclick="event.stopPropagation()" style="max-width:460px">
+    <div class="modal-header">
+      <h3>&#128100; Meu Perfil</h3>
+      <button class="modal-close" onclick="fecharModalPerfil()">&#10005;</button>
+    </div>
+    <div style="padding:0 24px 8px">
+      <div id="perfil-error"   class="alert alert-error   hidden"></div>
+      <div id="perfil-success" class="alert alert-success hidden"></div>
+
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px">Informações básicas da sua conta</p>
+
+      <div class="form-group">
+        <label>Nome Completo *</label>
+        <input type="text" id="perfil-nome" placeholder="Seu nome">
+      </div>
+      <div class="form-group">
+        <label>CRP</label>
+        <input type="text" id="perfil-crp" placeholder="Ex: 06/123456">
+      </div>
+      <div class="form-group">
+        <label>E-mail</label>
+        <input type="email" id="perfil-email" disabled style="opacity:.6;cursor:not-allowed">
+      </div>
+
+      <hr style="border:none;border-top:1px solid var(--border);margin:18px 0 14px">
+      <p style="font-size:12px;color:var(--text-muted);margin-bottom:14px">Alterar senha <span style="font-weight:400;opacity:.7">(deixe em branco para manter a atual)</span></p>
+
+      <div class="form-group">
+        <label>Senha Atual</label>
+        <input type="password" id="perfil-senha-atual" placeholder="Obrigatório apenas se quiser trocar">
+      </div>
+      <div class="form-row" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group" style="margin:0">
+          <label>Nova Senha</label>
+          <input type="password" id="perfil-senha-nova" placeholder="Mín. 6 caracteres">
+        </div>
+        <div class="form-group" style="margin:0">
+          <label>Confirmar</label>
+          <input type="password" id="perfil-senha-confirmar" placeholder="Repita">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="fecharModalPerfil()">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarPerfil()">&#10003; Salvar</button>
+    </div>
+  </div>
+</div>
+
 <!-- Modal de Ativação de Acesso -->
 <div id="modal-ativacao-overlay" class="modal-overlay hidden" onclick="fecharModalAtivacao()">
   <div class="modal-card" onclick="event.stopPropagation()" style="max-width:420px">
@@ -1045,6 +1258,7 @@
 </div>
 
 <script src="js/db.js"></script>
+<script src="js/db_pacientes/db_pacientes.js"></script>
 <script src="js/neupsilin/normas.js"></script>
 <script src="js/neupsilin/normas-inf.js"></script>
 <script src="js/wisc/normas.js"></script>
