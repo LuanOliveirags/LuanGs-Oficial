@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="css/neupsilin/style.css">
   <link rel="stylesheet" href="css/wisc/style.css">
   <link rel="stylesheet" href="css/pacientes/db_pacientes.css">
+  <link rel="stylesheet" href="css/bfp/style.css">
   <!-- jsPDF via CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
@@ -63,6 +64,9 @@
       </a>
       <a href="#" class="nav-item" onclick="navegarPara('testes', this)">
         <span class="nav-icon">📋</span> Correção de Testes
+      </a>
+      <a href="#" class="nav-item nav-aplicacao" onclick="navegarPara('aplicacao', this)">
+        <span class="nav-icon">📝</span> Aplicação de Testes
       </a>
       <a href="#" class="nav-item" onclick="navegarPara('historico', this)">
         <span class="nav-icon">📁</span> Histórico
@@ -861,6 +865,117 @@
       </div>
     </section>
 
+    <!-- ─── Seção: Hub de Aplicação de Testes ─── -->
+    <section id="sec-aplicacao" class="sec hidden">
+      <div class="aplicacao-intro">
+        <h2>Aplicação de Testes</h2>
+        <p>Administre instrumentos de autorrelato e avaliação estruturada diretamente pelo sistema.</p>
+      </div>
+      <div class="testes-grid">
+
+        <!-- Card BFP -->
+        <div class="teste-card bfp-hub-card" onclick="navegarPara('bfp', null)">
+          <div class="tc-accent" style="background:rgb(99,102,241)"></div>
+          <div class="tc-icon">🧩</div>
+          <div class="tc-tag">Adultos · 17+ anos · Autorrelato</div>
+          <h3 class="tc-nome">BFP</h3>
+          <p class="tc-desc">Bateria Fatorial de Personalidade — avalie os cinco grandes fatores de personalidade com base em normas brasileiras.</p>
+          <div class="tc-areas">
+            <span>Neuroticismo</span><span>Extroversão</span><span>Socialização</span>
+            <span>Realização</span><span>Abertura</span>
+          </div>
+          <button class="btn tc-btn" style="background:rgb(99,102,241);color:#fff">Aplicar →</button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ─── Seção: BFP ─── -->
+    <section id="sec-bfp" class="sec hidden">
+
+      <div style="margin-bottom:16px">
+        <button class="btn btn-secondary" onclick="navegarPara('aplicacao', null)">← Voltar aos Instrumentos</button>
+      </div>
+
+      <!-- Dados do Paciente -->
+      <div class="card">
+        <h3>BFP — Bateria Fatorial de Personalidade <span style="font-size:12px;font-weight:400;color:var(--text-muted);margin-left:8px">Nunes, Hutz &amp; Nunes, 2010 · Adultos 17+</span></h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nome Completo *</label>
+            <input type="text" id="bfp-nome" placeholder="Nome do avaliando">
+          </div>
+          <div class="form-group">
+            <label>Data de Nascimento *</label>
+            <input type="date" id="bfp-nasc">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Sexo</label>
+            <select id="bfp-sexo">
+              <option value="M">Masculino</option>
+              <option value="F">Feminino</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Escolaridade</label>
+            <select id="bfp-esc">
+              <option value="">Não informada</option>
+              <option value="baixa">Baixa (0–4 anos)</option>
+              <option value="media">Média (5–11 anos)</option>
+              <option value="alta">Alta (12+ anos)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Itens do BFP (gerados por JS) -->
+      <div class="card">
+        <div class="bfp-escala-ref">
+          Escala de resposta: <strong>1</strong> Nunca &nbsp;·&nbsp;
+          <strong>2</strong> Raramente &nbsp;·&nbsp;
+          <strong>3</strong> Às vezes &nbsp;·&nbsp;
+          <strong>4</strong> Com certa frequência &nbsp;·&nbsp;
+          <strong>5</strong> Frequentemente &nbsp;·&nbsp;
+          <strong>6</strong> Muito frequentemente &nbsp;·&nbsp;
+          <strong>7</strong> Sempre
+        </div>
+        <div class="tab-bar" id="bfp-tab-bar">
+          <!-- Tabs geradas por inicializarBFPForm() -->
+        </div>
+        <div id="bfp-tabs-container">
+          <!-- Conteúdo gerado por inicializarBFPForm() -->
+        </div>
+      </div>
+
+      <!-- Observações e Ações -->
+      <div class="card">
+        <div class="form-group">
+          <label>Observações Clínicas</label>
+          <textarea id="bfp-obs" rows="3" placeholder="Comportamento durante a avaliação, observações relevantes…"></textarea>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" style="font-size:15px;padding:12px 32px" onclick="calcularBFP()">
+            📊 Calcular e Salvar
+          </button>
+          <button class="btn btn-secondary" onclick="limparBFP()">Limpar</button>
+        </div>
+      </div>
+
+      <!-- Resultado inline -->
+      <div id="bfp-resultado-inline" class="card hidden resultado-card bfp-resultado-card">
+        <h3>Perfil de Personalidade — BFP</h3>
+        <div id="bfp-resultado-conteudo"></div>
+        <div class="form-actions">
+          <button class="btn" style="background:rgb(99,102,241);color:#fff;font-size:14px;font-weight:600;border:none;border-radius:8px;padding:10px 22px;cursor:pointer" onclick="exportarPDFBFP()">
+            📄 Exportar Laudo PDF
+          </button>
+        </div>
+      </div>
+
+    </section>
+
     <!-- ─── Seção: Histórico ─── -->
     <section id="sec-historico" class="sec hidden">
       <div class="card">
@@ -1157,6 +1272,13 @@
           <option value="vitalicio">Vitalício</option>
         </select>
       </div>
+      <div style="border-top:1px solid var(--border);margin-top:12px;padding-top:12px">
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:6px">
+          <input type="checkbox" id="usr-ocultar-aplicacao" style="width:15px;height:15px;cursor:pointer;accent-color:var(--primary)">
+          <span style="font-size:14px;font-weight:500">Ocultar aba <strong>Aplicação de Testes</strong></span>
+        </label>
+        <small style="color:var(--text-muted);font-size:12px">O usuário não verá essa seção no menu lateral.</small>
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="fecharModalUsuario()">Cancelar</button>
@@ -1266,5 +1388,7 @@
 <script src="js/neupsilin/avaliacao.js"></script>
 <script src="js/neupsilin/avaliacao-inf.js"></script>
 <script src="js/wisc/avaliacao.js"></script>
+<script src="js/bfp/normas.js"></script>
+<script src="js/bfp/avaliacao.js"></script>
 </body>
 </html>

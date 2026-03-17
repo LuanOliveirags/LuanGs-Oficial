@@ -332,76 +332,103 @@ function exportarPDFInf(avParam) {
 
   const L = 20, R = 190, W = R - L;
   let   Y = 20;
-  const cor    = [16, 185, 129]; // verde INF
+  const cor    = [16, 185, 129];
   const cinza  = [100, 116, 139];
   const preto  = [30, 41, 59];
+  const crpTxt = av.profissional.crp ? `CRP ${av.profissional.crp}` : "";
 
-  // Cabeçalho
+  // ── Cabeçalho ──────────────────────────────────────────────────────
   doc.setFillColor(...cor);
-  doc.rect(0, 0, 210, 32, "F");
+  doc.rect(0, 0, 210, 38, "F");
+
   doc.setTextColor(255, 255, 255);
-  doc.setFontSize(20);
+  doc.setFontSize(15);
   doc.setFont("helvetica", "bold");
-  doc.text("NEUPSILIN-INF", L, 14);
-  doc.setFontSize(9);
+  doc.text("LAUDO DE AVALIAÇÃO PSICOLÓGICA", L, 12);
+
+  doc.setFontSize(8.5);
   doc.setFont("helvetica", "normal");
-  doc.text("Instrumento de Avaliação Neuropsicológica Breve — Versão Infantil", L, 20);
-  doc.text("LAUDO DE CORREÇÃO AUTOMÁTICA", L, 26);
+  doc.text("NEUPSILIN-INF — Instrumento de Avaliação Neuropsicológica Breve (Versão Infantil)", L, 19);
+  doc.text("Elaborado em conformidade com a Resolução CFP nº 06/2019", L, 25);
+
   doc.setFontSize(8);
-  doc.text(`Profissional: ${av.profissional.nome}`, R, 16, { align: "right" });
-  doc.text(`${av.profissional.crp || ""}`, R, 21, { align: "right" });
-  doc.text(`Data: ${formatarData(av.data)}`, R, 26, { align: "right" });
+  doc.text(av.profissional.nome, R, 14, { align: "right" });
+  doc.text(crpTxt, R, 19, { align: "right" });
+  doc.text(`Emissão: ${formatarData(new Date().toISOString())}`, R, 24, { align: "right" });
 
-  Y = 42;
+  Y = 46;
 
-  // Dados da criança
+  // ── I. IDENTIFICAÇÃO DO AVALIADO ───────────────────────────────────
   const serieMap = {
-    EF1:"1º ano EF", EF2:"2º ano EF", EF3:"3º ano EF", EF4:"4º ano EF",
-    EF5:"5º ano EF", EF6:"6º ano EF", EF7:"7º ano EF", NEE:"Não frequenta"
+    EF1:"1º ano do Ensino Fundamental", EF2:"2º ano do Ensino Fundamental",
+    EF3:"3º ano do Ensino Fundamental", EF4:"4º ano do Ensino Fundamental",
+    EF5:"5º ano do Ensino Fundamental", EF6:"6º ano do Ensino Fundamental",
+    EF7:"7º ano do Ensino Fundamental", NEE:"Não frequenta escola regular"
   };
+
   doc.setFillColor(248, 250, 252);
-  doc.rect(L, Y - 5, W, 24, "F");
-  doc.setDrawColor(226, 232, 240);
-  doc.rect(L, Y - 5, W, 24);
+  doc.setDrawColor(...cor);
+  doc.setLineWidth(0.3);
+  doc.rect(L, Y, W, 28, "FD");
+
+  doc.setTextColor(...cor);
+  doc.setFontSize(8.5);
+  doc.setFont("helvetica", "bold");
+  doc.text("I. IDENTIFICAÇÃO DO AVALIADO", L + 4, Y + 6);
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8.5);
+  doc.setTextColor(...preto);
+  doc.text(`Nome: ${av.paciente.nome}`, L + 4, Y + 13);
+  doc.text(`Nascimento: ${formatarDataBR(av.paciente.nasc)}   |   Idade: ${av.paciente.idade} anos   |   Sexo: ${av.paciente.sexo === "M" ? "Masculino" : "Feminino"}`, L + 4, Y + 19);
+  doc.text(`Escolaridade: ${serieMap[av.paciente.serie] || av.paciente.serie || "—"}`, L + 4, Y + 25);
+  Y += 34;
+
+  // ── II. PROCEDIMENTO ADOTADO ────────────────────────────────────────
+  doc.setFillColor(248, 250, 252);
+  doc.setDrawColor(...cor);
+  doc.rect(L, Y, W, 28, "FD");
+
+  doc.setTextColor(...cor);
+  doc.setFontSize(8.5);
+  doc.setFont("helvetica", "bold");
+  doc.text("II. PROCEDIMENTO ADOTADO", L + 4, Y + 6);
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8.5);
+  doc.setTextColor(...preto);
+  doc.text("Instrumento: NEUPSILIN-INF — Instrumento de Avaliação Neuropsicológica Breve (Versão Infantil)", L + 4, Y + 13);
+  doc.text("Referência: Salles et al. (2011). Casa do Psicólogo. Normas estratificadas por idade (6–12 anos).", L + 4, Y + 19);
+  doc.text(`Data de aplicação: ${formatarDataBR(av.data)}   |   Modalidade: individual e presencial`, L + 4, Y + 25);
+  Y += 34;
+
+  // ── III. ANÁLISE DOS RESULTADOS ─────────────────────────────────────
   doc.setTextColor(...preto);
   doc.setFontSize(10);
   doc.setFont("helvetica", "bold");
-  doc.text("DADOS DA CRIANÇA", L + 4, Y + 1);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(9);
-  doc.text(`Nome: ${av.paciente.nome}`, L + 4, Y + 7);
-  doc.text(`Idade: ${av.paciente.idade} anos  |  Nascimento: ${formatarDataBR(av.paciente.nasc)}  |  Sexo: ${av.paciente.sexo === "M" ? "Masculino" : "Feminino"}`, L + 4, Y + 13);
-  doc.text(`Escolaridade: ${serieMap[av.paciente.serie] || av.paciente.serie || "—"}  |  Faixa normativa: ${av.paciente.idade} anos`, L + 4, Y + 19);
-  Y += 30;
+  doc.text("III. ANÁLISE DOS RESULTADOS", L, Y);
+  Y += 5;
 
-  // Resultado geral
   doc.setFillColor(...cor);
-  doc.rect(L, Y, W, 14, "F");
+  doc.rect(L, Y, W, 12, "F");
   doc.setTextColor(255, 255, 255);
-  doc.setFontSize(10);
+  doc.setFontSize(9);
   doc.setFont("helvetica", "bold");
-  doc.text(`CLASSIFICAÇÃO GERAL: ${av.classeGeral.label.toUpperCase()}`, L + 4, Y + 6);
+  doc.text(`Classificação Geral: ${av.classeGeral.label.toUpperCase()}`, L + 4, Y + 5);
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
-  doc.text(`Escore Total Bruto: ${av.totalBruto} / ${av.maxTotal}`, L + 4, Y + 11);
-  Y += 20;
-
-  // Tabela por área
-  doc.setTextColor(...preto);
-  doc.setFontSize(10);
-  doc.setFont("helvetica", "bold");
-  doc.text("RESULTADOS POR ÁREA", L, Y);
-  Y += 7;
+  doc.text(`Escore Total Bruto: ${av.totalBruto} / ${av.maxTotal}   |   Faixa normativa: ${av.paciente.idade} anos`, L + 4, Y + 10);
+  Y += 16;
 
   const cols = [L, L+62, L+90, L+112, L+135, L+158];
   const rowH = 8;
 
   doc.setFillColor(226, 232, 240);
   doc.rect(L, Y, W, rowH, "F");
-  doc.setFontSize(8);
+  doc.setFontSize(7.5);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...cinza);
-  doc.text("ÁREA", cols[0] + 2, Y + 5);
+  doc.text("ÁREA COGNITIVA", cols[0] + 2, Y + 5);
   doc.text("ESCORE", cols[1] + 2, Y + 5);
   doc.text("% MÁX", cols[2] + 2, Y + 5);
   doc.text("z-SCORE", cols[3] + 2, Y + 5);
@@ -414,8 +441,9 @@ function exportarPDFInf(avParam) {
   for (const area of areas) {
     const r   = av.resultados[area];
     const pct = Math.round((r.score / r.max) * 100);
-    const odd = row++ % 2 === 0;
-    if (odd) {
+    const corLinha = badgeParaCor(r.classe.badge);
+
+    if (row++ % 2 === 0) {
       doc.setFillColor(248, 250, 252);
       doc.rect(L, Y, W, rowH, "F");
     }
@@ -427,51 +455,72 @@ function exportarPDFInf(avParam) {
     doc.text(`${pct}%`, cols[2] + 2, Y + 5);
     doc.text(r.z.toFixed(2), cols[3] + 2, Y + 5);
     doc.text(r.media.toFixed(1), cols[4] + 2, Y + 5);
+
+    doc.setFillColor(...corLinha.bg);
+    doc.roundedRect(cols[5] + 2, Y + 1, 30, 5.5, 2, 2, "F");
+    doc.setTextColor(...corLinha.txt);
     doc.setFont("helvetica", "bold");
-    doc.text(r.classe.label, cols[5] + 2, Y + 5);
+    doc.text(r.classe.label, cols[5] + 17, Y + 5, { align: "center" });
     doc.setFont("helvetica", "normal");
+    doc.setTextColor(...preto);
+    doc.setDrawColor(226, 232, 240);
+    doc.line(L, Y + rowH, R, Y + rowH);
     Y += rowH;
   }
 
-  // Borda tabela
-  doc.setDrawColor(226, 232, 240);
-  doc.rect(L, Y - rowH * areas.length - rowH, W, rowH * (areas.length + 1));
-  Y += 8;
+  Y += 10;
 
-  // Interpretação
+  // ── IV. CONCLUSÃO ───────────────────────────────────────────────────
+  if (Y > 220) { doc.addPage(); Y = 20; }
+
   doc.setFont("helvetica", "bold");
   doc.setFontSize(10);
   doc.setTextColor(...preto);
-  doc.text("INTERPRETAÇÃO CLÍNICA", L, Y);
-  Y += 7;
+  doc.text("IV. CONCLUSÃO", L, Y);
+  Y += 6;
+
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8.5);
+  doc.setTextColor(50, 50, 50);
   const interp = gerarInterpretacaoInf(av).replace(/<[^>]+>/g, "");
   const linhas = doc.splitTextToSize(interp, W);
   doc.text(linhas, L, Y);
-  Y += linhas.length * 5 + 6;
+  Y += linhas.length * 5 + 8;
 
-  // Observações
+  // ── V. OBSERVAÇÕES CLÍNICAS ─────────────────────────────────────────
   if (av.obs) {
+    if (Y > 235) { doc.addPage(); Y = 20; }
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10);
-    doc.text("OBSERVAÇÕES CLÍNICAS", L, Y);
-    Y += 7;
+    doc.setTextColor(...preto);
+    doc.text("V. OBSERVAÇÕES CLÍNICAS", L, Y);
+    Y += 6;
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8.5);
+    doc.setTextColor(50, 50, 50);
     const obsLinhas = doc.splitTextToSize(av.obs, W);
     doc.text(obsLinhas, L, Y);
-    Y += obsLinhas.length * 5 + 6;
+    Y += obsLinhas.length * 5 + 8;
   }
 
-  // Assinatura
-  Y = Math.max(Y, 240);
-  doc.setDrawColor(...cor);
-  doc.line(L, Y, L + 70, Y);
-  doc.setFontSize(8);
-  doc.setTextColor(...cinza);
+  // ── Assinatura ──────────────────────────────────────────────────────
+  if (Y > 248) { doc.addPage(); Y = 20; }
+  Y = Math.max(Y, 248);
+
+  doc.setDrawColor(...cinza);
+  doc.setLineWidth(0.3);
+  doc.line(L, Y, L + 90, Y);
+  doc.setFontSize(8.5);
+  doc.setTextColor(...preto);
+  doc.setFont("helvetica", "bold");
   doc.text(av.profissional.nome, L, Y + 5);
-  doc.text(av.profissional.crp || "", L, Y + 10);
+  doc.setFont("helvetica", "normal");
+  doc.text(crpTxt, L, Y + 10);
+  doc.setTextColor(...cinza);
+  doc.text(`Local e data: _________________________________, ${formatarData(new Date().toISOString())}`, R, Y + 5, { align: "right" });
+
+  doc.setFontSize(7);
+  doc.text("Elaborado em conformidade com a Resolução CFP nº 06/2019. Uso exclusivo do profissional responsável.", 105, 292, { align: "center" });
 
   const nomeArq = `NEUPSILIN-INF_${av.paciente.nome.replace(/\s+/g, "_")}_${new Date(av.data).toLocaleDateString("pt-BR").replace(/\//g, "-")}.pdf`;
   doc.save(nomeArq);

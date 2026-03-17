@@ -39,7 +39,7 @@ const DB = {
     return this.getAll().find(u => u.email === email.toLowerCase().trim()) || null;
   },
 
-  async create({ email, senha, nome, crp = "", role = "profissional", plano = "1mes" }) {
+  async create({ email, senha, nome, crp = "", role = "profissional", plano = "1mes", ocultarAplicacao = false }) {
     if (!email || !senha || !nome) throw new Error("Preencha todos os campos obrigatórios.");
     if (senha.length < 6) throw new Error("A senha deve ter ao menos 6 caracteres.");
 
@@ -56,6 +56,7 @@ const DB = {
       plano,
       expiracao: calcularExpiracao(plano),
       bloqueado: false,
+      ocultarAplicacao,
       criadoEm: new Date().toISOString()
     };
     lista.push(usuario);

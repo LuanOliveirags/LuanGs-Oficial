@@ -145,6 +145,11 @@ function abrirDashboard() {
   document.querySelectorAll(".nav-admin").forEach(el => {
     el.style.display = usuarioLogado.role === "admin" ? "flex" : "none";
   });
+  // Controla visibilidade da aba Aplicação de Testes por usuário
+  const _uApl = DB.findByEmail(usuarioLogado.email);
+  document.querySelectorAll(".nav-aplicacao").forEach(el => {
+    el.style.display = (_uApl?.ocultarAplicacao && usuarioLogado.role !== "admin") ? "none" : "flex";
+  });
   // Exibir botão Meu Perfil apenas para não-admin
   const btnSenha = document.getElementById("btn-alterar-senha");
   if (btnSenha) btnSenha.style.display = usuarioLogado.role !== "admin" ? "block" : "none";
@@ -269,7 +274,9 @@ function navegarPara(secao, linkEl) {
     "nova-avaliacao": "NEUPSILIN Adulto — Correção",
     "neupsilin-inf":  "NEUPSILIN-INF — Correção Infantil",
     wisc: "WISC-IV — Correção",
-    historico: "Histórico de Correções",
+    aplicacao: "Aplicação de Testes",
+    bfp: "BFP — Bateria Fatorial de Personalidade",
+    historico: "Histórico de Avaliações",
     pacientes: "Pacientes",
     usuarios:  "Gerenciar Usuários"
   };
@@ -281,6 +288,7 @@ function navegarPara(secao, linkEl) {
   if (secao === "nova-avaliacao") limparFormulario();
   if (secao === "neupsilin-inf")  limparFormularioInf();
   if (secao === "wisc")           limparWISC();
+  if (secao === "bfp")            { limparBFP(); inicializarBFPForm(); }
 }
 
 function toggleSidebar() {
@@ -566,6 +574,8 @@ function atualizarStats() {
     return d.getMonth() === agora.getMonth() && d.getFullYear() === agora.getFullYear();
   });
   const pacientes = DB_PAC.getMeus();
+  const statTotal = document.getElementById("stat-total");
+  if (statTotal) statTotal.textContent = lista.length;
   document.getElementById("stat-pacientes").textContent = pacientes.length;
   document.getElementById("stat-mes").textContent       = mes.length;
 }
@@ -579,10 +589,16 @@ function renderizarTabelaRecentes() {
     return;
   }
   tbody.innerHTML = lista.map(a => {
-    const classeGeral = a.tipoTeste === "WISC-IV" ? (a.indices?.fsiq?.classe || { badge: "badge-medio", label: "\u2014" }) : a.classeGeral;
-    const teste = a.tipoTeste || "NEUPSILIN";
-    const bgColor = teste === "WISC-IV" ? "var(--accent)" : teste === "NEUPSILIN-INF" ? "var(--success)" : "var(--primary)";
-    const testeLabel = teste === "NEUPSILIN-ADULTO" ? "NEUPSILIN" : teste;
+    const isBFP  = a.tipoTeste === "BFP";
+    const teste  = a.tipoTeste || "NEUPSILIN";
+    const bgColor = isBFP ? "rgb(99,102,241)"
+      : teste === "WISC-IV" ? "var(--accent)"
+      : teste === "NEUPSILIN-INF" ? "var(--success)" : "var(--primary)";
+    const testeLabel = isBFP ? "BFP" : teste === "NEUPSILIN-ADULTO" ? "NEUPSILIN" : teste;
+    const classeGeral = isBFP
+      ? (() => { const ts = a.fatorScores?.N?.tscore ?? 50; return { badge: ts >= 60 ? "badge-inferior" : ts >= 45 ? "badge-medio" : "badge-superior", label: `N: T${ts}` }; })()
+      : a.tipoTeste === "WISC-IV" ? (a.indices?.fsiq?.classe || { badge: "badge-medio", label: "\u2014" })
+      : (a.classeGeral || { badge: "badge-medio", label: "\u2014" });
     return `
     <tr>
       <td>${formatarData(a.data)}</td>
@@ -625,17 +641,24 @@ function renderizarHistorico(filtro = "") {
   tbody.innerHTML = vis.map(a => {
     const isWISC = a.tipoTeste === "WISC-IV";
     const isINF  = a.tipoTeste === "NEUPSILIN-INF";
-    const testeBadge = isWISC
-      ? `<span class="badge" style="background:var(--accent);color:#fff">WISC-IV</span>`
-      : isINF
-        ? `<span class="badge" style="background:var(--success);color:#fff">NEUPSILIN-INF</span>`
-        : `<span class="badge" style="background:var(--primary);color:#fff">NEUPSILIN</span>`;
-    const classeGeral = isWISC
-      ? (a.indices?.fsiq?.classe || { badge: "badge-medio", label: "—" })
-      : (a.classeGeral || { badge: "badge-medio", label: "—" });
-    const scoreCol = isWISC
-      ? `QI: ${a.indices?.fsiq?.score ?? "—"}`
-      : `${a.totalBruto}/${a.maxTotal}`;
+    const isBFP  = a.tipoTeste === "BFP";
+    const testeBadge = isBFP
+      ? `<span class="badge" style="background:rgb(99,102,241);color:#fff">BFP</span>`
+      : isWISC
+        ? `<span class="badge" style="background:var(--accent);color:#fff">WISC-IV</span>`
+        : isINF
+          ? `<span class="badge" style="background:var(--success);color:#fff">NEUPSILIN-INF</span>`
+          : `<span class="badge" style="background:var(--primary);color:#fff">NEUPSILIN</span>`;
+    const classeGeral = isBFP
+      ? (() => { const ts = a.fatorScores?.N?.tscore ?? 50; return { badge: ts >= 60 ? "badge-inferior" : ts >= 45 ? "badge-medio" : "badge-superior", label: `N: T${ts}` }; })()
+      : isWISC
+        ? (a.indices?.fsiq?.classe || { badge: "badge-medio", label: "—" })
+        : (a.classeGeral || { badge: "badge-medio", label: "—" });
+    const scoreCol = isBFP
+      ? `T-N: ${a.fatorScores?.N?.tscore ?? "—"}`
+      : isWISC
+        ? `QI: ${a.indices?.fsiq?.score ?? "—"}`
+        : `${a.totalBruto}/${a.maxTotal}`;
     return `
     <tr>
       <td>${formatarData(a.data)}</td>
@@ -676,6 +699,11 @@ function abrirModal(id) {
     document.getElementById("modal-pdf-btn").onclick = () => exportarPDFInf(av);
     document.getElementById("modal-overlay").classList.remove("hidden");
     requestAnimationFrame(() => renderizarGraficosInf(av, "modal"));
+  } else if (av.tipoTeste === "BFP") {
+    document.getElementById("modal-body").innerHTML = buildResultadoBFPHTML(av, "modal");
+    document.getElementById("modal-pdf-btn").onclick = () => exportarPDFBFP(av);
+    document.getElementById("modal-overlay").classList.remove("hidden");
+    requestAnimationFrame(() => renderizarGraficosBFP(av, "modal"));
   } else {
     document.getElementById("modal-body").innerHTML = buildResultadoHTML(av, "modal");
     document.getElementById("modal-pdf-btn").onclick = () => exportarPDF(av);
@@ -962,6 +990,8 @@ function abrirModalUsuario(emailEditar = null) {
     document.getElementById("usr-senha").value = "";
     document.getElementById("usr-crp").value   = u.crp || "";
     document.getElementById("usr-role").value  = u.role || "profissional";
+    const ocultarChkEdit = document.getElementById("usr-ocultar-aplicacao");
+    if (ocultarChkEdit) ocultarChkEdit.checked = !!(u.ocultarAplicacao);
     senhaLabel.textContent = "Nova Senha";
     senhaHint.classList.remove("hidden");
     if (planoGroup) planoGroup.style.display = "none";
@@ -975,6 +1005,8 @@ function abrirModalUsuario(emailEditar = null) {
     document.getElementById("usr-crp").value   = "";
     document.getElementById("usr-role").value  = "profissional";
     document.getElementById("usr-plano").value = "1mes";
+    const ocultarChkNovo = document.getElementById("usr-ocultar-aplicacao");
+    if (ocultarChkNovo) ocultarChkNovo.checked = false;
     senhaLabel.textContent = "Senha *";
     senhaHint.classList.add("hidden");
     if (planoGroup) planoGroup.style.display = "";
@@ -996,6 +1028,7 @@ async function salvarUsuario() {
   const crp   = document.getElementById("usr-crp").value.trim();
   const role  = document.getElementById("usr-role").value;
   const plano = document.getElementById("usr-plano")?.value || "1mes";
+  const ocultarAplicacao = document.getElementById("usr-ocultar-aplicacao")?.checked || false;
 
   const errEl = document.getElementById("usr-error");
   const okEl  = document.getElementById("usr-success");
@@ -1011,6 +1044,7 @@ async function salvarUsuario() {
       lista[idx].nome = nome || lista[idx].nome;
       lista[idx].crp  = crp;
       lista[idx].role = role;
+      lista[idx].ocultarAplicacao = ocultarAplicacao;
       if (senha) {
         if (senha.length < 6) throw new Error("A nova senha deve ter ao menos 6 caracteres.");
         lista[idx].senhaHash = await hashSenha(senha);
@@ -1018,7 +1052,7 @@ async function salvarUsuario() {
       localStorage.setItem("neupsilin_usuarios", JSON.stringify(lista));
       okEl.textContent = "Usuário atualizado com sucesso!";
     } else {
-      await DB.create({ email, senha, nome, crp, role, plano });
+      await DB.create({ email, senha, nome, crp, role, plano, ocultarAplicacao });
       okEl.textContent = `Usuário "${nome}" criado com sucesso!`;
     }
     okEl.classList.remove("hidden");

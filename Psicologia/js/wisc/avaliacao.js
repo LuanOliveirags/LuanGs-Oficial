@@ -290,68 +290,89 @@ function exportarPDFWISC(avParam) {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const L = 20, R = 190, W = R - L;
   let Y = 20;
-  const cor   = [124, 58, 237]; // roxo (accent)
+  const cor   = [124, 58, 237];
   const cinza = [100, 116, 139];
   const preto = [30, 41, 59];
+  const crpTxt = av.profissional.crp ? `CRP ${av.profissional.crp}` : "";
 
-  // Cabeçalho
+  // ── Cabeçalho ──────────────────────────────────────────────────────
   doc.setFillColor(...cor);
-  doc.rect(0, 0, 210, 32, "F");
+  doc.rect(0, 0, 210, 38, "F");
   doc.setTextColor(255, 255, 255);
-  doc.setFontSize(20);
+  doc.setFontSize(15);
   doc.setFont("helvetica", "bold");
-  doc.text("WISC-IV", L, 14);
-  doc.setFontSize(9);
+  doc.text("LAUDO DE AVALIAÇÃO PSICOLÓGICA", L, 12);
+  doc.setFontSize(8.5);
   doc.setFont("helvetica", "normal");
-  doc.text("Escala de Inteligência Wechsler para Crianças — 4.ª Edição", L, 20);
-  doc.text("LAUDO DE AVALIAÇÃO", L, 26);
+  doc.text("WISC-IV — Escala de Inteligência Wechsler para Crianças (4.ª Edição)", L, 19);
+  doc.text("Elaborado em conformidade com a Resolução CFP nº 06/2019", L, 25);
   doc.setFontSize(8);
-  doc.text(`Profissional: ${av.profissional.nome}`, R, 16, { align: "right" });
-  doc.text(`${av.profissional.crp || ""}`, R, 21, { align: "right" });
-  doc.text(`Data: ${formatarData(av.data)}`, R, 26, { align: "right" });
+  doc.text(av.profissional.nome, R, 14, { align: "right" });
+  doc.text(crpTxt, R, 19, { align: "right" });
+  doc.text(`Emissão: ${formatarData(new Date().toISOString())}`, R, 24, { align: "right" });
 
-  Y = 42;
+  Y = 46;
 
-  // Dados do paciente
+  // ── I. IDENTIFICAÇÃO DO AVALIADO ───────────────────────────────────
   doc.setFillColor(248, 250, 252);
-  doc.rect(L, Y - 5, W, 20, "F");
-  doc.setDrawColor(226, 232, 240);
-  doc.rect(L, Y - 5, W, 20);
+  doc.setDrawColor(...cor);
+  doc.setLineWidth(0.3);
+  doc.rect(L, Y, W, 22, "FD");
+
+  doc.setTextColor(...cor);
+  doc.setFontSize(8.5);
+  doc.setFont("helvetica", "bold");
+  doc.text("I. IDENTIFICAÇÃO DO AVALIADO", L + 4, Y + 6);
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8.5);
+  doc.setTextColor(...preto);
+  doc.text(`Nome: ${av.paciente.nome}`, L + 4, Y + 13);
+  doc.text(`Nascimento: ${formatarDataBR(av.paciente.nasc)}   |   Idade: ${av.paciente.idade} anos   |   Sexo: ${av.paciente.sexo === "M" ? "Masculino" : "Feminino"}`, L + 4, Y + 19);
+  Y += 28;
+
+  // ── II. PROCEDIMENTO ADOTADO ────────────────────────────────────────
+  doc.setFillColor(248, 250, 252);
+  doc.setDrawColor(...cor);
+  doc.rect(L, Y, W, 28, "FD");
+
+  doc.setTextColor(...cor);
+  doc.setFontSize(8.5);
+  doc.setFont("helvetica", "bold");
+  doc.text("II. PROCEDIMENTO ADOTADO", L + 4, Y + 6);
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8.5);
+  doc.setTextColor(...preto);
+  doc.text("Instrumento: WISC-IV — Escala de Inteligência Wechsler para Crianças, 4.ª Edição", L + 4, Y + 13);
+  doc.text("Referência: Wechsler, D. (2013). Adaptação brasileira: Rueda et al. Normas para 6 a 16 anos.", L + 4, Y + 19);
+  doc.text(`Data de aplicação: ${formatarDataBR(av.data)}   |   Modalidade: individual e presencial`, L + 4, Y + 25);
+  Y += 34;
+
+  // ── III. ANÁLISE DOS RESULTADOS ─────────────────────────────────────
   doc.setTextColor(...preto);
   doc.setFontSize(10);
   doc.setFont("helvetica", "bold");
-  doc.text("DADOS DO PACIENTE", L + 4, Y + 1);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(9);
-  doc.text(`Nome: ${av.paciente.nome}`, L + 4, Y + 7);
-  doc.text(`Idade: ${av.paciente.idade} anos  |  Nascimento: ${formatarDataBR(av.paciente.nasc)}  |  Sexo: ${av.paciente.sexo === "M" ? "Masculino" : "Feminino"}`, L + 4, Y + 13);
-  Y += 26;
+  doc.text("III. ANÁLISE DOS RESULTADOS", L, Y);
+  Y += 5;
 
-  // QI Total
   const fsiq = av.indices.fsiq;
   doc.setFillColor(...cor);
-  doc.rect(L, Y, W, 14, "F");
+  doc.rect(L, Y, W, 12, "F");
   doc.setTextColor(255, 255, 255);
-  doc.setFontSize(10);
+  doc.setFontSize(9);
   doc.setFont("helvetica", "bold");
-  doc.text(`QI TOTAL (FSIQ): ${fsiq.score}  —  ${fsiq.classe.label.toUpperCase()}`, L + 4, Y + 9);
-  Y += 20;
-
-  // Tabela de índices
-  doc.setTextColor(...preto);
-  doc.setFontSize(10);
-  doc.setFont("helvetica", "bold");
-  doc.text("ESCORES DE ÍNDICE", L, Y);
-  Y += 7;
+  doc.text(`QI Total (FSIQ): ${fsiq.score}   —   ${fsiq.classe.label.toUpperCase()}`, L + 4, Y + 9);
+  Y += 16;
 
   const cols = [L, L + 70, L + 105, L + 130, L + 155];
   const rowH = 8;
   doc.setFillColor(226, 232, 240);
   doc.rect(L, Y, W, rowH, "F");
-  doc.setFontSize(8);
+  doc.setFontSize(7.5);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...cinza);
-  doc.text("ÍNDICE", cols[0] + 2, Y + 5);
+  doc.text("ÍNDICE COGNITIVO", cols[0] + 2, Y + 5);
   doc.text("SOMA PONDERADA", cols[1] + 2, Y + 5);
   doc.text("ESCORE (EI)", cols[2] + 2, Y + 5);
   doc.text("PERCENTIL", cols[3] + 2, Y + 5);
@@ -386,49 +407,53 @@ function exportarPDFWISC(avParam) {
 
   Y += 10;
 
-  // Interpretação
-  if (Y > 230) { doc.addPage(); Y = 20; }
+  // ── IV. CONCLUSÃO ───────────────────────────────────────────────────
+  if (Y > 220) { doc.addPage(); Y = 20; }
   doc.setFontSize(10);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...preto);
-  doc.text("INTERPRETAÇÃO", L, Y);
+  doc.text("IV. CONCLUSÃO", L, Y);
   Y += 6;
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8.5);
-  doc.setTextColor(...cinza);
+  doc.setTextColor(50, 50, 50);
   const interpTxt = stripHTML(gerarInterpretacaoWISC(av));
   const linhas = doc.splitTextToSize(interpTxt, W);
   doc.text(linhas, L, Y);
-  Y += linhas.length * 5 + 6;
+  Y += linhas.length * 5 + 8;
 
-  // Observações
+  // ── V. OBSERVAÇÕES CLÍNICAS ─────────────────────────────────────────
   if (av.obs) {
-    if (Y > 240) { doc.addPage(); Y = 20; }
+    if (Y > 235) { doc.addPage(); Y = 20; }
     doc.setFont("helvetica", "bold");
     doc.setFontSize(10);
     doc.setTextColor(...preto);
-    doc.text("OBSERVAÇÕES CLÍNICAS", L, Y);
+    doc.text("V. OBSERVAÇÕES CLÍNICAS", L, Y);
     Y += 6;
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8.5);
-    doc.setTextColor(...cinza);
+    doc.setTextColor(50, 50, 50);
     const obsLinhas = doc.splitTextToSize(av.obs, W);
     doc.text(obsLinhas, L, Y);
-    Y += obsLinhas.length * 5 + 6;
+    Y += obsLinhas.length * 5 + 8;
   }
 
-  // Assinatura
-  if (Y > 250) { doc.addPage(); Y = 20; }
-  Y = Math.max(Y, 250);
+  // ── Assinatura ──────────────────────────────────────────────────────
+  if (Y > 248) { doc.addPage(); Y = 20; }
+  Y = Math.max(Y, 248);
   doc.setDrawColor(...cinza);
-  doc.line(L, Y, L + 80, Y);
-  doc.setFontSize(8);
+  doc.setLineWidth(0.3);
+  doc.line(L, Y, L + 90, Y);
+  doc.setFontSize(8.5);
+  doc.setTextColor(...preto);
+  doc.setFont("helvetica", "bold");
+  doc.text(av.profissional.nome, L, Y + 5);
+  doc.setFont("helvetica", "normal");
+  doc.text(crpTxt, L, Y + 10);
   doc.setTextColor(...cinza);
-  doc.text(av.profissional.nome, L + 40, Y + 5, { align: "center" });
-  doc.text(av.profissional.crp || "", L + 40, Y + 9, { align: "center" });
-  doc.text(`Emitido em ${formatarData(new Date().toISOString())}`, R, Y + 9, { align: "right" });
+  doc.text(`Local e data: _________________________________, ${formatarData(new Date().toISOString())}`, R, Y + 5, { align: "right" });
   doc.setFontSize(7);
-  doc.text("Documento gerado pelo Sistema Psicorrection. Uso exclusivo do profissional avaliador.", 105, 292, { align: "center" });
+  doc.text("Elaborado em conformidade com a Resolução CFP nº 06/2019. Uso exclusivo do profissional responsável.", 105, 292, { align: "center" });
 
   const nomeArq = `laudo_wisc_${av.paciente.nome.replace(/\s+/g,"_").toLowerCase()}_${formatarDataArq(av.data)}.pdf`;
   doc.save(nomeArq);
