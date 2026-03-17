@@ -1,0 +1,21 @@
+/* ══════════════════════════════════════════════
+   ABAS — WISC-IV
+══════════════════════════════════════════════ */
+.wisc-tab {
+  padding: 9px 18px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: all .15s;
+  white-space: nowrap;
+  width: auto;
+  margin-top: 0;
+}
+.wisc-tab:hover { background: var(--bg); color: var(--accent); }
+.wisc-tab.active { background: var(--accent); color: #fff; font-weight: 600; }
+.wisc-tab-content { display: none; padding: 20px 0 8px; }
+.wisc-tab-content.active { display: block; }

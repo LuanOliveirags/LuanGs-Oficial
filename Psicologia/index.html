@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PsiCorrection — Sistema Clínico</title>
+  <link rel="stylesheet" href="css/layout/Pallettes/palette_global.css">
+  <link rel="stylesheet" href="css/layout/menu.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/base/responsive.css">
+  <link rel="stylesheet" href="css/neupsilin/style.css">
+  <link rel="stylesheet" href="css/wisc/style.css">
+  <!-- jsPDF via CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════ LOGIN ═══════════════════════════════════ -->
+<div id="page-login" class="page active">
+  <div class="login-card">
+    <div class="login-logo">
+      <span class="logo-icon">&#936;</span>
+      <h1>PsiCorrection</h1>
+      <p>Sistema de Avaliação Neuropsicológica</p>
+    </div>
+    <div id="login-error" class="alert alert-error hidden"></div>
+    <div class="form-group">
+      <label>Usuário (e-mail)</label>
+      <input type="email" id="login-email" placeholder="profissional@clinica.com" autocomplete="username">
+    </div>
+    <div class="form-group">
+      <label>Senha</label>
+      <input type="password" id="login-senha" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="btn btn-primary btn-full" onclick="fazerLogin()">Entrar</button>
+
+    <div style="margin-top:24px;padding-top:16px;border-top:1px solid var(--border);text-align:center">
+      <p style="font-size:12px;color:var(--text-muted);margin:0">Desenvolvido por <a href="https://luangs.pro/" target="_blank" rel="noopener noreferrer" style="color:var(--primary);text-decoration:none;font-weight:600">Luan Gs</a></p>
+      <a href="https://www.instagram.com/luanoliveirags/" target="_blank" rel="noopener noreferrer"
+        style="font-size:12px;color:var(--primary);text-decoration:none;display:inline-flex;align-items:center;gap:4px;margin-top:4px">
+        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        @luanoliveirags
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════ DASHBOARD ════════════════════════════════ -->
+<div id="page-dashboard" class="page hidden">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <span>🧠</span>
+      <strong>PsiCorrection</strong>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active" onclick="navegarPara('dashboard', this)">
+        <span class="nav-icon">📊</span> Dashboard
+      </a>
+      <a href="#" class="nav-item" onclick="navegarPara('testes', this)">
+        <span class="nav-icon">📋</span> Correção de Testes
+      </a>
+      <a href="#" class="nav-item" onclick="navegarPara('historico', this)">
+        <span class="nav-icon">📁</span> Histórico
+      </a>
+      <a href="#" class="nav-item" onclick="navegarPara('pacientes', this)">
+        <span class="nav-icon">👤</span> Pacientes
+      </a>
+      <a href="#" class="nav-item nav-admin" style="display:none" onclick="navegarPara('usuarios', this)">
+        <span class="nav-icon">🔑</span> Usuários
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <span id="sidebar-user">—</span>
+      <button class="btn-logout" onclick="fazerLogout()">Sair</button>
+      <a href="https://www.instagram.com/luanoliveirags/" target="_blank" rel="noopener noreferrer"
+        style="display:block;text-align:center;font-size:11px;color:var(--text-muted);text-decoration:none;margin-top:8px;opacity:.7">
+        Desenvolvido por <span style="text-decoration:underline">Luan Gs</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Conteúdo principal -->
+  <main class="main-content">
+
+    <!-- ─── Topo ─── -->
+    <header class="topbar">
+      <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+      <h2 id="topbar-title">Dashboard</h2>
+      <div class="topbar-right">
+        <span id="topbar-user-name" class="badge-user"></span>
+      </div>
+    </header>
+
+    <!-- ─── Seção: Dashboard ─── -->
+    <section id="sec-dashboard" class="sec active">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">📋</div>
+          <div>
+            <div class="stat-num" id="stat-total">0</div>
+            <div class="stat-label">Avaliações Realizadas</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div>
+            <div class="stat-num" id="stat-pacientes">0</div>
+            <div class="stat-label">Pacientes Cadastrados</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📅</div>
+          <div>
+            <div class="stat-num" id="stat-mes">0</div>
+            <div class="stat-label">Avaliações este Mês</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Últimas Avaliações</h3>
+        <table class="table" id="tabela-recentes">
+          <thead>
+            <tr><th>Data</th><th>Paciente</th><th>Classificação Geral</th><th>Ações</th></tr>
+          </thead>
+          <tbody id="tbody-recentes">
+            <tr><td colspan="4" class="empty-row">Nenhuma avaliação registrada.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ─── Seção: Hub de Testes ─── -->
+    <section id="sec-testes" class="sec hidden">
+      <div class="testes-intro">
+        <h2>Correção Automática de Avaliações</h2>
+        <p>Selecione o instrumento. Os dados foram coletados em clínica; aqui realize a correção.</p>
+      </div>
+      <div class="testes-grid">
+
+        <!-- Card NEUPSILIN-INF -->
+        <div class="teste-card" onclick="navegarPara('neupsilin-inf', null)">
+          <div class="tc-accent" style="background:var(--success)"></div>
+          <div class="tc-icon">🧠</div>
+          <div class="tc-tag">Infantil · 6 a 12 anos e 11 meses</div>
+          <h3 class="tc-nome">NEUPSILIN-INFANTIL</h3>
+          <p class="tc-desc">Versão infantil do NEUPSILIN — corrija os dados obtidos em clínica com normas por faixa etária.</p>
+          <div class="tc-areas">
+            <span>Orientação</span><span>Atenção</span><span>Percepção</span>
+            <span>Memória</span><span>Linguagem</span><span>+3</span>
+          </div>
+          <button class="btn tc-btn" style="background:var(--success);color:#fff">Corrigir →</button>
+        </div>
+
+        <!-- Card NEUPSILIN-ADULTO -->
+        <div class="teste-card" onclick="navegarPara('nova-avaliacao', null)">
+          <div class="tc-accent neupsilin-accent"></div>
+          <div class="tc-icon">🧠</div>
+          <div class="tc-tag">Adulto · 12 a 90 anos</div>
+          <h3 class="tc-nome">NEUPSILIN-ADULTO</h3>
+          <p class="tc-desc">Versão adulto do NEUPSILIN — corrija os dados obtidos em clínica com normas por idade e escolaridade.</p>
+          <div class="tc-areas">
+            <span>Orientação</span><span>Atenção</span><span>Percepção</span>
+            <span>Memória</span><span>Linguagem</span><span>+3</span>
+          </div>
+          <button class="btn btn-primary tc-btn">Corrigir →</button>
+        </div>
+
+        <!-- Card WISC-IV -->
+        <div class="teste-card" onclick="navegarPara('wisc', null)">
+          <div class="tc-accent wisc-accent"></div>
+          <div class="tc-icon">🧩</div>
+          <div class="tc-tag">Crianças e Adolescentes · 6–16 anos</div>
+          <h3 class="tc-nome">WISC-IV</h3>
+          <p class="tc-desc">Escala de Inteligência Wechsler para Crianças — corrija os dados obtidos em clínica com normas padronizadas.</p>
+          <div class="tc-areas">
+            <span>Compr. Verbal</span><span>Rac. Perceptual</span>
+            <span>Mem. Trabalho</span><span>Vel. Processamento</span>
+          </div>
+          <button class="btn btn-accent tc-btn">Corrigir →</button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ─── Seção: Correção NEUPSILIN Adulto ─── -->
+    <section id="sec-nova-avaliacao" class="sec hidden">
+
+      <!-- Botão voltar -->
+      <div style="margin-bottom:16px">
+        <button class="btn btn-secondary" onclick="navegarPara('testes', null)">← Voltar aos Instrumentos</button>
+      </div>
+
+      <div class="card">
+        <h3>Dados do Paciente — NEUPSILIN Adulto <span style="font-size:12px;font-weight:400;color:var(--text-muted);margin-left:8px">12–90 anos</span></h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nome Completo *</label>
+            <input type="text" id="pac-nome" placeholder="Nome do paciente">
+          </div>
+          <div class="form-group">
+            <label>Data de Nascimento *</label>
+            <input type="date" id="pac-nasc">
+          </div>
+          <div class="form-group">
+            <label>Escolaridade *</label>
+            <select id="pac-esc">
+              <option value="">Selecione…</option>
+              <option value="baixa">Baixa (0–4 anos)</option>
+              <option value="media">Média (5–11 anos)</option>
+              <option value="alta">Alta (12+ anos)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Sexo</label>
+            <select id="pac-sexo">
+              <option value="M">Masculino</option>
+              <option value="F">Feminino</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Abas das áreas -->
+      <div class="card">
+        <div class="tab-bar" id="tab-bar">
+          <button class="tab active" data-tab="orientacao">Orientação</button>
+          <button class="tab" data-tab="atencao">Atenção</button>
+          <button class="tab" data-tab="percepcao">Percepção</button>
+          <button class="tab" data-tab="memoria">Memória</button>
+          <button class="tab" data-tab="habilidades">Hab. Aritméticas</button>
+          <button class="tab" data-tab="linguagem">Linguagem</button>
+          <button class="tab" data-tab="funcoes">Funções Exec.</button>
+          <button class="tab" data-tab="praxias">Praxias</button>
+        </div>
+
+        <!-- ORIENTAÇÃO -->
+        <div class="tab-content active" id="tab-orientacao">
+          <h4>Orientação (Têmporo-Espacial)</h4>
+          <p class="tab-desc">Pergunte as questões e marque quantas o paciente respondeu corretamente.</p>
+          <div class="subteste-grid">
+            <div class="subteste-item">
+              <label>Dia da semana <span class="max">/1</span></label>
+              <input type="number" min="0" max="1" class="score-input" data-area="orientacao" data-sub="dia_semana" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Dia do mês <span class="max">/1</span></label>
+              <input type="number" min="0" max="1" class="score-input" data-area="orientacao" data-sub="dia_mes" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Mês <span class="max">/1</span></label>
+              <input type="number" min="0" max="1" class="score-input" data-area="orientacao" data-sub="mes" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Ano <span class="max">/1</span></label>
+              <input type="number" min="0" max="1" class="score-input" data-area="orientacao" data-sub="ano" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Local onde está <span class="max">/1</span></label>
+              <input type="number" min="0" max="1" class="score-input" data-area="orientacao" data-sub="local" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Cidade <span class="max">/1</span></label>
+              <input type="number" min="0" max="1" class="score-input" data-area="orientacao" data-sub="cidade" placeholder="0">
+            </div>
+          </div>
+          <div class="subtotal-bar">Subtotal Orientação: <strong id="sub-orientacao">0</strong> / 6</div>
+        </div>
+
+        <!-- ATENÇÃO -->
+        <div class="tab-content hidden" id="tab-atencao">
+          <h4>Atenção</h4>
+          <p class="tab-desc">Subtestes de atenção seletiva, sustentada e alternada.</p>
+          <div class="subteste-grid">
+            <div class="subteste-item">
+              <label>Dígitos — Ordem Direta <span class="max">/12</span></label>
+              <input type="number" min="0" max="12" class="score-input" data-area="atencao" data-sub="digitos_direto" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Dígitos — Ordem Inversa <span class="max">/10</span></label>
+              <input type="number" min="0" max="10" class="score-input" data-area="atencao" data-sub="digitos_inverso" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Cancelamento de Letras <span class="max">/10</span></label>
+              <input type="number" min="0" max="10" class="score-input" data-area="atencao" data-sub="cancelamento" placeholder="0">
+            </div>
+          </div>
+          <div class="subtotal-bar">Subtotal Atenção: <strong id="sub-atencao">0</strong> / 32</div>
+        </div>
+
+        <!-- PERCEPÇÃO -->
+        <div class="tab-content hidden" id="tab-percepcao">
+          <h4>Percepção Visual</h4>
+          <p class="tab-desc">Nomeação de figuras e discriminação visual.</p>
+          <div class="subteste-grid">
+            <div class="subteste-item">
+              <label>Nomeação de Figuras <span class="max">/10</span></label>
+              <input type="number" min="0" max="10" class="score-input" data-area="percepcao" data-sub="nomeacao" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Discriminação de Figuras <span class="max">/10</span></label>
+              <input type="number" min="0" max="10" class="score-input" data-area="percepcao" data-sub="discriminacao" placeholder="0">
+            </div>
+          </div>
+          <div class="subtotal-bar">Subtotal Percepção: <strong id="sub-percepcao">0</strong> / 20</div>
+        </div>
+
+        <!-- MEMÓRIA -->
+        <div class="tab-content hidden" id="tab-memoria">
+          <h4>Memória</h4>
+          <p class="tab-desc">Memória de trabalho, episódica verbal e semântica.</p>
+          <div class="subteste-grid">
+            <div class="subteste-item">
+              <label>Memória de Trabalho Verbal <span class="max">/6</span></label>
+              <input type="number" min="0" max="6" class="score-input" data-area="memoria" data-sub="trabalho_verbal" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Evocação Imediata (5 palavras) <span class="max">/5</span></label>
+              <input type="number" min="0" max="5" class="score-input" data-area="memoria" data-sub="evocacao_imediata" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Evocação Tardia (5 palavras) <span class="max">/5</span></label>
+              <input type="number" min="0" max="5" class="score-input" data-area="memoria" data-sub="evocacao_tardia" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Reconhecimento <span class="max">/10</span></label>
+              <input type="number" min="0" max="10" class="score-input" data-area="memoria" data-sub="reconhecimento" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Memória Semântica <span class="max">/10</span></label>
+              <input type="number" min="0" max="10" class="score-input" data-area="memoria" data-sub="semantica" placeholder="0">
+            </div>
+          </div>
+          <div class="subtotal-bar">Subtotal Memória: <strong id="sub-memoria">0</strong> / 36</div>
+        </div>
+
+        <!-- HABILIDADES ARITMÉTICAS -->
+        <div class="tab-content hidden" id="tab-habilidades">
+          <h4>Habilidades Aritméticas</h4>
+          <p class="tab-desc">Cálculo mental e resolução de problemas escritos.</p>
+          <div class="subteste-grid">
+            <div class="subteste-item">
+              <label>Cálculo Mental <span class="max">/6</span></label>
+              <input type="number" min="0" max="6" class="score-input" data-area="habilidades" data-sub="calculo_mental" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Problemas Aritméticos <span class="max">/4</span></label>
+              <input type="number" min="0" max="4" class="score-input" data-area="habilidades" data-sub="problemas" placeholder="0">
+            </div>
+          </div>
+          <div class="subtotal-bar">Subtotal Habilidades: <strong id="sub-habilidades">0</strong> / 10</div>
+        </div>
+
+        <!-- LINGUAGEM -->
+        <div class="tab-content hidden" id="tab-linguagem">
+          <h4>Linguagem</h4>
+          <p class="tab-desc">Fluência verbal, compreensão oral, repetição e escrita.</p>
+          <div class="subteste-grid">
+            <div class="subteste-item">
+              <label>Fluência Verbal (animais/min) <span class="max">/13</span></label>
+              <input type="number" min="0" max="13" class="score-input" data-area="linguagem" data-sub="fluencia" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Compreensão Oral <span class="max">/5</span></label>
+              <input type="number" min="0" max="5" class="score-input" data-area="linguagem" data-sub="compreensao_oral" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Repetição de Palavras <span class="max">/5</span></label>
+              <input type="number" min="0" max="5" class="score-input" data-area="linguagem" data-sub="repeticao" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Leitura <span class="max">/5</span></label>
+              <input type="number" min="0" max="5" class="score-input" data-area="linguagem" data-sub="leitura" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Escrita (ditado) <span class="max">/5</span></label>
+              <input type="number" min="0" max="5" class="score-input" data-area="linguagem" data-sub="escrita" placeholder="0">
+            </div>
+          </div>
+          <div class="subtotal-bar">Subtotal Linguagem: <strong id="sub-linguagem">0</strong> / 33</div>
+        </div>
+
+        <!-- FUNÇÕES EXECUTIVAS -->
+        <div class="tab-content hidden" id="tab-funcoes">
+          <h4>Funções Executivas</h4>
+          <p class="tab-desc">Fluência fonêmica, solução de problemas e abstração verbal.</p>
+          <div class="subteste-grid">
+            <div class="subteste-item">
+              <label>Fluência Fonêmica (letra F) <span class="max">/10</span></label>
+              <input type="number" min="0" max="10" class="score-input" data-area="funcoes" data-sub="fluencia_fonemica" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Controle Inibitório <span class="max">/6</span></label>
+              <input type="number" min="0" max="6" class="score-input" data-area="funcoes" data-sub="controle_inibitorico" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Resolução de Problemas <span class="max">/4</span></label>
+              <input type="number" min="0" max="4" class="score-input" data-area="funcoes" data-sub="resolucao_problemas" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Abstração Verbal <span class="max">/6</span></label>
+              <input type="number" min="0" max="6" class="score-input" data-area="funcoes" data-sub="abstracao" placeholder="0">
+            </div>
+          </div>
+          <div class="subtotal-bar">Subtotal Funções Exec.: <strong id="sub-funcoes">0</strong> / 26</div>
+        </div>
+
+        <!-- PRAXIAS -->
+        <div class="tab-content hidden" id="tab-praxias">
+          <h4>Praxias</h4>
+          <p class="tab-desc">Praxia construtiva (cópia de figuras) e ideomotora.</p>
+          <div class="subteste-grid">
+            <div class="subteste-item">
+              <label>Praxia Construtiva <span class="max">/10</span></label>
+              <input type="number" min="0" max="10" class="score-input" data-area="praxias" data-sub="construtiva" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Praxia Ideomotora <span class="max">/10</span></label>
+              <input type="number" min="0" max="10" class="score-input" data-area="praxias" data-sub="ideomotora" placeholder="0">
+            </div>
+          </div>
+          <div class="subtotal-bar">Subtotal Praxias: <strong id="sub-praxias">0</strong> / 20</div>
+        </div>
+
+      </div><!-- /card abas -->
+
+      <!-- Observações -->
+      <div class="card">
+        <h3>Observações Clínicas</h3>
+        <textarea id="obs-clinicas" rows="4" placeholder="Comportamento durante a avaliação, intercorrências, observações relevantes…"></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-secondary" onclick="limparFormulario()">Limpar</button>
+        <button class="btn btn-primary" onclick="calcularEsalvar()">&#128196; Calcular &amp; Gerar Laudo</button>
+      </div>
+
+      <!-- Resultado inline -->
+      <div id="resultado-inline" class="card hidden resultado-card">
+        <h3>Resultado da Avaliação</h3>
+        <div id="resultado-conteudo"></div>
+        <div class="form-actions">
+          <button class="btn btn-accent" onclick="exportarPDF()">📄 Exportar Laudo PDF</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── Seção: Correção NEUPSILIN Infantil ─── -->
+    <section id="sec-neupsilin-inf" class="sec hidden">
+
+      <!-- Botão voltar -->
+      <div style="margin-bottom:16px">
+        <button class="btn btn-secondary" onclick="navegarPara('testes', null)">← Voltar aos Instrumentos</button>
+      </div>
+
+      <!-- Dados da criança -->
+      <div class="card">
+        <h3>Dados da Criança — NEUPSILIN-INF <span style="font-size:12px;font-weight:400;color:var(--text-muted);margin-left:8px">6 a 12 anos e 11 meses</span></h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nome Completo *</label>
+            <input type="text" id="ninf-nome" placeholder="Nome da criança">
+          </div>
+          <div class="form-group">
+            <label>Data de Nascimento *</label>
+            <input type="date" id="ninf-nasc">
+          </div>
+          <div class="form-group">
+            <label>Série / Ano Escolar</label>
+            <select id="ninf-serie">
+              <option value="">Selecione…</option>
+              <option value="EF1">1º ano — Ensino Fundamental</option>
+              <option value="EF2">2º ano — Ensino Fundamental</option>
+              <option value="EF3">3º ano — Ensino Fundamental</option>
+              <option value="EF4">4º ano — Ensino Fundamental</option>
+              <option value="EF5">5º ano — Ensino Fundamental</option>
+              <option value="EF6">6º ano — Ensino Fundamental</option>
+              <option value="EF7">7º ano — Ensino Fundamental</option>
+              <option value="NEE">Não frequenta escola</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Sexo</label>
+            <select id="ninf-sexo">
+              <option value="M">Masculino</option>
+              <option value="F">Feminino</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Abas dos domínios INF -->
+      <div class="card">
+        <div class="tab-bar" id="ninf-tab-bar">
+          <button class="ninf-tab active" data-ninf-tab="orientacao">Orientação</button>
+          <button class="ninf-tab" data-ninf-tab="atencao">Atenção</button>
+          <button class="ninf-tab" data-ninf-tab="percepcao">Percepção</button>
+          <button class="ninf-tab" data-ninf-tab="memoria">Memória</button>
+          <button class="ninf-tab" data-ninf-tab="habilidades">Hab. Aritméticas</button>
+          <button class="ninf-tab" data-ninf-tab="linguagem">Linguagem</button>
+          <button class="ninf-tab" data-ninf-tab="funcoes">Funções Exec.</button>
+          <button class="ninf-tab" data-ninf-tab="praxias">Praxias</button>
+        </div>
+
+        <!-- ORIENTAÇÃO -->
+        <div class="ninf-tab-content active" id="ninf-tab-orientacao">
+          <h4>Orientação Têmporo-Espacial</h4>
+          <p class="tab-desc">Registre quantas questões a criança respondeu corretamente.</p>
+          <div class="subteste-grid">
+            <div class="subteste-item">
+              <label>Dia da semana <span class="max">/1</span></label>
+              <input type="number" min="0" max="1" class="ninf-score" data-area="orientacao" data-sub="inf_dia_semana" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Dia do mês <span class="max">/1</span></label>
+              <input type="number" min="0" max="1" class="ninf-score" data-area="orientacao" data-sub="inf_dia_mes" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Mês <span class="max">/1</span></label>
+              <input type="number" min="0" max="1" class="ninf-score" data-area="orientacao" data-sub="inf_mes" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Ano <span class="max">/1</span></label>
+              <input type="number" min="0" max="1" class="ninf-score" data-area="orientacao" data-sub="inf_ano" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Local onde está <span class="max">/1</span></label>
+              <input type="number" min="0" max="1" class="ninf-score" data-area="orientacao" data-sub="inf_local" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Cidade <span class="max">/1</span></label>
+              <input type="number" min="0" max="1" class="ninf-score" data-area="orientacao" data-sub="inf_cidade" placeholder="0">
+            </div>
+          </div>
+          <div class="subtotal-bar">Subtotal Orientação: <strong id="ninf-sub-orientacao">0</strong> / 6</div>
+        </div>
+
+        <!-- ATENÇÃO -->
+        <div class="ninf-tab-content hidden" id="ninf-tab-atencao">
+          <h4>Atenção</h4>
+          <p class="tab-desc">Subtestes de atenção com sequências adaptadas para crianças.</p>
+          <div class="subteste-grid">
+            <div class="subteste-item">
+              <label>Dígitos — Ordem Direta <span class="max">/8</span></label>
+              <input type="number" min="0" max="8" class="ninf-score" data-area="atencao" data-sub="inf_digitos_direto" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Dígitos — Ordem Inversa <span class="max">/6</span></label>
+              <input type="number" min="0" max="6" class="ninf-score" data-area="atencao" data-sub="inf_digitos_inverso" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Cancelamento de Figuras <span class="max">/8</span></label>
+              <input type="number" min="0" max="8" class="ninf-score" data-area="atencao" data-sub="inf_cancelamento" placeholder="0">
+            </div>
+          </div>
+          <div class="subtotal-bar">Subtotal Atenção: <strong id="ninf-sub-atencao">0</strong> / 22</div>
+        </div>
+
+        <!-- PERCEPÇÃO -->
+        <div class="ninf-tab-content hidden" id="ninf-tab-percepcao">
+          <h4>Percepção Visual</h4>
+          <p class="tab-desc">Nomeação de figuras e discriminação visual.</p>
+          <div class="subteste-grid">
+            <div class="subteste-item">
+              <label>Nomeação de Figuras <span class="max">/10</span></label>
+              <input type="number" min="0" max="10" class="ninf-score" data-area="percepcao" data-sub="inf_nomeacao" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Discriminação Visual <span class="max">/10</span></label>
+              <input type="number" min="0" max="10" class="ninf-score" data-area="percepcao" data-sub="inf_discriminacao" placeholder="0">
+            </div>
+          </div>
+          <div class="subtotal-bar">Subtotal Percepção: <strong id="ninf-sub-percepcao">0</strong> / 20</div>
+        </div>
+
+        <!-- MEMÓRIA -->
+        <div class="ninf-tab-content hidden" id="ninf-tab-memoria">
+          <h4>Memória</h4>
+          <p class="tab-desc">Memória de trabalho, episódica verbal e semântica adaptadas para crianças.</p>
+          <div class="subteste-grid">
+            <div class="subteste-item">
+              <label>Memória de Trabalho Verbal <span class="max">/6</span></label>
+              <input type="number" min="0" max="6" class="ninf-score" data-area="memoria" data-sub="inf_trabalho_verbal" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Evocação Imediata <span class="max">/5</span></label>
+              <input type="number" min="0" max="5" class="ninf-score" data-area="memoria" data-sub="inf_evocacao_imediata" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Evocação Tardia <span class="max">/5</span></label>
+              <input type="number" min="0" max="5" class="ninf-score" data-area="memoria" data-sub="inf_evocacao_tardia" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Reconhecimento <span class="max">/10</span></label>
+              <input type="number" min="0" max="10" class="ninf-score" data-area="memoria" data-sub="inf_reconhecimento" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Memória Semântica <span class="max">/4</span></label>
+              <input type="number" min="0" max="4" class="ninf-score" data-area="memoria" data-sub="inf_semantica" placeholder="0">
+            </div>
+          </div>
+          <div class="subtotal-bar">Subtotal Memória: <strong id="ninf-sub-memoria">0</strong> / 30</div>
+        </div>
+
+        <!-- HABILIDADES ARITMÉTICAS -->
+        <div class="ninf-tab-content hidden" id="ninf-tab-habilidades">
+          <h4>Habilidades Aritméticas</h4>
+          <p class="tab-desc">Cálculo simples e resolução de problemas adequados à faixa etária.</p>
+          <div class="subteste-grid">
+            <div class="subteste-item">
+              <label>Cálculo Simples <span class="max">/4</span></label>
+              <input type="number" min="0" max="4" class="ninf-score" data-area="habilidades" data-sub="inf_calculo" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Problemas Aritméticos <span class="max">/4</span></label>
+              <input type="number" min="0" max="4" class="ninf-score" data-area="habilidades" data-sub="inf_problemas" placeholder="0">
+            </div>
+          </div>
+          <div class="subtotal-bar">Subtotal Habilidades: <strong id="ninf-sub-habilidades">0</strong> / 8</div>
+        </div>
+
+        <!-- LINGUAGEM -->
+        <div class="ninf-tab-content hidden" id="ninf-tab-linguagem">
+          <h4>Linguagem</h4>
+          <p class="tab-desc">Fluência verbal, compreensão, repetição, leitura e escrita adaptadas.</p>
+          <div class="subteste-grid">
+            <div class="subteste-item">
+              <label>Fluência Verbal (categorias) <span class="max">/8</span></label>
+              <input type="number" min="0" max="8" class="ninf-score" data-area="linguagem" data-sub="inf_fluencia" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Compreensão Oral <span class="max">/5</span></label>
+              <input type="number" min="0" max="5" class="ninf-score" data-area="linguagem" data-sub="inf_compreensao_oral" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Repetição de Palavras <span class="max">/5</span></label>
+              <input type="number" min="0" max="5" class="ninf-score" data-area="linguagem" data-sub="inf_repeticao" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Leitura <span class="max">/4</span></label>
+              <input type="number" min="0" max="4" class="ninf-score" data-area="linguagem" data-sub="inf_leitura" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Escrita / Ditado <span class="max">/4</span></label>
+              <input type="number" min="0" max="4" class="ninf-score" data-area="linguagem" data-sub="inf_escrita" placeholder="0">
+            </div>
+          </div>
+          <div class="subtotal-bar">Subtotal Linguagem: <strong id="ninf-sub-linguagem">0</strong> / 26</div>
+        </div>
+
+        <!-- FUNÇÕES EXECUTIVAS -->
+        <div class="ninf-tab-content hidden" id="ninf-tab-funcoes">
+          <h4>Funções Executivas</h4>
+          <p class="tab-desc">Fluência fonêmica, controle inibitório, resolução de problemas e abstração.</p>
+          <div class="subteste-grid">
+            <div class="subteste-item">
+              <label>Fluência Fonêmica (letra P) <span class="max">/6</span></label>
+              <input type="number" min="0" max="6" class="ninf-score" data-area="funcoes" data-sub="inf_fluencia_fonemica" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Controle Inibitório <span class="max">/6</span></label>
+              <input type="number" min="0" max="6" class="ninf-score" data-area="funcoes" data-sub="inf_controle_inibitorico" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Resolução de Problemas <span class="max">/3</span></label>
+              <input type="number" min="0" max="3" class="ninf-score" data-area="funcoes" data-sub="inf_resolucao_problemas" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Abstração <span class="max">/3</span></label>
+              <input type="number" min="0" max="3" class="ninf-score" data-area="funcoes" data-sub="inf_abstracao" placeholder="0">
+            </div>
+          </div>
+          <div class="subtotal-bar">Subtotal Funções Exec.: <strong id="ninf-sub-funcoes">0</strong> / 18</div>
+        </div>
+
+        <!-- PRAXIAS -->
+        <div class="ninf-tab-content hidden" id="ninf-tab-praxias">
+          <h4>Praxias</h4>
+          <p class="tab-desc">Praxia construtiva (cópia de figuras) e ideomotora adaptadas para crianças.</p>
+          <div class="subteste-grid">
+            <div class="subteste-item">
+              <label>Praxia Construtiva <span class="max">/8</span></label>
+              <input type="number" min="0" max="8" class="ninf-score" data-area="praxias" data-sub="inf_construtiva" placeholder="0">
+            </div>
+            <div class="subteste-item">
+              <label>Praxia Ideomotora <span class="max">/8</span></label>
+              <input type="number" min="0" max="8" class="ninf-score" data-area="praxias" data-sub="inf_ideomotora" placeholder="0">
+            </div>
+          </div>
+          <div class="subtotal-bar">Subtotal Praxias: <strong id="ninf-sub-praxias">0</strong> / 16</div>
+        </div>
+
+      </div><!-- /card abas INF -->
+
+      <!-- Observações -->
+      <div class="card">
+        <h3>Observações Clínicas</h3>
+        <textarea id="ninf-obs" rows="4" placeholder="Comportamento durante a avaliação, intercorrências, observações relevantes sobre a criança…"></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-secondary" onclick="limparFormularioInf()">Limpar</button>
+        <button class="btn btn-sm" style="background:var(--success);color:#fff;border-radius:8px;padding:10px 22px;font-size:14px;font-weight:600;cursor:pointer;border:none" onclick="calcularESalvarInf()">&#128196; Calcular &amp; Gerar Laudo INF</button>
+      </div>
+
+      <!-- Resultado inline INF -->
+      <div id="ninf-resultado-inline" class="card hidden resultado-card" style="border-left-color:var(--success)">
+        <h3>Resultado — NEUPSILIN-INF</h3>
+        <div id="ninf-resultado-conteudo"></div>
+        <div class="form-actions">
+          <button class="btn" style="background:var(--success);color:#fff;border-radius:8px;padding:10px 22px;font-size:14px;font-weight:600;cursor:pointer;border:none" onclick="exportarPDFInf()">&#128196; Exportar Laudo PDF</button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ─── Seção: WISC-IV ─── -->
+    <section id="sec-wisc" class="sec hidden">
+
+      <!-- Botão voltar -->
+      <div style="margin-bottom:16px">
+        <button class="btn btn-secondary" onclick="navegarPara('testes', null)">← Voltar aos Instrumentos</button>
+      </div>
+
+      <!-- Dados do paciente -->
+      <div class="card">
+        <h3>Dados do Paciente — WISC-IV</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nome Completo *</label>
+            <input type="text" id="wisc-nome" placeholder="Nome do paciente">
+          </div>
+          <div class="form-group">
+            <label>Data de Nascimento *</label>
+            <input type="date" id="wisc-nasc">
+          </div>
+          <div class="form-group">
+            <label>Sexo</label>
+            <select id="wisc-sexo">
+              <option value="M">Masculino</option>
+              <option value="F">Feminino</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Abas dos índices WISC -->
+      <div class="card">
+        <div class="tab-bar" id="wisc-tab-bar">
+          <button class="wisc-tab active" data-wisc-tab="cv">Compr. Verbal</button>
+          <button class="wisc-tab" data-wisc-tab="rp">Rac. Perceptual</button>
+          <button class="wisc-tab" data-wisc-tab="mt">Mem. Trabalho</button>
+          <button class="wisc-tab" data-wisc-tab="vp">Vel. Processamento</button>
+        </div>
+
+        <!-- CV — Compreensão Verbal -->
+        <div class="wisc-tab-content active" id="wisc-tab-cv">
+          <h4>Compreensão Verbal (CV)</h4>
+          <p class="tab-desc">Subtestes que avaliam raciocínio verbal, formação de conceitos e conhecimento adquirido do ambiente.</p>
+          <div class="subteste-grid">
+            <div class="subteste-item">
+              <label>Semelhanças <span class="max">/19</span></label>
+              <input type="number" min="1" max="19" class="wisc-score score-input" data-indice="cv" data-sub="semelhancas" placeholder="1–19">
+            </div>
+            <div class="subteste-item">
+              <label>Vocabulário <span class="max">/19</span></label>
+              <input type="number" min="1" max="19" class="wisc-score score-input" data-indice="cv" data-sub="vocabulario" placeholder="1–19">
+            </div>
+            <div class="subteste-item">
+              <label>Compreensão <span class="max">/19</span></label>
+              <input type="number" min="1" max="19" class="wisc-score score-input" data-indice="cv" data-sub="compreensao" placeholder="1–19">
+            </div>
+          </div>
+          <div class="subtotal-bar">Soma CV: <strong id="wisc-soma-cv">0</strong> &nbsp;|&nbsp; EI estimado: <strong id="wisc-ei-cv">—</strong></div>
+        </div>
+
+        <!-- RP — Raciocínio Perceptual -->
+        <div class="wisc-tab-content hidden" id="wisc-tab-rp">
+          <h4>Raciocínio Perceptual (RP)</h4>
+          <p class="tab-desc">Subtestes de raciocínio fluido, processamento espacial e integração visuo-motora.</p>
+          <div class="subteste-grid">
+            <div class="subteste-item">
+              <label>Cubos <span class="max">/19</span></label>
+              <input type="number" min="1" max="19" class="wisc-score score-input" data-indice="rp" data-sub="cubos" placeholder="1–19">
+            </div>
+            <div class="subteste-item">
+              <label>Conceitos Figurados <span class="max">/19</span></label>
+              <input type="number" min="1" max="19" class="wisc-score score-input" data-indice="rp" data-sub="conceitos_fig" placeholder="1–19">
+            </div>
+            <div class="subteste-item">
+              <label>Raciocínio com Matrizes <span class="max">/19</span></label>
+              <input type="number" min="1" max="19" class="wisc-score score-input" data-indice="rp" data-sub="matrizes" placeholder="1–19">
+            </div>
+          </div>
+          <div class="subtotal-bar">Soma RP: <strong id="wisc-soma-rp">0</strong> &nbsp;|&nbsp; EI estimado: <strong id="wisc-ei-rp">—</strong></div>
+        </div>
+
+        <!-- MT — Memória de Trabalho -->
+        <div class="wisc-tab-content hidden" id="wisc-tab-mt">
+          <h4>Memória de Trabalho (MT)</h4>
+          <p class="tab-desc">Subtestes de atenção, concentração e memória operacional.</p>
+          <div class="subteste-grid">
+            <div class="subteste-item">
+              <label>Dígitos <span class="max">/19</span></label>
+              <input type="number" min="1" max="19" class="wisc-score score-input" data-indice="mt" data-sub="digitos" placeholder="1–19">
+            </div>
+            <div class="subteste-item">
+              <label>Sequência de Letras-Números <span class="max">/19</span></label>
+              <input type="number" min="1" max="19" class="wisc-score score-input" data-indice="mt" data-sub="sequencia_ln" placeholder="1–19">
+            </div>
+          </div>
+          <div class="subtotal-bar">Soma MT: <strong id="wisc-soma-mt">0</strong> &nbsp;|&nbsp; EI estimado: <strong id="wisc-ei-mt">—</strong></div>
+        </div>
+
+        <!-- VP — Velocidade de Processamento -->
+        <div class="wisc-tab-content hidden" id="wisc-tab-vp">
+          <h4>Velocidade de Processamento (VP)</h4>
+          <p class="tab-desc">Subtestes de velocidade mental, atenção visual e coordenação visual-motora.</p>
+          <div class="subteste-grid">
+            <div class="subteste-item">
+              <label>Código <span class="max">/19</span></label>
+              <input type="number" min="1" max="19" class="wisc-score score-input" data-indice="vp" data-sub="codigo" placeholder="1–19">
+            </div>
+            <div class="subteste-item">
+              <label>Procurar Símbolos <span class="max">/19</span></label>
+              <input type="number" min="1" max="19" class="wisc-score score-input" data-indice="vp" data-sub="procurar_simbolos" placeholder="1–19">
+            </div>
+          </div>
+          <div class="subtotal-bar">Soma VP: <strong id="wisc-soma-vp">0</strong> &nbsp;|&nbsp; EI estimado: <strong id="wisc-ei-vp">—</strong></div>
+        </div>
+
+      </div><!-- /card abas -->
+
+      <!-- Observações -->
+      <div class="card">
+        <h3>Observações Clínicas</h3>
+        <textarea id="wisc-obs" rows="4" placeholder="Comportamento durante a avaliação, intercorrências, observações relevantes…"></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn btn-secondary" onclick="limparWISC()">Limpar</button>
+        <button class="btn btn-accent" onclick="calcularESalvarWISC()">Calcular &amp; Salvar WISC-IV</button>
+      </div>
+
+      <!-- Resultado inline -->
+      <div id="wisc-resultado-inline" class="card hidden resultado-card">
+        <h3>Resultado WISC-IV</h3>
+        <div id="wisc-resultado-conteudo"></div>
+        <div class="form-actions">
+          <button class="btn btn-accent" onclick="exportarPDFWISC()">📄 Exportar Laudo PDF</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── Seção: Histórico ─── -->
+    <section id="sec-historico" class="sec hidden">
+      <div class="card">
+        <div class="card-header-flex">
+          <h3>Histórico de Avaliações</h3>
+          <input type="text" id="busca-historico" placeholder="Buscar por paciente…" oninput="filtrarHistorico()" class="input-busca">
+        </div>
+        <table class="table" id="tabela-historico">
+          <thead>
+            <tr><th>Data</th><th>Paciente</th><th>Idade</th><th>Escolaridade</th><th>Escore Total</th><th>Classificação</th><th>Ações</th></tr>
+          </thead>
+          <tbody id="tbody-historico">
+            <tr><td colspan="7" class="empty-row">Nenhuma avaliação registrada.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ─── Seção: Usuários (admin only) ─── -->
+    <section id="sec-usuarios" class="sec hidden">
+
+      <!-- Barra de busca + botão novo -->
+      <div class="card" style="padding:16px 20px">
+        <div class="card-header-flex" style="flex-wrap:wrap;gap:10px">
+          <h3 style="margin:0">&#128101; Gerenciar Usuários</h3>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <div style="position:relative">
+              <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none">&#128269;</span>
+              <input type="text" id="usr-busca" placeholder="Buscar por nome ou e-mail…"
+                style="padding:8px 12px 8px 34px;border:1px solid var(--border);border-radius:8px;font-size:14px;min-width:240px"
+                oninput="renderizarUsuarios()">
+            </div>
+            <button class="btn btn-primary" onclick="abrirModalUsuario()">+ Novo Usuário</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Usuários Ativos -->
+      <div class="card" style="margin-top:16px">
+        <h3 style="color:var(--success);margin-bottom:14px">
+          ✅ Usuários Ativos
+          <span id="count-ativos" class="badge" style="background:var(--success);color:#fff;margin-left:6px">0</span>
+        </h3>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Nome</th><th>E-mail</th><th>CRP</th><th>Perfil</th>
+              <th>Plano</th><th>Expira em</th><th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-usuarios-ativos">
+            <tr><td colspan="7" class="empty-row">Carregando…</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Usuários Bloqueados -->
+      <div class="card" style="margin-top:16px">
+        <h3 style="color:var(--danger);margin-bottom:14px">
+          &#128683; Usuários Bloqueados
+          <span id="count-bloqueados" class="badge" style="background:var(--danger);color:#fff;margin-left:6px">0</span>
+        </h3>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Nome</th><th>E-mail</th><th>CRP</th><th>Perfil</th>
+              <th>Bloqueado em</th><th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-usuarios-bloqueados">
+            <tr><td colspan="6" class="empty-row">Nenhum usuário bloqueado.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+
+    <!-- ─── Seção: Pacientes ─── -->
+    <section id="sec-pacientes" class="sec hidden">
+      <div class="card">
+        <h3>Pacientes Cadastrados</h3>
+        <table class="table">
+          <thead>
+            <tr><th>Nome</th><th>Data de Nascimento</th><th>Escolaridade</th><th>Avaliações</th></tr>
+          </thead>
+          <tbody id="tbody-pacientes">
+            <tr><td colspan="4" class="empty-row">Nenhum paciente cadastrado.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Modal de usuário (criar / editar) -->
+<div id="modal-usuario-overlay" class="modal-overlay hidden" onclick="fecharModalUsuario()">
+  <div class="modal-card" onclick="event.stopPropagation()" style="max-width:520px">
+    <div class="modal-header">
+      <h3 id="modal-usr-titulo">Novo Usuário</h3>
+      <button class="modal-close" onclick="fecharModalUsuario()">&#10005;</button>
+    </div>
+    <div style="padding:0 24px 8px">
+      <div id="usr-error"  class="alert alert-error   hidden"></div>
+      <div id="usr-success" class="alert alert-success hidden"></div>
+      <div class="form-group">
+        <label>Nome Completo *</label>
+        <input type="text" id="usr-nome" placeholder="Nome do profissional">
+      </div>
+      <div class="form-group">
+        <label>E-mail *</label>
+        <input type="email" id="usr-email" placeholder="email@clinica.com">
+      </div>
+      <div class="form-group" id="usr-senha-group">
+        <label id="usr-senha-label">Senha *</label>
+        <input type="password" id="usr-senha" placeholder="Mínimo 6 caracteres">
+        <small id="usr-senha-hint" class="hidden" style="color:var(--text-muted);margin-top:4px">Deixe em branco para manter a senha atual.</small>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>CRP (opcional)</label>
+          <input type="text" id="usr-crp" placeholder="CRP 07/00000">
+        </div>
+        <div class="form-group">
+          <label>Perfil</label>
+          <select id="usr-role">
+            <option value="profissional">Profissional</option>
+            <option value="admin">Administrador</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group" id="usr-plano-group">
+        <label>Tipo de Acesso</label>
+        <select id="usr-plano">
+          <option value="1mes">1 Mês</option>
+          <option value="3meses">3 Meses</option>
+          <option value="vitalicio">Vitalício</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="fecharModalUsuario()">Cancelar</button>
+      <button class="btn btn-primary" id="usr-salvar-btn" onclick="salvarUsuario()">Criar Usuário</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Ativação de Acesso -->
+<div id="modal-ativacao-overlay" class="modal-overlay hidden" onclick="fecharModalAtivacao()">
+  <div class="modal-card" onclick="event.stopPropagation()" style="max-width:420px">
+    <div class="modal-header">
+      <h3>&#9989; Ativar Acesso</h3>
+      <button class="modal-close" onclick="fecharModalAtivacao()">&#10005;</button>
+    </div>
+    <div style="padding:0 24px 8px">
+      <p id="modal-ativacao-desc" style="color:var(--text-muted);margin-bottom:18px;font-size:14px"></p>
+      <div class="form-group">
+        <label>Tipo de Acesso</label>
+        <select id="ativacao-plano">
+          <option value="1mes">1 Mês</option>
+          <option value="3meses">3 Meses</option>
+          <option value="vitalicio">Vitalício</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="fecharModalAtivacao()">Cancelar</button>
+      <button class="btn btn-primary" onclick="confirmarAtivacao()">&#9989; Ativar Usuário</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de visualização de resultado -->
+<div id="modal-overlay" class="modal-overlay hidden" onclick="fecharModal()">
+  <div class="modal-card" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Detalhes da Avaliação</h3>
+      <button class="modal-close" onclick="fecharModal()">✕</button>
+    </div>
+    <div id="modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-accent" id="modal-pdf-btn">📄 Exportar PDF</button>
+      <button class="btn btn-danger" id="modal-del-btn">🗑 Excluir</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/db.js"></script>
+<script src="js/neupsilin/normas.js"></script>
+<script src="js/neupsilin/normas-inf.js"></script>
+<script src="js/wisc/normas.js"></script>
+<script src="js/script.js"></script>
+<script src="js/neupsilin/avaliacao.js"></script>
+<script src="js/neupsilin/avaliacao-inf.js"></script>
+<script src="js/wisc/avaliacao.js"></script>
+</body>
+</html>

@@ -1,0 +1,435 @@
+/* ═══════════════════════════════════════════════════════
+   WISC-IV — avaliacao.js
+   Cálculo, renderização de resultados e exportação PDF
+═══════════════════════════════════════════════════════ */
+
+let wiscAvaliacaoAtiva = null;
+
+// ── Subtotais e EI em tempo real ──
+function atualizarSubtotalWISC(e) {
+  const indice = e.target.dataset.indice;
+  if (!indice) return;
+  let soma = 0;
+  document.querySelectorAll(`.wisc-score[data-indice="${indice}"]`).forEach(inp => {
+    soma += parseInt(inp.value) || 0;
+  });
+  const somaEl = document.getElementById("wisc-soma-" + indice);
+  const eiEl   = document.getElementById("wisc-ei-"   + indice);
+  if (somaEl) somaEl.textContent = soma;
+  if (eiEl)   eiEl.textContent   = soma > 0 ? calcularIndiceWISC(soma, indice) : "—";
+}
+
+// ── Limpar formulário WISC ──
+function limparWISC() {
+  ["wisc-nome", "wisc-obs"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = "";
+  });
+  const nascEl = document.getElementById("wisc-nasc");
+  if (nascEl) nascEl.value = "";
+  document.querySelectorAll(".wisc-score").forEach(inp => inp.value = "");
+  ["cv","rp","mt","vp"].forEach(idx => {
+    const somaEl = document.getElementById("wisc-soma-" + idx);
+    const eiEl   = document.getElementById("wisc-ei-"   + idx);
+    if (somaEl) somaEl.textContent = "0";
+    if (eiEl)   eiEl.textContent   = "—";
+  });
+  const res = document.getElementById("wisc-resultado-inline");
+  if (res) res.classList.add("hidden");
+  wiscAvaliacaoAtiva = null;
+}
+
+// ── Calcular & Salvar WISC ──
+function calcularESalvarWISC() {
+  const nome = document.getElementById("wisc-nome").value.trim();
+  const nasc = document.getElementById("wisc-nasc").value;
+  const sexo = document.getElementById("wisc-sexo").value;
+
+  if (!nome || !nasc) {
+    alert("Preencha o Nome e a Data de Nascimento do paciente.");
+    return;
+  }
+
+  const idade = calcularIdade(nasc);
+  if (idade < 6 || idade > 16) {
+    alert("O WISC-IV é normatizado para crianças e adolescentes de 6 a 16 anos.");
+    return;
+  }
+
+  // Coleta escores ponderados por índice
+  const subtestes = {};
+  const indices   = {};
+  let somaTodos   = 0;
+
+  for (const [idx, subs] of Object.entries(WISC_SUBTESTES_POR_INDICE)) {
+    let soma = 0;
+    subs.forEach(sub => {
+      const inp = document.querySelector(`.wisc-score[data-indice="${idx}"][data-sub="${sub}"]`);
+      const val = Math.min(Math.max(parseInt(inp?.value) || 0, 0), 19);
+      subtestes[sub] = val;
+      soma += val;
+    });
+    const score = calcularIndiceWISC(soma, idx);
+    indices[idx] = { soma, score, classe: classificarQI(score) };
+    somaTodos += soma;
+  }
+
+  // QI Total (FSIQ) — média ponderada dos 4 índices (simplificado)
+  const somaEI = Object.values(indices).reduce((acc, v) => acc + v.score, 0);
+  const fsiq   = Math.round(somaEI / 4);
+  indices.fsiq = { score: fsiq, classe: classificarQI(fsiq) };
+
+  const avaliacao = {
+    id: Date.now(),
+    tipoTeste: "WISC-IV",
+    data: new Date().toISOString(),
+    profissional: usuarioLogado,
+    paciente: { nome, nasc, sexo, idade },
+    subtestes,
+    indices,
+    obs: document.getElementById("wisc-obs").value.trim()
+  };
+
+  salvarAvaliacao(avaliacao);
+  wiscAvaliacaoAtiva = avaliacao;
+
+  renderizarResultadoWISCInline(avaliacao);
+  atualizarStats();
+}
+
+// ── Resultado inline WISC ──
+function renderizarResultadoWISCInline(av) {
+  const div = document.getElementById("wisc-resultado-conteudo");
+  div.innerHTML = buildResultadoWISCHTML(av, "wisc-inline");
+  const card = document.getElementById("wisc-resultado-inline");
+  card.classList.remove("hidden");
+  card.scrollIntoView({ behavior: "smooth", block: "start" });
+  requestAnimationFrame(() => renderizarGraficosWISC(av, "wisc-inline"));
+}
+
+// ── HTML do resultado WISC ──
+function buildResultadoWISCHTML(av, ctx) {
+  const ordemIndices = ["cv", "rp", "mt", "vp"];
+  let indicesHTML = "";
+
+  for (const idx of ordemIndices) {
+    const r = av.indices[idx];
+    indicesHTML += `
+      <div class="resultado-area">
+        <div class="area-nome">${WISC_INDICES[idx]}</div>
+        <div class="area-score">${r.score}<span class="area-max"> EI</span></div>
+        <div style="font-size:11px;color:var(--text-muted);margin:2px 0">Soma ponderada: ${r.soma}</div>
+        <div class="area-class"><span class="badge ${r.classe.badge}">${r.classe.label}</span></div>
+      </div>`;
+  }
+
+  const fsiq   = av.indices.fsiq;
+  const interp = gerarInterpretacaoWISC(av);
+
+  return `
+    <div style="margin-bottom:12px;font-size:13px;color:var(--text-muted)">
+      <strong>${av.paciente.nome}</strong> &nbsp;|&nbsp;
+      ${av.paciente.idade} anos &nbsp;|&nbsp;
+      Avaliação em: ${formatarData(av.data)}
+    </div>
+    <div class="resultado-total">
+      <div>
+        <div class="total-label">QI Total (FSIQ)</div>
+        <div class="total-score">${fsiq.score}</div>
+      </div>
+      <div class="total-class">${fsiq.classe.label}</div>
+    </div>
+    <div class="resultado-grid">${indicesHTML}</div>
+    <div class="graficos-container">
+      <canvas id="chart-radar-${ctx}"></canvas>
+      <canvas id="chart-barras-${ctx}"></canvas>
+    </div>
+    <div class="resultado-interp"><strong>Interpretação:</strong><br>${interp}</div>`;
+}
+
+// ── Gráficos WISC ──
+function renderizarGraficosWISC(av, ctx) {
+  const ordemIndices = ["cv", "rp", "mt", "vp"];
+  const labels = ["Compr. Verbal", "Rac. Perceptual", "Mem. Trabalho", "Vel. Processamento"];
+
+  const corPorEI = ei => {
+    if (ei >= 120) return { bg: "rgba(22,163,74,0.7)",   brd: "rgb(22,163,74)" };
+    if (ei >= 110) return { bg: "rgba(5,150,105,0.7)",   brd: "rgb(5,150,105)" };
+    if (ei >= 90)  return { bg: "rgba(124,58,237,0.7)",  brd: "rgb(124,58,237)" };
+    if (ei >= 80)  return { bg: "rgba(217,119,6,0.7)",   brd: "rgb(217,119,6)" };
+    return           { bg: "rgba(220,38,38,0.7)",    brd: "rgb(220,38,38)" };
+  };
+
+  const cores = ordemIndices.map(i => corPorEI(av.indices[i].score));
+
+  if (_charts[`radar_${ctx}`])  _charts[`radar_${ctx}`].destroy();
+  if (_charts[`barras_${ctx}`]) _charts[`barras_${ctx}`].destroy();
+
+  // Radar — escores de índice (40–160, média=100)
+  const canvasRadar = document.getElementById(`chart-radar-${ctx}`);
+  if (canvasRadar) {
+    _charts[`radar_${ctx}`] = new Chart(canvasRadar, {
+      type: "radar",
+      data: {
+        labels,
+        datasets: [
+          {
+            label: "Paciente (EI)",
+            data: ordemIndices.map(i => av.indices[i].score),
+            backgroundColor: "rgba(124,58,237,0.12)",
+            borderColor: "rgba(124,58,237,0.9)",
+            borderWidth: 2.5,
+            pointBackgroundColor: cores.map(c => c.brd),
+            pointRadius: 5,
+            pointHoverRadius: 7
+          },
+          {
+            label: "Média normativa (100)",
+            data: ordemIndices.map(() => 100),
+            borderColor: "rgba(148,163,184,0.6)",
+            borderDash: [6, 4],
+            borderWidth: 1.5,
+            pointRadius: 0,
+            fill: false
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        scales: {
+          r: {
+            min: 50, max: 150,
+            ticks: { stepSize: 25, font: { size: 10 }, backdropColor: "transparent" },
+            pointLabels: { font: { size: 11, weight: "600" } },
+            grid: { color: "rgba(0,0,0,0.07)" },
+            angleLines: { color: "rgba(0,0,0,0.07)" }
+          }
+        },
+        plugins: {
+          legend: { position: "bottom", labels: { font: { size: 12 }, padding: 16 } },
+          tooltip: { callbacks: { label: c => ` EI = ${c.raw}` } }
+        }
+      }
+    });
+  }
+
+  // Barras — escores de índice
+  const canvasBar = document.getElementById(`chart-barras-${ctx}`);
+  if (canvasBar) {
+    _charts[`barras_${ctx}`] = new Chart(canvasBar, {
+      type: "bar",
+      data: {
+        labels,
+        datasets: [
+          {
+            label: "Paciente (EI)",
+            data: ordemIndices.map(i => av.indices[i].score),
+            backgroundColor: cores.map(c => c.bg),
+            borderColor:     cores.map(c => c.brd),
+            borderWidth: 1.5,
+            borderRadius: 6
+          },
+          {
+            label: "Média normativa (100)",
+            data: ordemIndices.map(() => 100),
+            backgroundColor: "rgba(148,163,184,0.2)",
+            borderColor: "rgba(148,163,184,0.7)",
+            borderWidth: 1.5,
+            borderRadius: 6
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        scales: {
+          y: {
+            min: 50, max: 150,
+            ticks: { font: { size: 11 } },
+            grid: { color: "rgba(0,0,0,0.05)" }
+          },
+          x: { grid: { display: false }, ticks: { font: { size: 10 } } }
+        },
+        plugins: {
+          legend: { position: "bottom", labels: { font: { size: 12 }, padding: 16 } },
+          tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${c.raw}` } }
+        }
+      }
+    });
+  }
+}
+
+// ── Interpretação WISC ──
+function gerarInterpretacaoWISC(av) {
+  const ordemIndices = ["cv", "rp", "mt", "vp"];
+  const fsiq = av.indices.fsiq.score;
+  const classe = av.indices.fsiq.classe;
+
+  let txt = `O desempenho intelectual de <strong>${av.paciente.nome}</strong> foi avaliado pelo WISC-IV. `;
+  txt += `O QI Total (FSIQ) obtido foi de <strong>${fsiq}</strong>, classificado como <strong>${classe.label}</strong>, `;
+  txt += `indicando ${classe.interp}. `;
+
+  const acima  = ordemIndices.filter(i => av.indices[i].score >= 110).map(i => WISC_INDICES[i]);
+  const abaixo = ordemIndices.filter(i => av.indices[i].score < 90).map(i => WISC_INDICES[i]);
+
+  if (acima.length)  txt += `Índices com desempenho acima da média: <em>${acima.join(", ")}</em>. `;
+  if (abaixo.length) txt += `Índices abaixo da média: <em>${abaixo.join(", ")}</em>, sugerindo necessidade de investigação adicional nessas habilidades. `;
+  if (!abaixo.length && !acima.length) txt += `Todos os índices cognitivos encontram-se dentro da faixa média esperada para a faixa etária. `;
+
+  txt += `Os escores de índice foram calculados com base nas normas do WISC-IV para crianças de ${av.paciente.idade} anos.`;
+  return txt;
+}
+
+// ── Exportar PDF WISC ──
+function exportarPDFWISC(avParam) {
+  const av = avParam || wiscAvaliacaoAtiva;
+  if (!av) { alert("Nenhuma avaliação WISC para exportar."); return; }
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: "mm", format: "a4" });
+  const L = 20, R = 190, W = R - L;
+  let Y = 20;
+  const cor   = [124, 58, 237]; // roxo (accent)
+  const cinza = [100, 116, 139];
+  const preto = [30, 41, 59];
+
+  // Cabeçalho
+  doc.setFillColor(...cor);
+  doc.rect(0, 0, 210, 32, "F");
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(20);
+  doc.setFont("helvetica", "bold");
+  doc.text("WISC-IV", L, 14);
+  doc.setFontSize(9);
+  doc.setFont("helvetica", "normal");
+  doc.text("Escala de Inteligência Wechsler para Crianças — 4.ª Edição", L, 20);
+  doc.text("LAUDO DE AVALIAÇÃO", L, 26);
+  doc.setFontSize(8);
+  doc.text(`Profissional: ${av.profissional.nome}`, R, 16, { align: "right" });
+  doc.text(`${av.profissional.crp || ""}`, R, 21, { align: "right" });
+  doc.text(`Data: ${formatarData(av.data)}`, R, 26, { align: "right" });
+
+  Y = 42;
+
+  // Dados do paciente
+  doc.setFillColor(248, 250, 252);
+  doc.rect(L, Y - 5, W, 20, "F");
+  doc.setDrawColor(226, 232, 240);
+  doc.rect(L, Y - 5, W, 20);
+  doc.setTextColor(...preto);
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "bold");
+  doc.text("DADOS DO PACIENTE", L + 4, Y + 1);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(9);
+  doc.text(`Nome: ${av.paciente.nome}`, L + 4, Y + 7);
+  doc.text(`Idade: ${av.paciente.idade} anos  |  Nascimento: ${formatarDataBR(av.paciente.nasc)}  |  Sexo: ${av.paciente.sexo === "M" ? "Masculino" : "Feminino"}`, L + 4, Y + 13);
+  Y += 26;
+
+  // QI Total
+  const fsiq = av.indices.fsiq;
+  doc.setFillColor(...cor);
+  doc.rect(L, Y, W, 14, "F");
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "bold");
+  doc.text(`QI TOTAL (FSIQ): ${fsiq.score}  —  ${fsiq.classe.label.toUpperCase()}`, L + 4, Y + 9);
+  Y += 20;
+
+  // Tabela de índices
+  doc.setTextColor(...preto);
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "bold");
+  doc.text("ESCORES DE ÍNDICE", L, Y);
+  Y += 7;
+
+  const cols = [L, L + 70, L + 105, L + 130, L + 155];
+  const rowH = 8;
+  doc.setFillColor(226, 232, 240);
+  doc.rect(L, Y, W, rowH, "F");
+  doc.setFontSize(8);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(...cinza);
+  doc.text("ÍNDICE", cols[0] + 2, Y + 5);
+  doc.text("SOMA PONDERADA", cols[1] + 2, Y + 5);
+  doc.text("ESCORE (EI)", cols[2] + 2, Y + 5);
+  doc.text("PERCENTIL", cols[3] + 2, Y + 5);
+  doc.text("CLASSIFICAÇÃO", cols[4] + 2, Y + 5);
+  Y += rowH;
+
+  const ordemIndices = ["cv", "rp", "mt", "vp"];
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8);
+  ordemIndices.forEach((idx, i) => {
+    const r = av.indices[idx];
+    const corBadge = badgeParaCor(r.classe.badge);
+    const percentil = Math.round(((r.score - 100) / 15) * 34 + 50);
+    const pctClamp  = Math.max(1, Math.min(99, percentil));
+    if (i % 2 === 0) { doc.setFillColor(248, 250, 252); doc.rect(L, Y, W, rowH, "F"); }
+    doc.setTextColor(...preto);
+    doc.text(WISC_INDICES[idx], cols[0] + 2, Y + 5);
+    doc.text(`${r.soma}`, cols[1] + 2, Y + 5);
+    doc.text(`${r.score}`, cols[2] + 2, Y + 5);
+    doc.text(`~${pctClamp}º`, cols[3] + 2, Y + 5);
+    doc.setFillColor(...corBadge.bg);
+    doc.roundedRect(cols[4] + 2, Y + 1, 34, 5.5, 2, 2, "F");
+    doc.setTextColor(...corBadge.txt);
+    doc.setFont("helvetica", "bold");
+    doc.text(r.classe.label, cols[4] + 19, Y + 5, { align: "center" });
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(...preto);
+    doc.setDrawColor(226, 232, 240);
+    doc.line(L, Y + rowH, R, Y + rowH);
+    Y += rowH;
+  });
+
+  Y += 10;
+
+  // Interpretação
+  if (Y > 230) { doc.addPage(); Y = 20; }
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(...preto);
+  doc.text("INTERPRETAÇÃO", L, Y);
+  Y += 6;
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8.5);
+  doc.setTextColor(...cinza);
+  const interpTxt = stripHTML(gerarInterpretacaoWISC(av));
+  const linhas = doc.splitTextToSize(interpTxt, W);
+  doc.text(linhas, L, Y);
+  Y += linhas.length * 5 + 6;
+
+  // Observações
+  if (av.obs) {
+    if (Y > 240) { doc.addPage(); Y = 20; }
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.setTextColor(...preto);
+    doc.text("OBSERVAÇÕES CLÍNICAS", L, Y);
+    Y += 6;
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8.5);
+    doc.setTextColor(...cinza);
+    const obsLinhas = doc.splitTextToSize(av.obs, W);
+    doc.text(obsLinhas, L, Y);
+    Y += obsLinhas.length * 5 + 6;
+  }
+
+  // Assinatura
+  if (Y > 250) { doc.addPage(); Y = 20; }
+  Y = Math.max(Y, 250);
+  doc.setDrawColor(...cinza);
+  doc.line(L, Y, L + 80, Y);
+  doc.setFontSize(8);
+  doc.setTextColor(...cinza);
+  doc.text(av.profissional.nome, L + 40, Y + 5, { align: "center" });
+  doc.text(av.profissional.crp || "", L + 40, Y + 9, { align: "center" });
+  doc.text(`Emitido em ${formatarData(new Date().toISOString())}`, R, Y + 9, { align: "right" });
+  doc.setFontSize(7);
+  doc.text("Documento gerado pelo Sistema Psicorrection. Uso exclusivo do profissional avaliador.", 105, 292, { align: "center" });
+
+  const nomeArq = `laudo_wisc_${av.paciente.nome.replace(/\s+/g,"_").toLowerCase()}_${formatarDataArq(av.data)}.pdf`;
+  doc.save(nomeArq);
+}

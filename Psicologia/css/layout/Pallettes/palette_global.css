@@ -1,0 +1,81 @@
+/* ═══════════════════════════════════════════════════════════════
+   Psicorrection — Paleta Global de Cores e Tokens de Design
+   css/layout/Pallettes/palette_global.css
+
+   Este ficheiro DEVE ser o PRIMEIRO CSS carregado na página.
+   Centraliza todas as variáveis CSS do sistema, garantindo
+   consistência visual em todos os componentes.
+═══════════════════════════════════════════════════════════════ */
+
+:root {
+
+  /* ──────────────────────────────────────────────────────
+     CORES PRINCIPAIS
+  ────────────────────────────────────────────────────── */
+  --primary:        #2563eb;    /* Azul — NEUPSILIN / ações primárias */
+  --primary-dk:     #1d4ed8;    /* Azul escuro (hover) */
+  --primary-lt:     #dbeafe;    /* Azul claro (fundos, badges) */
+  --primary-alpha:  rgba(37,99,235,.15);  /* foco / ring */
+
+  --accent:         #7c3aed;    /* Roxo — WISC-IV / destaque */
+  --accent-dk:      #6d28d9;    /* Roxo escuro (hover) */
+  --accent-lt:      #ede9fe;    /* Roxo claro */
+
+  /* ──────────────────────────────────────────────────────
+     FEEDBACK / STATUS
+  ────────────────────────────────────────────────────── */
+  --success:        #16a34a;
+  --success-lt:     #dcfce7;
+  --success-border: #86efac;
+
+  --warning:        #d97706;
+  --warning-lt:     #fef9c3;
+  --warning-border: #fde68a;
+
+  --danger:         #dc2626;
+  --danger-lt:      #fee2e2;
+  --danger-border:  #fca5a5;
+  --danger-dk:      #b91c1c;
+
+  --info:           #0284c7;
+  --info-lt:        #e0f2fe;
+
+  /* ──────────────────────────────────────────────────────
+     SUPERFÍCIES E BORDAS
+  ────────────────────────────────────────────────────── */
+  --sidebar-bg:     #1e293b;    /* Fundo da sidebar */
+  --sidebar-txt:    #cbd5e1;    /* Texto na sidebar */
+
+  --bg:             #f1f5f9;    /* Fundo geral da página */
+  --bg-alt:         #f8fafc;    /* Fundo alternativo (linhas, áreas) */
+  --card-bg:        #ffffff;    /* Fundo de cards */
+  --border:         #e2e8f0;    /* Bordas gerais */
+  --border-focus:   #2563eb;    /* Borda ao focar inputs */
+
+  /* ──────────────────────────────────────────────────────
+     TIPOGRAFIA
+  ────────────────────────────────────────────────────── */
+  --text:           #1e293b;    /* Texto principal */
+  --text-main:      #0f172a;    /* Títulos / headings */
+  --text-muted:     #64748b;    /* Texto secundário */
+  --text-light:     #94a3b8;    /* Texto muito discreto */
+
+  /* ──────────────────────────────────────────────────────
+     TOKENS DE LAYOUT
+  ────────────────────────────────────────────────────── */
+  --radius:         10px;       /* Arredondamento padrão */
+  --radius-sm:      6px;        /* Pequeno (inputs, badges) */
+  --radius-lg:      16px;       /* Grande (cards, modais) */
+  --radius-xl:      20px;       /* Muito grande (login card) */
+
+  --shadow:         0 2px 12px rgba(0,0,0,.08);
+  --shadow-md:      0 4px 24px rgba(0,0,0,.12);
+  --shadow-lg:      0 8px 40px rgba(0,0,0,.18);
+  --shadow-sidebar: 4px 0 24px rgba(0,0,0,.22);
+
+  --sidebar-w:      240px;      /* Largura da sidebar desktop */
+  --topbar-h:       60px;       /* Altura da topbar */
+
+  --transition:     .18s ease;  /* Transição padrão */
+  --transition-slow:.3s ease;
+}
