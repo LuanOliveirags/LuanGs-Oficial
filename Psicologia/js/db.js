@@ -114,9 +114,9 @@ const DB = {
   }
 };
 
-/** Calcula a data de expiração com base no plano. Retorna null para vitalício. */
+/** Calcula a data de expiração com base no plano. Retorna null para vitalício e por avaliação. */
 function calcularExpiracao(plano) {
-  if (plano === "vitalicio") return null;
+  if (plano === "vitalicio" || plano === "1avaliacao") return null;
   const d = new Date();
   if (plano === "1mes")   d.setMonth(d.getMonth() + 1);
   if (plano === "3meses") d.setMonth(d.getMonth() + 3);

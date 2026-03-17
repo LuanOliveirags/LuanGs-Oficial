@@ -208,6 +208,12 @@ function salvarAvaliacao(av) {
   const lista = _todasAvaliacoes();
   lista.push(av);
   localStorage.setItem("neupsilin_avaliacoes", JSON.stringify(lista));
+
+  // Plano "1 Avaliação": bloqueia automaticamente após salvar
+  const usr = DB.findByEmail(usuarioLogado.email);
+  if (usr && usr.plano === "1avaliacao" && usr.role !== "admin") {
+    DB.bloquear(usuarioLogado.email);
+  }
 }
 
 /** Retorna TODAS as avaliações (uso interno e para o admin). */
@@ -966,7 +972,7 @@ function renderizarUsuarios() {
   const todos  = DB.getAll();
   const roMap  = { admin: "Administrador", profissional: "Profissional" };
   const bMap   = { admin: "badge-admin", profissional: "badge-prof" };
-  const planoLabel = { "1mes": "1 Mês", "3meses": "3 Meses", "vitalicio": "Vitalício" };
+  const planoLabel = { "1mes": "1 Mês", "3meses": "3 Meses", "vitalicio": "Vitalício", "1avaliacao": "1 Avaliação" };
 
   const filtrados = busca
     ? todos.filter(u => u.nome.toLowerCase().includes(busca) || u.email.toLowerCase().includes(busca))
