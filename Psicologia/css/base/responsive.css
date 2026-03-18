@@ -67,6 +67,12 @@
   .graficos-container { gap: 14px; }
 
   .card { padding: 20px; }
+
+  /* ── Login: painel esquerdo reduzido ── */
+  .login-brand-panel { flex: 0 0 40%; padding: 40px 32px; }
+  .login-brand-logo h1 { font-size: 26px; }
+  .login-brand-features { gap: 12px; }
+  .login-form-panel { padding: 32px 28px; }
 }
 
 
@@ -182,6 +188,42 @@
   /* ── Utilitários ── */
   .hide-mobile { display: none; }
   .show-mobile { display: initial; }
+
+  /* ── Login: card centralizado no gradiente ── */
+  #page-login {
+    align-items: center;
+    justify-content: center;
+    padding: 28px 20px;
+    min-height: 100vh;
+  }
+  .login-wrapper {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: auto;
+    max-width: 100%;
+    width: 100%;
+  }
+  .login-brand-panel { display: none; }
+  .login-form-panel {
+    flex: none;
+    padding: 0;
+    min-height: auto;
+    background: transparent;
+    width: 100%;
+    max-width: 420px;
+  }
+  .login-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 32px 24px 36px;
+    max-width: 100%;
+    width: 100%;
+    box-shadow: 0 24px 64px rgba(0,0,0,.35);
+  }
+  .login-logo-mobile { display: block; }
+  .login-form-header { display: none; }
+  .login-footer-mobile { display: block; }
 }
 
 
@@ -190,18 +232,10 @@
 ══════════════════════════════════════════════════════════════ */
 @media (max-width: 600px) {
 
-  /* ── Login: card sobe do rodapé ── */
-  #page-login {
-    align-items: flex-end;
-    padding-bottom: 0;
-  }
-  .login-card {
-    border-radius: 20px 20px 0 0;
-    padding: 36px 24px 40px;
-    max-width: 100%;
-    width: 100%;
-    box-shadow: 0 -8px 40px rgba(0,0,0,.2);
-  }
+  /* ── Login: tela pequena — menos padding e margem menor ── */
+  #page-login { padding: 20px 16px; }
+  .login-card { padding: 28px 20px 32px; }
+  .login-logo-mobile { margin-bottom: 22px; }
 
   /* ── Topbar: oculta nome do utilizador ── */
   .badge-user { display: none; }
@@ -245,10 +279,10 @@
 @media (max-width: 480px) {
 
   /* ── Login ── */
-  .login-logo .logo-icon { font-size: 44px; }
-  .login-logo h1         { font-size: 22px; letter-spacing: 1px; }
-  .login-logo p          { font-size: 12px; }
-  .login-card            { padding: 32px 20px 36px; }
+  .login-logo-mobile h2  { font-size: 19px; }
+  .login-logo-mobile img { height: 40px !important; }
+  #page-login { padding: 16px 12px; }
+  .login-card            { padding: 24px 16px 28px; border-radius: 16px; }
 
   /* ── Stats: coluna única ── */
   .stats-grid { grid-template-columns: 1fr; }

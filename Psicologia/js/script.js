@@ -88,6 +88,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 // ──────────────────────────────────────────────────────
 // AUTENTICAÇÃO
 // ──────────────────────────────────────────────────────
+function toggleSenha(btn) {
+  const input  = document.getElementById("login-senha");
+  const eyeOn  = document.getElementById("eye-open");
+  const eyeOff = document.getElementById("eye-off");
+  const isPassword = input.type === "password";
+  input.type = isPassword ? "text" : "password";
+  eyeOn.classList.toggle("hidden",  isPassword);
+  eyeOff.classList.toggle("hidden", !isPassword);
+}
+
 async function fazerLogin() {
   const email  = document.getElementById("login-email").value.trim().toLowerCase();
   const senha  = document.getElementById("login-senha").value;
