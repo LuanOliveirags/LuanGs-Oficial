@@ -1196,7 +1196,8 @@ function renderizarUsuarios() {
       <td style="display:flex;gap:6px;flex-wrap:wrap">
         <button class="btn btn-sm btn-secondary" onclick="abrirModalUsuario('${u.email}')">✏️ Editar</button>
         ${u.email !== usuarioLogado.email
-          ? `<button class="btn btn-sm btn-danger" onclick="bloquearUsuario('${u.email}')">🚫 Bloquear</button>`
+          ? `<button class="btn btn-sm btn-danger" onclick="bloquearUsuario('${u.email}')">🚫 Bloquear</button>
+             <button class="btn btn-sm btn-danger" onclick="excluirUsuarioAdmin('${u.email}')">🗑 Excluir</button>`
           : `<span style="font-size:11px;color:var(--text-muted);padding:5px 4px">Conta atual</span>`}
       </td>
     </tr>`;
