@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════
    NEUPSILIN — Sistema Clínico  |  script.js
-   Lógica: autenticação, avaliação, localStorage, PDF
+   Lógica: autenticação, avaliação, Firestore, PDF
 ═══════════════════════════════════════════════════════ */
 
 // ──────────────────────────────────────────────────────
@@ -10,21 +10,32 @@ let usuarioLogado = null;
 let avaliacaoAtiva = null; // guarda última avaliação calculada para PDF
 let modalAvaliacaoId = null;
 const _charts = {};
+let _cacheAvaliacoes = []; // cache em memória, populado após o login
 
 // ──────────────────────────────────────────────────────
 // INICIALIZAÇÃO
 // ──────────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", async () => {
-  // Inicializa banco (cria admin padrão se não existir)
+  // Auth anônima garante que as regras do Firestore sejam cumpridas
+  await firebase.auth().signInAnonymously().catch(console.error);
+
+  // Inicializa banco (cria admin padrão se Firestore ainda estiver vazio)
   await inicializarDB();
-  // Verifica periodicamente expiracoes (1x ao iniciar)
-  DB.verificarExpiracoes();
 
   // Tenta restaurar sessão
   const sessao = sessionStorage.getItem("neupsilin_user");
   if (sessao) {
-    usuarioLogado = JSON.parse(sessao);
-    abrirDashboard();
+    try {
+      usuarioLogado = JSON.parse(sessao);
+      await DB.carregarTodos(usuarioLogado.role === "admin", usuarioLogado.email);
+      await DB_PAC.carregarCache(usuarioLogado.email, usuarioLogado.role === "admin");
+      await carregarAvaliacoes(usuarioLogado.email, usuarioLogado.role === "admin");
+      DB.verificarExpiracoes();
+      abrirDashboard();
+    } catch (_) {
+      sessionStorage.removeItem("neupsilin_user");
+      usuarioLogado = null;
+    }
   }
 
   // Listener Enter no login
@@ -81,6 +92,7 @@ async function fazerLogin() {
   const email  = document.getElementById("login-email").value.trim().toLowerCase();
   const senha  = document.getElementById("login-senha").value;
   const errDiv = document.getElementById("login-error");
+  const btnLogin = document.querySelector("#page-login .btn-primary");
 
   if (!email || !senha) {
     errDiv.textContent = "Preencha e-mail e senha.";
@@ -88,39 +100,70 @@ async function fazerLogin() {
     return;
   }
 
-  const usuario = DB.findByEmail(email);
-  if (!usuario) {
-    errDiv.textContent = "E-mail ou senha incorretos.";
-    errDiv.classList.remove("hidden");
-    return;
-  }
+  if (btnLogin) { btnLogin.disabled = true; btnLogin.textContent = "Entrando…"; }
 
-  const hash = await hashSenha(senha);
-  if (hash !== usuario.senhaHash) {
-    errDiv.textContent = "E-mail ou senha incorretos.";
-    errDiv.classList.remove("hidden");
-    return;
-  }
+  try {
+    // Busca direto no Firestore (cache ainda não está carregado)
+    const doc = await _firestoreDB.collection("usuarios").doc(email).get();
+    if (!doc.exists) {
+      errDiv.textContent = "E-mail ou senha incorretos.";
+      errDiv.classList.remove("hidden");
+      return;
+    }
 
-  // Verifica expiracoes antes de liberar
-  DB.verificarExpiracoes();
-  const usuarioAtualizado = DB.findByEmail(email);
-  if (usuarioAtualizado.bloqueado && usuarioAtualizado.role !== "admin") {
-    errDiv.textContent = "Seu acesso está bloqueado ou expirado. Entre em contato com o administrador.";
-    errDiv.classList.remove("hidden");
-    return;
-  }
+    const usuarioData = doc.data();
+    const hash = await hashSenha(senha);
+    if (hash !== usuarioData.senhaHash) {
+      errDiv.textContent = "E-mail ou senha incorretos.";
+      errDiv.classList.remove("hidden");
+      return;
+    }
 
-  errDiv.classList.add("hidden");
-  usuarioLogado = { email: usuarioAtualizado.email, nome: usuarioAtualizado.nome, crp: usuarioAtualizado.crp, role: usuarioAtualizado.role };
-  sessionStorage.setItem("neupsilin_user", JSON.stringify(usuarioLogado));
-  limparFormulario();
-  abrirDashboard();
+    // Verifica expiração diretamente
+    if (usuarioData.role !== "admin" && !usuarioData.bloqueado && usuarioData.expiracao) {
+      if (new Date(usuarioData.expiracao) < new Date()) {
+        const ts = new Date().toISOString();
+        _firestoreDB.collection("usuarios").doc(email)
+          .update({ bloqueado: true, bloqueadoEm: ts }).catch(console.error);
+        errDiv.textContent = "Seu acesso expirou. Entre em contato com o administrador.";
+        errDiv.classList.remove("hidden");
+        return;
+      }
+    }
+
+    if (usuarioData.bloqueado && usuarioData.role !== "admin") {
+      errDiv.textContent = "Seu acesso está bloqueado ou expirado. Entre em contato com o administrador.";
+      errDiv.classList.remove("hidden");
+      return;
+    }
+
+    // Carrega caches após autenticação bem-sucedida
+    await DB.carregarTodos(usuarioData.role === "admin", email);
+    await DB_PAC.carregarCache(email, usuarioData.role === "admin");
+    await carregarAvaliacoes(email, usuarioData.role === "admin");
+    DB.verificarExpiracoes();
+
+    errDiv.classList.add("hidden");
+    usuarioLogado = { email: usuarioData.email, nome: usuarioData.nome, crp: usuarioData.crp, role: usuarioData.role };
+    sessionStorage.setItem("neupsilin_user", JSON.stringify(usuarioLogado));
+    limparFormulario();
+    abrirDashboard();
+  } catch (e) {
+    console.error(e);
+    errDiv.textContent = "Erro ao conectar. Verifique sua conexão e tente novamente.";
+    errDiv.classList.remove("hidden");
+  } finally {
+    if (btnLogin) { btnLogin.disabled = false; btnLogin.textContent = "Entrar"; }
+  }
 }
 
 function fazerLogout() {
   sessionStorage.removeItem("neupsilin_user");
   usuarioLogado = null;
+  // Limpa caches para não vazar dados entre sessões
+  DB._cache = [];
+  DB_PAC._cache = [];
+  _cacheAvaliacoes = [];
   document.getElementById("page-login").classList.remove("hidden");
   document.getElementById("page-login").classList.add("active");
   document.getElementById("page-dashboard").classList.add("hidden");
@@ -305,8 +348,16 @@ function calcularIdade(nasc) {
 }
 
 // ──────────────────────────────────────────────────────
-// localStorage
+// AVALIAÇÕES — Firestore + cache em memória
 // ──────────────────────────────────────────────────────
+async function carregarAvaliacoes(email, isAdmin) {
+  const col  = _firestoreDB.collection("avaliacoes");
+  const snap = isAdmin
+    ? await col.get()
+    : await col.where("profissional.email", "==", email.toLowerCase().trim()).get();
+  _cacheAvaliacoes = snap.docs.map(d => d.data());
+}
+
 function salvarAvaliacao(av) {
   // Garante que a avaliação sempre carrega o email do profissional que a criou
   av.profissional.email = usuarioLogado.email;
@@ -320,14 +371,11 @@ function salvarAvaliacao(av) {
       p.nome.toLowerCase() === nomePac.toLowerCase() && p.nasc === nascPac
     );
     if (existing) {
-      // Apenas vincula o id do paciente à avaliação
       av.pacienteId = existing.id;
     } else {
-      // Cria a ficha automaticamente com os dados disponíveis
       const sexoPac = av.paciente.sexo || "";
-      // Converte escolaridade NEUPSILIN (baixa/media/alta) → código da ficha
-      const escMap = { baixa: "fi", media: "mc", alta: "sc" };
-      const escCod = escMap[av.paciente.esc] || av.paciente.esc || "";
+      const escMap  = { baixa: "fi", media: "mc", alta: "sc" };
+      const escCod  = escMap[av.paciente.esc] || av.paciente.esc || "";
       const novo = DB_PAC.create({
         nome:  nomePac,
         nasc:  nascPac,
@@ -340,9 +388,12 @@ function salvarAvaliacao(av) {
   }
   // ─────────────────────────────────────────────────────────────────────────
 
-  const lista = _todasAvaliacoes();
-  lista.push(av);
-  localStorage.setItem("neupsilin_avaliacoes", JSON.stringify(lista));
+  // Garante ID numérico (compatibilidade com código existente)
+  if (!av.id) av.id = Date.now();
+
+  // Persiste no cache e dispara escrita no Firestore
+  _cacheAvaliacoes.push(av);
+  _firestoreDB.collection("avaliacoes").doc(String(av.id)).set(av).catch(console.error);
 
   // Plano "1 Avaliação": bloqueia automaticamente após salvar
   const usr = DB.findByEmail(usuarioLogado.email);
@@ -353,7 +404,7 @@ function salvarAvaliacao(av) {
 
 /** Retorna TODAS as avaliações (uso interno e para o admin). */
 function _todasAvaliacoes() {
-  return JSON.parse(localStorage.getItem("neupsilin_avaliacoes") || "[]");
+  return _cacheAvaliacoes;
 }
 
 /**
@@ -369,10 +420,11 @@ function getAvaliacoes() {
 
 function excluirAvaliacao(id) {
   // Só remove se o usuário tem acesso à avaliação
-  const permitidos = getAvaliacoes().map(a => a.id);
-  if (!permitidos.includes(id)) return;
-  const lista = _todasAvaliacoes().filter(a => a.id !== id);
-  localStorage.setItem("neupsilin_avaliacoes", JSON.stringify(lista));
+  const idNum = Number(id);
+  const permitidos = getAvaliacoes().map(a => Number(a.id));
+  if (!permitidos.includes(idNum)) return;
+  _cacheAvaliacoes = _cacheAvaliacoes.filter(a => Number(a.id) !== idNum);
+  _firestoreDB.collection("avaliacoes").doc(String(id)).delete().catch(console.error);
 }
 
 // ──────────────────────────────────────────────────────
@@ -1037,19 +1089,13 @@ async function salvarUsuario() {
 
   try {
     if (_editandoEmail) {
-      // Edição: atualiza nome, crp, role e senha (se preenchida)
-      const lista = DB.getAll();
-      const idx   = lista.findIndex(u => u.email === _editandoEmail);
-      if (idx === -1) throw new Error("Usuário não encontrado.");
-      lista[idx].nome = nome || lista[idx].nome;
-      lista[idx].crp  = crp;
-      lista[idx].role = role;
-      lista[idx].ocultarAplicacao = ocultarAplicacao;
-      if (senha) {
-        if (senha.length < 6) throw new Error("A nova senha deve ter ao menos 6 caracteres.");
-        lista[idx].senhaHash = await hashSenha(senha);
-      }
-      localStorage.setItem("neupsilin_usuarios", JSON.stringify(lista));
+      await DB.updateAdmin(_editandoEmail, {
+        nome: nome || undefined,
+        crp,
+        role,
+        ocultarAplicacao,
+        novaSenha: senha || undefined
+      });
       okEl.textContent = "Usuário atualizado com sucesso!";
     } else {
       await DB.create({ email, senha, nome, crp, role, plano, ocultarAplicacao });

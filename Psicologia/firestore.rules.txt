@@ -1,0 +1,30 @@
+// ═══════════════════════════════════════════════════════
+//  REGRAS DO FIRESTORE — PsiCorrection
+//  Cole estas regras em:
+//  Firebase Console → Firestore Database → Regras
+// ═══════════════════════════════════════════════════════
+//
+//  Estratégia de segurança:
+//  - Exige autenticação anônima (feita automaticamente pelo app no carregamento)
+//  - Impede acesso de scripts externos sem o SDK Firebase
+//  - Controle de permissões é feito pela lógica da aplicação
+//
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      // Apenas usuários autenticados (mesmo anonimamente) podem acessar
+      allow read, write: if request.auth != null;
+    }
+  }
+}
+
+// ───────────────────────────────────────────────────────
+//  CONFIGURAÇÃO ADICIONAL RECOMENDADA:
+//
+//  1. No Firebase Console → Configurações do projeto → Restrições de API:
+//     Restrinja a chave de API para aceitar apenas o domínio do seu site.
+//     Ex: https://luangs.pro/*
+//
+//  2. Nunca exponha chaves de serviço (service account) no frontend.
+// ───────────────────────────────────────────────────────

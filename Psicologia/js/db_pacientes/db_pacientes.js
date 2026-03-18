@@ -1,48 +1,61 @@
 /* ═══════════════════════════════════════════════════════
    PACIENTES — Banco de Dados e Ficha Cadastral
-   Armazenamento: localStorage ("psicologia_pacientes")
+   Armazenamento: Firebase Firestore ("pacientes")
+   Cache em memória populado após o login.
 ═══════════════════════════════════════════════════════ */
 
 const DB_PAC = {
-  _key: "psicologia_pacientes",
-  getAll()    { return JSON.parse(localStorage.getItem(this._key) || "[]"); },
-  _save(l)    { localStorage.setItem(this._key, JSON.stringify(l)); },
-  getById(id) { return this.getAll().find(p => p.id === id) || null; },
+  _cache: [], // populado por carregarCache() após o login
+
+  // ── Carga do Firestore ─────────────────────────────
+  async carregarCache(email, isAdmin) {
+    const col = _firestoreDB.collection("pacientes");
+    const snap = isAdmin
+      ? await col.get()
+      : await col.where("emailProfissional", "==", email.toLowerCase().trim()).get();
+    this._cache = snap.docs.map(d => d.data());
+  },
+
+  // ── Leituras síncronas (via cache) ────────────────
+  getAll()    { return this._cache; },
+  getById(id) { return this._cache.find(p => p.id === id) || null; },
 
   // Retorna apenas os pacientes do usuário logado (admin vê todos)
   getMeus() {
-    const todos = this.getAll();
-    if (usuarioLogado?.role === "admin") return todos;
-    return todos.filter(p => p.emailProfissional === usuarioLogado?.email);
+    if (usuarioLogado?.role === "admin") return this._cache;
+    return this._cache.filter(p => p.emailProfissional === usuarioLogado?.email);
   },
 
+  // ── Criar paciente e disparar escrita no Firestore ─
   create(dados) {
-    const lista = this.getAll();
-    const pac   = {
-      id: "pac_" + Date.now(),
+    const id  = "pac_" + Date.now();
+    const pac = {
+      id,
       ...dados,
       emailProfissional: usuarioLogado?.email || "",
       criadoEm: new Date().toISOString()
     };
-    lista.push(pac);
-    this._save(lista);
+    this._cache.push(pac);
+    _firestoreDB.collection("pacientes").doc(id).set(pac).catch(console.error);
     return pac;
   },
 
   update(id, dados) {
-    const lista = this.getAll();
-    const idx   = lista.findIndex(p => p.id === id);
+    const idx = this._cache.findIndex(p => p.id === id);
     if (idx === -1) return null;
-    lista[idx] = { ...lista[idx], ...dados, atualizadoEm: new Date().toISOString() };
-    this._save(lista);
-    return lista[idx];
+    const atualizado = { ...this._cache[idx], ...dados, atualizadoEm: new Date().toISOString() };
+    this._cache[idx] = atualizado;
+    _firestoreDB.collection("pacientes").doc(id)
+      .update({ ...dados, atualizadoEm: atualizado.atualizadoEm }).catch(console.error);
+    return atualizado;
   },
 
   // Só permite excluir pacientes do próprio usuário (ou admin)
   delete(id) {
     const permitidos = this.getMeus().map(p => p.id);
     if (!permitidos.includes(id)) return;
-    this._save(this.getAll().filter(p => p.id !== id));
+    this._cache = this._cache.filter(p => p.id !== id);
+    _firestoreDB.collection("pacientes").doc(id).delete().catch(console.error);
   }
 };
 

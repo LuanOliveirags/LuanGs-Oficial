@@ -1,6 +1,7 @@
 /* ═══════════════════════════════════════════════════════
-   NEUPSILIN — Banco de Dados (localStorage + SubtleCrypto)
-   Usuários são persistidos no navegador com senha em SHA-256.
+   NEUPSILIN — Banco de Dados (Firebase Firestore)
+   Usuários persistidos no Firestore com senha em SHA-256.
+   Cache em memória garante leituras síncronas após o login.
 ═══════════════════════════════════════════════════════ */
 
 const ADMIN_PADRAO = {
@@ -23,29 +24,42 @@ async function hashSenha(senha) {
     .join("");
 }
 
-/* Banco de dados de usuários */
+/* ──────────────────────────────────────────────────────
+   Banco de dados de usuários
+   ID do documento Firestore = e-mail (normalizado)
+────────────────────────────────────────────────────── */
 const DB = {
-  _key: "neupsilin_usuarios",
+  _cache: [], // cache em memória, populado após o login
 
-  getAll() {
-    return JSON.parse(localStorage.getItem(this._key) || "[]");
+  // ── Carga do Firestore ─────────────────────────────
+  // isAdmin=true carrega todos; false carrega só o próprio usuário.
+  async carregarTodos(isAdmin, email = "") {
+    const col = _firestoreDB.collection("usuarios");
+    if (isAdmin) {
+      const snap = await col.get();
+      this._cache = snap.docs.map(d => d.data());
+    } else {
+      const doc = await col.doc(email.toLowerCase().trim()).get();
+      this._cache = doc.exists ? [doc.data()] : [];
+    }
   },
 
-  _save(lista) {
-    localStorage.setItem(this._key, JSON.stringify(lista));
+  // ── Leituras síncronas (via cache) ────────────────
+  getAll() {
+    return this._cache;
   },
 
   findByEmail(email) {
-    return this.getAll().find(u => u.email === email.toLowerCase().trim()) || null;
+    return this._cache.find(u => u.email === email.toLowerCase().trim()) || null;
   },
 
+  // ── Criar usuário ──────────────────────────────────
   async create({ email, senha, nome, crp = "", role = "profissional", plano = "1mes", ocultarAplicacao = false }) {
     if (!email || !senha || !nome) throw new Error("Preencha todos os campos obrigatórios.");
     if (senha.length < 6) throw new Error("A senha deve ter ao menos 6 caracteres.");
 
-    const lista    = this.getAll();
     const emailNorm = email.toLowerCase().trim();
-    if (lista.find(u => u.email === emailNorm)) throw new Error("E-mail já cadastrado.");
+    if (this.findByEmail(emailNorm)) throw new Error("E-mail já cadastrado.");
 
     const usuario = {
       email: emailNorm,
@@ -59,73 +73,98 @@ const DB = {
       ocultarAplicacao,
       criadoEm: new Date().toISOString()
     };
-    lista.push(usuario);
-    this._save(lista);
+    await _firestoreDB.collection("usuarios").doc(emailNorm).set(usuario);
+    this._cache.push(usuario);
     return usuario;
   },
 
-  delete(email) {
-    const lista = this.getAll().filter(u => u.email !== email.toLowerCase().trim());
-    this._save(lista);
-  },
-
-  async updateSenha(email, novaSenha) {
-    if (novaSenha.length < 6) throw new Error("A senha deve ter ao menos 6 caracteres.");
-    const lista = this.getAll();
-    const idx   = lista.findIndex(u => u.email === email.toLowerCase().trim());
+  // ── Atualizar usuário pelo admin ───────────────────
+  async updateAdmin(email, { nome, crp, role, ocultarAplicacao, novaSenha } = {}) {
+    const emailNorm = email.toLowerCase().trim();
+    const idx = this._cache.findIndex(u => u.email === emailNorm);
     if (idx === -1) throw new Error("Usuário não encontrado.");
-    lista[idx].senhaHash = await hashSenha(novaSenha);
-    this._save(lista);
+
+    const updates = {};
+    if (nome !== undefined)             updates.nome = nome.trim();
+    if (crp !== undefined)              updates.crp  = crp.trim();
+    if (role !== undefined)             updates.role = role;
+    if (ocultarAplicacao !== undefined) updates.ocultarAplicacao = ocultarAplicacao;
+    if (novaSenha) {
+      if (novaSenha.length < 6) throw new Error("A nova senha deve ter ao menos 6 caracteres.");
+      updates.senhaHash = await hashSenha(novaSenha);
+    }
+    await _firestoreDB.collection("usuarios").doc(emailNorm).update(updates);
+    Object.assign(this._cache[idx], updates);
   },
 
+  // ── Atualizar perfil do próprio usuário ────────────
   async updatePerfil(email, { nome, crp, novaSenha } = {}) {
-    const lista = this.getAll();
-    const idx   = lista.findIndex(u => u.email === email.toLowerCase().trim());
+    const emailNorm = email.toLowerCase().trim();
+    const idx = this._cache.findIndex(u => u.email === emailNorm);
     if (idx === -1) throw new Error("Usuário não encontrado.");
-    if (nome) lista[idx].nome = nome.trim();
-    if (crp  !== undefined) lista[idx].crp  = crp.trim();
+
+    const updates = {};
+    if (nome) updates.nome = nome.trim();
+    if (crp !== undefined) updates.crp = crp.trim();
     if (novaSenha) {
       if (novaSenha.length < 6) throw new Error("A senha deve ter ao menos 6 caracteres.");
-      lista[idx].senhaHash = await hashSenha(novaSenha);
+      updates.senhaHash = await hashSenha(novaSenha);
     }
-    this._save(lista);
-    return lista[idx];
+    await _firestoreDB.collection("usuarios").doc(emailNorm).update(updates);
+    Object.assign(this._cache[idx], updates);
+    return this._cache[idx];
   },
 
+  // ── Excluir usuário ────────────────────────────────
+  delete(email) {
+    const emailNorm = email.toLowerCase().trim();
+    this._cache = this._cache.filter(u => u.email !== emailNorm);
+    _firestoreDB.collection("usuarios").doc(emailNorm).delete().catch(console.error);
+  },
+
+  // ── Bloquear usuário ───────────────────────────────
   bloquear(email) {
-    const lista = this.getAll();
-    const idx   = lista.findIndex(u => u.email === email.toLowerCase().trim());
+    const emailNorm = email.toLowerCase().trim();
+    const idx = this._cache.findIndex(u => u.email === emailNorm);
     if (idx === -1) return;
-    lista[idx].bloqueado   = true;
-    lista[idx].bloqueadoEm = new Date().toISOString();
-    this._save(lista);
+    const ts = new Date().toISOString();
+    this._cache[idx].bloqueado   = true;
+    this._cache[idx].bloqueadoEm = ts;
+    _firestoreDB.collection("usuarios").doc(emailNorm)
+      .update({ bloqueado: true, bloqueadoEm: ts }).catch(console.error);
   },
 
+  // ── Ativar usuário ─────────────────────────────────
   ativar(email, plano) {
-    const lista = this.getAll();
-    const idx   = lista.findIndex(u => u.email === email.toLowerCase().trim());
+    const emailNorm = email.toLowerCase().trim();
+    const idx = this._cache.findIndex(u => u.email === emailNorm);
     if (idx === -1) return;
-    lista[idx].bloqueado   = false;
-    lista[idx].plano       = plano;
-    lista[idx].expiracao   = calcularExpiracao(plano);
-    lista[idx].ativadoEm   = new Date().toISOString();
-    delete lista[idx].bloqueadoEm;
-    this._save(lista);
+    const ts       = new Date().toISOString();
+    const expiracao = calcularExpiracao(plano);
+    Object.assign(this._cache[idx], { bloqueado: false, plano, expiracao, ativadoEm: ts });
+    delete this._cache[idx].bloqueadoEm;
+    _firestoreDB.collection("usuarios").doc(emailNorm).update({
+      bloqueado: false,
+      plano,
+      expiracao,
+      ativadoEm: ts,
+      bloqueadoEm: firebase.firestore.FieldValue.delete()
+    }).catch(console.error);
   },
 
+  // ── Verificar expirados e bloquear ────────────────
   verificarExpiracoes() {
-    const lista = this.getAll();
-    let changed  = false;
-    const agora  = new Date();
-    lista.forEach((u, i) => {
+    const agora = new Date();
+    this._cache.forEach((u, i) => {
       if (u.role === "admin" || u.bloqueado || !u.expiracao) return;
       if (new Date(u.expiracao) < agora) {
-        lista[i].bloqueado   = true;
-        lista[i].bloqueadoEm = new Date().toISOString();
-        changed = true;
+        const ts = new Date().toISOString();
+        this._cache[i].bloqueado   = true;
+        this._cache[i].bloqueadoEm = ts;
+        _firestoreDB.collection("usuarios").doc(u.email)
+          .update({ bloqueado: true, bloqueadoEm: ts }).catch(console.error);
       }
     });
-    if (changed) this._save(lista);
   }
 };
 
@@ -140,16 +179,8 @@ function calcularExpiracao(plano) {
 
 /** Inicializa o banco criando o admin padrão se ainda não houver nenhum usuário. */
 async function inicializarDB() {
-  if (DB.getAll().length === 0) {
+  const snap = await _firestoreDB.collection("usuarios").limit(1).get();
+  if (snap.empty) {
     await DB.create({ ...ADMIN_PADRAO, senha: ADMIN_SENHA_PADRAO, plano: "vitalicio" });
-  } else {
-    // Migração: garante campos novos em usuários antigos
-    const lista = DB.getAll();
-    let changed = false;
-    lista.forEach((u, i) => {
-      if (u.bloqueado === undefined) { lista[i].bloqueado = false; changed = true; }
-      if (!u.plano) { lista[i].plano = u.role === "admin" ? "vitalicio" : "vitalicio"; lista[i].expiracao = null; changed = true; }
-    });
-    if (changed) localStorage.setItem("neupsilin_usuarios", JSON.stringify(lista));
   }
 }
