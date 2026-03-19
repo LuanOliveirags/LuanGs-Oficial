@@ -47,10 +47,12 @@ function atualizarSubtotalInf(e) {
 // CALCULAR & SALVAR — INF
 // ──────────────────────────────────────────────────────
 function calcularESalvarInf() {
-  const nome  = document.getElementById("ninf-nome").value.trim();
-  const nasc  = document.getElementById("ninf-nasc").value;
-  const serie = document.getElementById("ninf-serie").value;
-  const sexo  = document.getElementById("ninf-sexo").value;
+  const nome       = document.getElementById("ninf-nome").value.trim();
+  const nasc        = document.getElementById("ninf-nasc").value;
+  const serie       = document.getElementById("ninf-serie").value;
+  const sexo        = document.getElementById("ninf-sexo").value;
+  const tipoEscola  = document.getElementById("ninf-tipo-escola").value;
+  const regiao      = document.getElementById("ninf-regiao").value;
 
   if (!nome || !nasc) {
     alert("Preencha Nome e Data de Nascimento da criança.");
@@ -79,7 +81,7 @@ function calcularESalvarInf() {
   const resultados = {};
   const zList = [];
   for (const area of areas) {
-    const r = calcularZAreaInf(area, escores[area].total, idade);
+    const r = calcularZAreaInf(area, escores[area].total, idade, tipoEscola, regiao);
     resultados[area] = { ...r, score: escores[area].total, max: MAX_SCORES_INF[area], subs: escores[area].subs };
     zList.push(r.z);
   }
@@ -93,7 +95,7 @@ function calcularESalvarInf() {
     tipoTeste: "NEUPSILIN-INF",
     data: new Date().toISOString(),
     profissional: usuarioLogado,
-    paciente: { nome, nasc, serie, sexo, idade },
+    paciente: { nome, nasc, serie, sexo, tipoEscola, regiao, idade },
     escores,
     resultados,
     totalBruto,
@@ -128,33 +130,52 @@ function renderizarResultadoInlineInf(av) {
 function buildResultadoHTMLInf(av, ctx) {
   const areas = ["orientacao","atencao","percepcao","memoria","habilidades","linguagem","funcoes","praxias"];
   const serieMap = {
-    EF1:"1º ano EF", EF2:"2º ano EF", EF3:"3º ano EF", EF4:"4º ano EF",
-    EF5:"5º ano EF", EF6:"6º ano EF", EF7:"7º ano EF", NEE: "Não frequenta"
+    EF1:"1º ano EF", EF2:"2º ano EF", EF3:"3º ano EF",
+    EF4:"4º ano EF", EF5:"5º ano EF", EF6:"6º ano EF",
+    NEE: "Não frequenta"
   };
+
+  const usouNormaCompleta = Object.values(av.resultados).every(r => r.normalizacaoUsada === "completa");
+  const escolaMap = { publica: "Pública", particular: "Particular" };
+  const regiaoMap = { norte: "Norte", nordeste: "Nordeste", centro_oeste: "Centro-Oeste", sudeste: "Sudeste", sul: "Sul" };
+
+  const bannerNorma = usouNormaCompleta ? "" : `
+    <div style="background:rgba(217,119,6,0.07);border:1px solid rgba(217,119,6,0.35);border-radius:8px;padding:9px 13px;margin-bottom:14px;font-size:12px;color:#b45309;display:flex;gap:8px;align-items:flex-start">
+      <span style="font-size:15px;line-height:1">⚠️</span>
+      <span><strong>Norma estimada por faixa etária.</strong> As normas estratificadas por tipo de escola e região ainda não foram inseridas no sistema (aguardando dados do Manual oficial). Os z-scores são aproximados.</span>
+    </div>`;
 
   let areasHTML = "";
   for (const area of areas) {
     const r = av.resultados[area];
     const pct = Math.round((r.score / r.max) * 100);
+    const normaTag = r.normalizacaoUsada === "completa"
+      ? `<span style="font-size:10px;color:var(--success);font-weight:600">● norma completa</span>`
+      : `<span style="font-size:10px;color:#b45309">● norma p/ idade</span>`;
     areasHTML += `
       <div class="resultado-area">
         <div class="area-nome">${AREA_NOMES_INF[area]}</div>
         <div class="area-score">${r.score}<span class="area-max">/${r.max}</span></div>
         <div style="font-size:11px;color:var(--text-muted);margin:2px 0">z = ${r.z.toFixed(2)} &nbsp;|&nbsp; ${pct}%</div>
         <div class="area-class"><span class="badge ${r.classe.badge}">${r.classe.label}</span></div>
+        <div style="margin-top:4px">${normaTag}</div>
       </div>`;
   }
 
   const interp = gerarInterpretacaoInf(av);
   const serieLabel = serieMap[av.paciente.serie] || av.paciente.serie || "Não informado";
+  const escolaLabel = escolaMap[av.paciente.tipoEscola] || "";
+  const regiaoLabel = regiaoMap[av.paciente.regiao] || "";
 
   return `
     <div style="margin-bottom:12px;font-size:13px;color:var(--text-muted)">
       <strong>${av.paciente.nome}</strong> &nbsp;|&nbsp;
       ${av.paciente.idade} anos &nbsp;|&nbsp;
       ${serieLabel} &nbsp;|&nbsp;
+      ${escolaLabel}${regiaoLabel ? " — " + regiaoLabel : ""} &nbsp;|&nbsp;
       Correção em: ${formatarData(av.data)}
     </div>
+    ${bannerNorma}
     <div class="resultado-total">
       <div>
         <div class="total-label">Escore Total Bruto</div>
@@ -175,7 +196,7 @@ function buildResultadoHTMLInf(av, ctx) {
 // ──────────────────────────────────────────────────────
 function renderizarGraficosInf(av, ctx) {
   const areas  = ["orientacao","atencao","percepcao","memoria","habilidades","linguagem","funcoes","praxias"];
-  const labels = ["Orientação","Atenção","Percepção","Memória","Hab. Aritm.","Linguagem","Funç. Exec.","Praxias"];
+  const labels = ["Orientação","Atenção","Percepção","Memória","Hab. Aritm.","Linguagem","Funç. Exec.","Hab. Visuo."];
 
   const corPorZ = z => {
     if (z >= 1.0)  return { bg: "rgba(22,163,74,0.7)",   brd: "rgb(22,163,74)" };
@@ -298,7 +319,7 @@ function gerarInterpretacaoInf(av) {
   else
     txt += `Não foram identificadas áreas com desempenho significativamente abaixo da média para crianças de ${av.paciente.idade} anos. `;
 
-  txt += `Os escores foram comparados às normas do NEUPSILIN-INF para a faixa etária de ${av.paciente.idade} anos.`;
+  txt += `Os escores foram comparados às normas do NEUPSILIN-INF (Salles et al., 2011) para a faixa etária de ${av.paciente.idade} anos.`;
   return txt;
 }
 
@@ -363,13 +384,19 @@ function exportarPDFInf(avParam) {
     EF1:"1º ano do Ensino Fundamental", EF2:"2º ano do Ensino Fundamental",
     EF3:"3º ano do Ensino Fundamental", EF4:"4º ano do Ensino Fundamental",
     EF5:"5º ano do Ensino Fundamental", EF6:"6º ano do Ensino Fundamental",
-    EF7:"7º ano do Ensino Fundamental", NEE:"Não frequenta escola regular"
+    NEE:"Não frequenta escola regular"
+  };
+
+  const escolaMap = { publica: "Pública", particular: "Particular" };
+  const regiaoMap = {
+    norte: "Norte", nordeste: "Nordeste", centro_oeste: "Centro-Oeste",
+    sudeste: "Sudeste", sul: "Sul"
   };
 
   doc.setFillColor(248, 250, 252);
   doc.setDrawColor(...cor);
   doc.setLineWidth(0.3);
-  doc.rect(L, Y, W, 28, "FD");
+  doc.rect(L, Y, W, 34, "FD");
 
   doc.setTextColor(...cor);
   doc.setFontSize(8.5);
@@ -382,7 +409,8 @@ function exportarPDFInf(avParam) {
   doc.text(`Nome: ${av.paciente.nome}`, L + 4, Y + 13);
   doc.text(`Nascimento: ${formatarDataBR(av.paciente.nasc)}   |   Idade: ${av.paciente.idade} anos   |   Sexo: ${av.paciente.sexo === "M" ? "Masculino" : "Feminino"}`, L + 4, Y + 19);
   doc.text(`Escolaridade: ${serieMap[av.paciente.serie] || av.paciente.serie || "—"}`, L + 4, Y + 25);
-  Y += 34;
+  doc.text(`Tipo de escola: ${escolaMap[av.paciente.tipoEscola] || "—"}   |   Região: ${regiaoMap[av.paciente.regiao] || "—"}`, L + 4, Y + 31);
+  Y += 40;
 
   // ── II. PROCEDIMENTO ADOTADO ────────────────────────────────────────
   doc.setFillColor(248, 250, 252);
@@ -398,7 +426,7 @@ function exportarPDFInf(avParam) {
   doc.setFontSize(8.5);
   doc.setTextColor(...preto);
   doc.text("Instrumento: NEUPSILIN-INF — Instrumento de Avaliação Neuropsicológica Breve (Versão Infantil)", L + 4, Y + 13);
-  doc.text("Referência: Salles et al. (2011). Casa do Psicólogo. Normas estratificadas por idade (6–12 anos).", L + 4, Y + 19);
+  doc.text("Referência: Salles, J.F. et al. (2011). Vetor Editora. Normas por idade, tipo de escola e região.", L + 4, Y + 19);
   doc.text(`Data de aplicação: ${formatarDataBR(av.data)}   |   Modalidade: individual e presencial`, L + 4, Y + 25);
   Y += 34;
 
@@ -417,7 +445,7 @@ function exportarPDFInf(avParam) {
   doc.text(`Classificação Geral: ${av.classeGeral.label.toUpperCase()}`, L + 4, Y + 5);
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
-  doc.text(`Escore Total Bruto: ${av.totalBruto} / ${av.maxTotal}   |   Faixa normativa: ${av.paciente.idade} anos`, L + 4, Y + 10);
+  doc.text(`Escore Total Bruto: ${av.totalBruto} / ${av.maxTotal}   |   Faixa normativa: ${av.paciente.idade} anos | ${escolaMap[av.paciente.tipoEscola] || ""} | Região ${regiaoMap[av.paciente.regiao] || ""}`, L + 4, Y + 10);
   Y += 16;
 
   const cols = [L, L+62, L+90, L+112, L+135, L+158];

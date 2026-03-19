@@ -1,22 +1,28 @@
 /**
  * NEUPSILIN-INF — Tabelas Normativas
- * Referência: Linassi, J. et al. (2014). NEUPSILIN-Inf. Manual.
+ * Referência: Salles, J.F., Fonseca, R.P., Cruz-Rodrigues, C., Mello, C.B., Barbosa, T.,
+ *             & Miranda, M.C. (2011). Desenvolvimento do Instrumento de Avaliação
+ *             Neuropsicológica Breve Infantil NEUPSILIN-Inf. Vetor Editora.
  *
  * Normas estratificadas por FAIXA ETÁRIA (ano a ano: 6–12 anos).
- * Aplicável a crianças de 6 anos a 12 anos e 11 meses.
+ * Aplicável a crianças de 6 anos a 12 anos e 11 meses (1º ao 6º ano do EF).
+ *
+ * ATENÇÃO: As normas oficiais do NEUPSILIN-INF levam em conta também Tipo de Escola
+ * (pública/particular) e Região Geográfica. As tabelas abaixo são referências gerais
+ * por faixa etária. Para estratificação completa, consulte o Manual oficial (Vetor Editora).
  *
  * Faixas: "6" | "7" | "8" | "9" | "10" | "11" | "12"
  *
- * Escores máximos por área (versão infantil, itens adaptados):
- *   Orientação       : 6
- *   Atenção          : 22
- *   Percepção Visual : 20
- *   Memória          : 30
- *   Hab. Aritméticas : 8
- *   Linguagem        : 26
- *   Funções Exec.    : 18
- *   Praxias          : 16
- *   TOTAL            : 146
+ * Escores máximos por área (26 subtestes — versão infantil):
+ *   Orientação Têmporo-Espacial   : 6
+ *   Atenção                       : 22
+ *   Percepção Visual              : 20
+ *   Memória                       : 30
+ *   Hab. Aritméticas              : 8
+ *   Linguagem                     : 26
+ *   Funções Executivas            : 18
+ *   Habilidades Visuoconstrutivas : 16
+ *   TOTAL                         : 146
  */
 
 const NORMAS_INF = {
@@ -115,7 +121,7 @@ const AREA_NOMES_INF = {
   habilidades: "Habilidades Aritméticas",
   linguagem:   "Linguagem",
   funcoes:     "Funções Executivas",
-  praxias:     "Praxias"
+  praxias:     "Habilidades Visuoconstrutivas"
 };
 
 /* Nomes dos subtestes — INF */
@@ -167,12 +173,46 @@ function getFaixaEtariaInf(idadeAnos) {
 
 /**
  * Calcula z-score para uma área do NEUPSILIN-INF.
- * Normativas baseadas em idade (sem estratificação por escolaridade).
+ *
+ * Prioridade de busca (da mais para a menos específica):
+ *  1. Norma completa  →  chave "idade_tipoescola_regiao"  (ex: "8_publica_sul")
+ *  2. Fallback        →  chave "idade"                    (ex: "8")
+ *
+ * Quando as normas estratificadas do manual forem inseridas em NORMAS_INF,
+ * o sistema usará automaticamente a norma completa para cada criança.
+ *
+ * Como adicionar as normas completas em NORMAS_INF (para cada área):
+ *   "8_publica_sul":        { media: X.X, dp: X.X },
+ *   "8_particular_sudeste": { media: X.X, dp: X.X },
+ *   ...
+ *
+ *   Chave = "IDADE_TIPOESCOLA_REGIAO"
+ *   Tipos de escola : publica | particular
+ *   Regiões         : norte | nordeste | centro_oeste | sudeste | sul
+ *   Idades          : 6 | 7 | 8 | 9 | 10 | 11 | 12
+ *
+ * @param {string} area       - chave da área (ex: "orientacao")
+ * @param {number} score      - escore bruto obtido
+ * @param {number} idadeAnos  - idade em anos completos
+ * @param {string} [tipoEscola] - "publica" | "particular"
+ * @param {string} [regiao]     - "norte" | "nordeste" | "centro_oeste" | "sudeste" | "sul"
+ * @returns {{ z, media, dp, classe, normalizacaoUsada }}
  */
-function calcularZAreaInf(area, score, idadeAnos) {
+function calcularZAreaInf(area, score, idadeAnos, tipoEscola = "", regiao = "") {
   const faixa = getFaixaEtariaInf(idadeAnos);
-  const norma = NORMAS_INF[area]?.[faixa];
-  if (!norma) return { z: 0, media: 0, dp: 1, classe: classificarZ(0) };
+
+  // 1ª tentativa: norma completa (idade × tipo de escola × região)
+  const chaveCompleta = tipoEscola && regiao ? `${faixa}_${tipoEscola}_${regiao}` : null;
+  const normaCompleta = chaveCompleta ? NORMAS_INF[area]?.[chaveCompleta] : null;
+
+  // 2ª tentativa: fallback por idade apenas
+  const normaFallback = NORMAS_INF[area]?.[faixa];
+
+  const norma = normaCompleta ?? normaFallback;
+  const normalizacaoUsada = normaCompleta ? "completa" : "parcial_idade";
+
+  if (!norma) return { z: 0, media: 0, dp: 1, classe: classificarZ(0), normalizacaoUsada: "indisponivel" };
+
   const z = (score - norma.media) / norma.dp;
-  return { z: +z.toFixed(2), media: norma.media, dp: norma.dp, classe: classificarZ(z) };
+  return { z: +z.toFixed(2), media: norma.media, dp: norma.dp, classe: classificarZ(z), normalizacaoUsada };
 }

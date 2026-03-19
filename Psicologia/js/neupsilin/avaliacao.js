@@ -104,16 +104,27 @@ function buildResultadoHTML(av, ctx) {
   const areas = ["orientacao","atencao","percepcao","memoria","habilidades","linguagem","funcoes","praxias"];
   const escMap = { baixa: "Baixa (0–4 anos)", media: "Média (5–11 anos)", alta: "Alta (12+ anos)" };
 
+  const normasReais = Object.values(av.resultados).every(r => r.normalizacaoUsada === "real");
+  const bannerNorma = normasReais ? "" : `
+    <div style="background:rgba(217,119,6,0.07);border:1px solid rgba(217,119,6,0.35);border-radius:8px;padding:9px 13px;margin-bottom:14px;font-size:12px;color:#b45309;display:flex;gap:8px;align-items:flex-start">
+      <span style="font-size:15px;line-height:1">⚠️</span>
+      <span><strong>Normas estimadas.</strong> Os valores de média e DP ainda são aproximações — aguardando dados do Manual oficial (Vetor Editora). Os z-scores são aproximados.</span>
+    </div>`;
+
   let areasHTML = "";
   for (const area of areas) {
     const r = av.resultados[area];
     const pct = Math.round((r.score / r.max) * 100);
+    const normaTag = r.normalizacaoUsada === "real"
+      ? `<span style="font-size:10px;color:var(--primary);font-weight:600">● norma oficial</span>`
+      : `<span style="font-size:10px;color:#b45309">● norma estimada</span>`;
     areasHTML += `
       <div class="resultado-area">
         <div class="area-nome">${AREA_NOMES[area]}</div>
         <div class="area-score">${r.score}<span class="area-max">/${r.max}</span></div>
         <div style="font-size:11px;color:var(--text-muted);margin:2px 0">z = ${r.z.toFixed(2)} &nbsp;|&nbsp; ${pct}%</div>
         <div class="area-class"><span class="badge ${r.classe.badge}">${r.classe.label}</span></div>
+        <div style="margin-top:4px">${normaTag}</div>
       </div>`;
   }
 
@@ -126,6 +137,7 @@ function buildResultadoHTML(av, ctx) {
       Escolaridade: ${escMap[av.paciente.esc]} &nbsp;|&nbsp;
       Avaliação em: ${formatarData(av.data)}
     </div>
+    ${bannerNorma}
     <div class="resultado-total">
       <div>
         <div class="total-label">Escore Total Bruto</div>
@@ -135,8 +147,8 @@ function buildResultadoHTML(av, ctx) {
     </div>
     <div class="resultado-grid">${areasHTML}</div>
     <div class="graficos-container">
-      <canvas id="chart-radar-${ctx}"></canvas>
-      <canvas id="chart-barras-${ctx}"></canvas>
+      <div class="grafico-box"><p class="grafico-titulo">Perfil por z-score (Radar)</p><div class="grafico-wrap"><canvas id="chart-radar-${ctx}"></canvas></div></div>
+      <div class="grafico-box"><p class="grafico-titulo">Desempenho por Área (%)</p><div class="grafico-wrap"><canvas id="chart-barras-${ctx}"></canvas></div></div>
     </div>
     <div class="resultado-interp"><strong>Interpretação:</strong><br>${interp}</div>`;
 }
@@ -375,7 +387,7 @@ function exportarPDF(avParam) {
   doc.setFontSize(8.5);
   doc.setTextColor(...preto);
   doc.text("Instrumento: NEUPSILIN — Instrumento de Avaliação Neuropsicológica Breve (Versão Adulto)", L + 4, Y + 13);
-  doc.text("Referência: Fonseca, Salles & Parente (2009). Casa do Psicólogo. Normas por faixa etária e escolaridade.", L + 4, Y + 19);
+  doc.text("Referência: Fonseca, Salles & Parente (2009). Vetor Editora. Normas por faixa etária e escolaridade.", L + 4, Y + 19);
   doc.text(`Data de aplicação: ${formatarDataBR(av.data)}   |   Modalidade: individual e presencial`, L + 4, Y + 25);
   Y += 34;
 

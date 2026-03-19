@@ -305,7 +305,7 @@
           <button class="tab" data-tab="atencao">Atenção</button>
           <button class="tab" data-tab="percepcao">Percepção</button>
           <button class="tab" data-tab="memoria">Memória</button>
-          <button class="tab" data-tab="habilidades">Hab. Aritméticas</button>
+          <button class="tab" data-tab="habilidades">Cálculo</button>
           <button class="tab" data-tab="linguagem">Linguagem</button>
           <button class="tab" data-tab="funcoes">Funções Exec.</button>
           <button class="tab" data-tab="praxias">Praxias</button>
@@ -411,9 +411,9 @@
           <div class="subtotal-bar">Subtotal Memória: <strong id="sub-memoria">0</strong> / 36</div>
         </div>
 
-        <!-- HABILIDADES ARITMÉTICAS -->
+        <!-- CÁLCULO -->
         <div class="tab-content hidden" id="tab-habilidades">
-          <h4>Habilidades Aritméticas</h4>
+          <h4>Cálculo</h4>
           <p class="tab-desc">Cálculo mental e resolução de problemas escritos.</p>
           <div class="subteste-grid">
             <div class="subteste-item">
@@ -425,7 +425,7 @@
               <input type="number" min="0" max="4" class="score-input" data-area="habilidades" data-sub="problemas" placeholder="0">
             </div>
           </div>
-          <div class="subtotal-bar">Subtotal Habilidades: <strong id="sub-habilidades">0</strong> / 10</div>
+          <div class="subtotal-bar">Subtotal Cálculo: <strong id="sub-habilidades">0</strong> / 10</div>
         </div>
 
         <!-- LINGUAGEM -->
@@ -552,7 +552,6 @@
               <option value="EF4">4º ano — Ensino Fundamental</option>
               <option value="EF5">5º ano — Ensino Fundamental</option>
               <option value="EF6">6º ano — Ensino Fundamental</option>
-              <option value="EF7">7º ano — Ensino Fundamental</option>
               <option value="NEE">Não frequenta escola</option>
             </select>
           </div>
@@ -561,6 +560,23 @@
             <select id="ninf-sexo">
               <option value="M">Masculino</option>
               <option value="F">Feminino</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Tipo de Escola</label>
+            <select id="ninf-tipo-escola">
+              <option value="publica">Pública</option>
+              <option value="particular">Particular</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Região Geográfica</label>
+            <select id="ninf-regiao">
+              <option value="norte">Norte</option>
+              <option value="nordeste">Nordeste</option>
+              <option value="centro_oeste">Centro-Oeste</option>
+              <option value="sudeste">Sudeste</option>
+              <option value="sul">Sul</option>
             </select>
           </div>
         </div>
@@ -576,7 +592,7 @@
           <button class="ninf-tab" data-ninf-tab="habilidades">Hab. Aritméticas</button>
           <button class="ninf-tab" data-ninf-tab="linguagem">Linguagem</button>
           <button class="ninf-tab" data-ninf-tab="funcoes">Funções Exec.</button>
-          <button class="ninf-tab" data-ninf-tab="praxias">Praxias</button>
+          <button class="ninf-tab" data-ninf-tab="praxias">Hab. Visuoconstr.</button>
         </div>
 
         <!-- ORIENTAÇÃO -->
@@ -750,10 +766,10 @@
           <div class="subtotal-bar">Subtotal Funções Exec.: <strong id="ninf-sub-funcoes">0</strong> / 18</div>
         </div>
 
-        <!-- PRAXIAS -->
+        <!-- HABILIDADES VISUOCONSTRUTIVAS -->
         <div class="ninf-tab-content hidden" id="ninf-tab-praxias">
-          <h4>Praxias</h4>
-          <p class="tab-desc">Praxia construtiva (cópia de figuras) e ideomotora adaptadas para crianças.</p>
+          <h4>Habilidades Visuoconstrutivas</h4>
+          <p class="tab-desc">Praxia construtiva (cópia de figuras) e praxia ideomotora (gestos) adaptadas para crianças.</p>
           <div class="subteste-grid">
             <div class="subteste-item">
               <label>Praxia Construtiva <span class="max">/8</span></label>
@@ -764,7 +780,7 @@
               <input type="number" min="0" max="8" class="ninf-score" data-area="praxias" data-sub="inf_ideomotora" placeholder="0">
             </div>
           </div>
-          <div class="subtotal-bar">Subtotal Praxias: <strong id="ninf-sub-praxias">0</strong> / 16</div>
+          <div class="subtotal-bar">Subtotal Habilidades Visuoconstrutivas: <strong id="ninf-sub-praxias">0</strong> / 16</div>
         </div>
 
       </div><!-- /card abas INF -->

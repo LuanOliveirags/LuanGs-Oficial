@@ -1,13 +1,17 @@
 /**
  * NEUPSILIN ADULTO — Tabelas Normativas
- * Baseadas em: Pawlowski, J. et al. (2013) NEUPSILIN manual.
+ * Referência: Fonseca, R.P., Salles, J.F., & Parente, M.A.M.P. (2009).
+ *             NEUPSILIN — Instrumento de Avaliação Neuropsicológica Breve. Vetor Editora.
  *
- * Normas por escolaridade (baixa/media/alta) e faixa etária.
- * Faixas etárias (12 a 90 anos):
- *   "12-18" | "19-25" | "26-35" | "36-49" | "50-64" | "65+"
+ * ATENÇÃO: Os valores de média e DP abaixo são estimativas para funcionamento do sistema.
+ * Substitua pelos dados oficiais do Manual (Vetor Editora) quando disponíveis.
  *
- * Escolaridades:
- *   "baixa" (0–4 anos) | "media" (5–11 anos) | "alta" (12+ anos)
+ * Normas estratificadas por Escolaridade × Faixa Etária:
+ *   Escolaridades : "baixa" (0–4 anos) | "media" (5–11 anos) | "alta" (12+ anos)
+ *   Faixas etárias: "12-18" | "19-25" | "26-35" | "36-49" | "50-64" | "65+"
+ *
+ * Para adolescentes (12–18 anos), o NEUPSILIN possui normas em escore Z específicas.
+ * Para adultos (19–90 anos), as normas são estratificadas por idade e escolaridade.
  */
 
 const NORMAS = {
@@ -71,7 +75,7 @@ const AREA_NOMES = {
   atencao:     "Atenção",
   percepcao:   "Percepção Visual",
   memoria:     "Memória",
-  habilidades: "Habilidades Aritméticas",
+  habilidades: "Cálculo",
   linguagem:   "Linguagem",
   funcoes:     "Funções Executivas",
   praxias:     "Praxias"
@@ -119,12 +123,24 @@ function classificarZ(z) {
  * @param {number} idade - em anos
  * @returns {{ z: number, classe: object, media: number, dp: number }}
  */
+/**
+ * Calcula escore-Z para uma área.
+ *
+ * normalizacaoUsada:
+ *  "real"    — quando os dados oficiais do manual estiverem inseridos (futuro)
+ *  "estimada" — enquanto os valores são aproximações (estado atual)
+ *
+ * Para inserir os dados reais do manual, substitua os valores de média e DP
+ * nas tabelas NORMAS acima pelas normas oficiais da Vetor Editora.
+ */
 function calcularZArea(area, score, escolaridade, idade) {
   const faixa = getFaixaEtaria(idade);
   const norma = NORMAS[area]?.[escolaridade]?.[faixa];
-  if (!norma) return { z: 0, classe: classificarZ(0), media: 0, dp: 1 };
+  if (!norma) return { z: 0, classe: classificarZ(0), media: 0, dp: 1, normalizacaoUsada: "indisponivel" };
   const z = (score - norma.media) / norma.dp;
-  return { z, classe: classificarZ(z), media: norma.media, dp: norma.dp };
+  // Altere para "real" após inserir os dados oficiais do Manual
+  const normalizacaoUsada = "estimada";
+  return { z: +z.toFixed(2), classe: classificarZ(z), media: norma.media, dp: norma.dp, normalizacaoUsada };
 }
 
 /**
