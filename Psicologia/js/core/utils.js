@@ -79,3 +79,29 @@ function badgeParaCor(badge) {
   };
   return map[badge] || { bg: [226, 232, 240], txt: [100, 116, 139] };
 }
+
+/**
+ * Alterna o modo de edição da interpretação clínica.
+ * Quando em edição, o <div> fica com contentEditable e borda azul.
+ * @param {HTMLButtonElement} btn
+ */
+function toggleEditarInterp(btn) {
+  const wrapper = btn.closest(".resultado-interp-wrapper");
+  const div = wrapper.querySelector(".resultado-interp");
+  const editing = div.dataset.editavel === "true";
+
+  if (editing) {
+    div.contentEditable = "false";
+    div.dataset.editavel = "false";
+    div.classList.remove("editando");
+    btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar';
+    btn.classList.remove("salvando");
+  } else {
+    div.contentEditable = "true";
+    div.dataset.editavel = "true";
+    div.classList.add("editando");
+    div.focus();
+    btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Salvar';
+    btn.classList.add("salvando");
+  }
+}

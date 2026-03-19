@@ -519,14 +519,74 @@ textarea { resize: vertical; }
 .total-score { font-size: 36px; font-weight: 900; }
 .total-class { font-size: 16px; font-weight: 700; background: rgba(255,255,255,.2); border-radius: 7px; padding: 6px 14px; }
 
-.resultado-interp {
+.resultado-interp-wrapper {
   background: #f0f9ff;
   border: 1px solid #bae6fd;
-  border-radius: 8px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.resultado-interp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: #e0f2fe;
+  border-bottom: 1px solid #bae6fd;
+  font-size: 13px;
+  color: #0c4a6e;
+}
+
+.btn-editar-interp {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #0369a1;
+  background: #fff;
+  border: 1px solid #7dd3fc;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all .2s ease;
+}
+.btn-editar-interp:hover {
+  background: #0ea5e9;
+  color: #fff;
+  border-color: #0ea5e9;
+}
+.btn-editar-interp.salvando {
+  color: #fff;
+  background: #16a34a;
+  border-color: #16a34a;
+}
+.btn-editar-interp.salvando:hover {
+  background: #15803d;
+  border-color: #15803d;
+}
+
+.resultado-interp {
   padding: 14px 16px;
   font-size: 13px;
   color: #0c4a6e;
-  line-height: 1.6;
+  line-height: 1.7;
+  outline: none;
+  transition: all .2s ease;
+  min-height: 60px;
+}
+
+.resultado-interp.editando {
+  background: #fff;
+  border: 2px dashed #38bdf8;
+  border-radius: 0 0 8px 8px;
+  cursor: text;
+  box-shadow: inset 0 0 0 2px rgba(56,189,248,0.1);
+}
+
+.resultado-interp.editando:focus {
+  border-color: #0284c7;
+  box-shadow: inset 0 0 0 2px rgba(2,132,199,0.12);
 }
 
 /* ══════════════════════════════════════════════

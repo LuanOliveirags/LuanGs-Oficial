@@ -320,8 +320,15 @@ function buildResultadoBFPHTML(av, ctx) {
       </table>
     </div>
 
-    <div class="resultado-interp" style="margin-top:18px">
-      <strong>Interpretação:</strong><br>${gerarInterpretacaoBFP(av)}
+    <div class="resultado-interp-wrapper" style="margin-top:18px">
+      <div class="resultado-interp-header">
+        <strong>Interpretação Clínica</strong>
+        <button type="button" class="btn-editar-interp" onclick="toggleEditarInterp(this)" title="Editar interpretação">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Editar
+        </button>
+      </div>
+      <div class="resultado-interp" id="bfp-interp-texto" data-editavel="false">${gerarInterpretacaoBFP(av)}</div>
     </div>
     <p style="font-size:11px;color:var(--text-muted);margin-top:8px;font-style:italic">
       * Os T-scores são calculados com base em normas aproximadas para adultos brasileiros.
@@ -343,24 +350,37 @@ function gerarInterpretacaoBFP(av) {
     const f     = BFP_FATORES[fCode];
     const label = score.classe.label.toLowerCase();
     if (fCode === "N") {
-      if (score.tscore >= 60) return `<em>Neuroticismo</em> elevado (T=${score.tscore}), indicando maior vulnerabilidade emocional e tendência a experienciar afetos negativos`;
-      if (score.tscore >= 45) return `<em>Neuroticismo</em> no nível ${label} (T=${score.tscore}), com relativa estabilidade emocional`;
-      return `<em>Neuroticismo</em> baixo (T=${score.tscore}), sugerindo boa estabilidade emocional e resiliência ao estresse`;
+      if (score.tscore >= 60) return `No fator <em>Neuroticismo</em>, o escore T de ${score.tscore} situa-se em nível elevado, sugerindo maior vulnerabilidade emocional e propensão a vivenciar afetos negativos com mais frequência e intensidade`;
+      if (score.tscore >= 45) return `No fator <em>Neuroticismo</em>, o escore T de ${score.tscore} indica um nível ${label}, compatível com relativa estabilidade emocional e capacidade adequada de manejo do estresse`;
+      return `No fator <em>Neuroticismo</em>, o escore T de ${score.tscore} aponta para um nível baixo, sugerindo boa estabilidade emocional e resiliência diante de situações adversas`;
     }
-    return `<em>${f.nome}</em> no nível ${label} (T=${score.tscore})`;
+    if (fCode === "E") {
+      if (score.tscore >= 60) return `Em <em>${f.nome}</em>, o nível ${label} (T=${score.tscore}) indica uma pessoa sociável, comunicativa e que tende a buscar estímulo no contato interpessoal`;
+      if (score.tscore <= 40) return `Em <em>${f.nome}</em>, o nível ${label} (T=${score.tscore}) sugere preferência por atividades mais reservadas e menor necessidade de estímulo social`;
+      return `Em <em>${f.nome}</em>, o resultado situou-se no nível ${label} (T=${score.tscore}), dentro dos parâmetros esperados`;
+    }
+    if (fCode === "S") {
+      if (score.tscore >= 60) return `Em <em>${f.nome}</em>, o nível ${label} (T=${score.tscore}) revela tendência a comportamentos pró-sociais, empatia e consideração pelo outro`;
+      if (score.tscore <= 40) return `Em <em>${f.nome}</em>, o nível ${label} (T=${score.tscore}) pode indicar menor disponibilidade para relações cooperativas ou postura mais assertiva e competitiva`;
+      return `Em <em>${f.nome}</em>, o resultado situou-se no nível ${label} (T=${score.tscore}), dentro da faixa normativa`;
+    }
+    if (fCode === "R") {
+      if (score.tscore >= 60) return `Em <em>${f.nome}</em>, o nível ${label} (T=${score.tscore}) indica boa capacidade de organização, planejamento e comprometimento com metas e responsabilidades`;
+      if (score.tscore <= 40) return `Em <em>${f.nome}</em>, o nível ${label} (T=${score.tscore}) pode sinalizar menor grau de autodisciplina e organização, sendo relevante avaliar o impacto funcional`;
+      return `Em <em>${f.nome}</em>, o resultado situou-se no nível ${label} (T=${score.tscore}), compatível com a média normativa`;
+    }
+    // Abertura
+    if (score.tscore >= 60) return `Em <em>${f.nome}</em>, o nível ${label} (T=${score.tscore}) sugere interesse por novas experiências, criatividade e abertura a perspectivas diversas`;
+    if (score.tscore <= 40) return `Em <em>${f.nome}</em>, o nível ${label} (T=${score.tscore}) aponta para preferência por rotinas estabelecidas e menor busca por novidade`;
+    return `Em <em>${f.nome}</em>, o resultado situou-se no nível ${label} (T=${score.tscore}), dentro dos parâmetros normativos`;
   };
 
-  const frases = [
-    descFator("N", N),
-    descFator("E", E),
-    descFator("S", S),
-    descFator("R", R),
-    descFator("A", A)
-  ];
-
-  return `<strong>${av.paciente.nome}</strong> apresentou o seguinte perfil no BFP: ${frases.join("; ")}. ` +
-    `O instrumento avalia as cinco dimensões do modelo Big Five da personalidade. ` +
-    `Os resultados devem ser interpretados de forma integrada, considerando o contexto clínico e demandas do avaliado.`;
+  let txt = `A avaliação dos traços de personalidade de <strong>${av.paciente.nome}</strong>, conduzida por meio da Bateria Fatorial de Personalidade (BFP), revelou o seguinte perfil nas cinco dimensões do modelo Big Five:`;
+  txt += `<br><br>`;
+  txt += [descFator("N", N), descFator("E", E), descFator("S", S), descFator("R", R), descFator("A", A)].join(". ") + ".";
+  txt += `<br><br>`;
+  txt += `Ressalta-se que os resultados do BFP oferecem um panorama dos traços de personalidade e devem ser interpretados de forma integrada, à luz do contexto clínico, da história pessoal e das demandas específicas apresentadas pelo avaliando. Nenhum fator isolado é suficiente para uma conclusão diagnóstica.`;
+  return txt;
 }
 
 // ──────────────────────────────────────────────────────
@@ -685,7 +705,8 @@ function exportarPDFBFP(avParam) {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8.5);
   doc.setTextColor(50, 50, 50);
-  const interpTxt = gerarInterpretacaoBFP(av).replace(/<[^>]+>/g, "");
+  const interpEl = document.getElementById("bfp-interp-texto");
+  const interpTxt = interpEl ? interpEl.innerText : gerarInterpretacaoBFP(av).replace(/<[^>]+>/g, "");
   const linhas    = doc.splitTextToSize(interpTxt, W);
   doc.text(linhas, L, Y);
   Y += linhas.length * 5 + 6;

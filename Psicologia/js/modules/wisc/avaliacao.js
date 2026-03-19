@@ -160,7 +160,16 @@ function buildResultadoWISCHTML(av, ctx) {
       <div class="grafico-box"><p class="grafico-titulo">Perfil de Índices (Radar)</p><div class="grafico-wrap"><canvas id="chart-radar-${ctx}"></canvas></div></div>
       <div class="grafico-box"><p class="grafico-titulo">Escores por Índice</p><div class="grafico-wrap"><canvas id="chart-barras-${ctx}"></canvas></div></div>
     </div>
-    <div class="resultado-interp"><strong>Interpretação:</strong><br>${interp}</div>`;
+    <div class="resultado-interp-wrapper">
+      <div class="resultado-interp-header">
+        <strong>Interpretação Clínica</strong>
+        <button type="button" class="btn-editar-interp" onclick="toggleEditarInterp(this)" title="Editar interpretação">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Editar
+        </button>
+      </div>
+      <div class="resultado-interp" id="wisc-interp-texto" data-editavel="false">${interp}</div>
+    </div>`;
 }
 
 // ── Gráficos WISC ──
@@ -282,18 +291,25 @@ function gerarInterpretacaoWISC(av) {
   const fsiq = av.indices.fsiq.score;
   const classe = av.indices.fsiq.classe;
 
-  let txt = `O desempenho intelectual de <strong>${av.paciente.nome}</strong> foi avaliado pelo WISC-IV. `;
-  txt += `O QI Total (FSIQ) obtido foi de <strong>${fsiq}</strong>, classificado como <strong>${classe.label}</strong>, `;
-  txt += `indicando ${classe.interp}. `;
+  let txt = `A avaliação do funcionamento intelectual de <strong>${av.paciente.nome}</strong>, realizada por meio do WISC-IV, evidenciou um Quociente de Inteligência Total (FSIQ) de <strong>${fsiq}</strong>, situado na faixa <strong>${classe.label}</strong>, o que corresponde a ${classe.interp}.`;
+
+  txt += `<br><br>`;
 
   const acima  = ordemIndices.filter(i => av.indices[i].score >= 110).map(i => WISC_INDICES[i]);
   const abaixo = ordemIndices.filter(i => av.indices[i].score < 90).map(i => WISC_INDICES[i]);
 
-  if (acima.length)  txt += `Índices com desempenho acima da média: <em>${acima.join(", ")}</em>. `;
-  if (abaixo.length) txt += `Índices abaixo da média: <em>${abaixo.join(", ")}</em>, sugerindo necessidade de investigação adicional nessas habilidades. `;
-  if (!abaixo.length && !acima.length) txt += `Todos os índices cognitivos encontram-se dentro da faixa média esperada para a faixa etária. `;
+  if (acima.length && abaixo.length) {
+    txt += `Na análise dos índices fatoriais, observou-se desempenho acima da média em <em>${acima.join(" e ")}</em>, configurando áreas de maior potencial cognitivo. Em contrapartida, os índices de <em>${abaixo.join(" e ")}</em> apresentaram escores abaixo do esperado para a faixa etária, o que merece atenção clínica e sugere a pertinência de investigação complementar dessas habilidades.`;
+  } else if (acima.length) {
+    txt += `Na análise dos índices fatoriais, destacaram-se positivamente <em>${acima.join(" e ")}</em>, com escores acima da média normativa, indicando recursos cognitivos bem desenvolvidos nessas áreas. Os demais índices situaram-se dentro dos parâmetros esperados.`;
+  } else if (abaixo.length) {
+    txt += `Na análise dos índices fatoriais, foram identificados escores abaixo da média em <em>${abaixo.join(" e ")}</em>, o que sugere a necessidade de acompanhamento e investigação mais aprofundada dessas competências. Os demais índices mantiveram-se dentro da faixa média.`;
+  } else {
+    txt += `Na análise dos índices fatoriais, todos os domínios cognitivos avaliados situaram-se dentro da faixa média esperada para a faixa etária, sem discrepâncias clinicamente significativas entre os índices.`;
+  }
 
-  txt += `Os escores de índice foram calculados com base nas normas do WISC-IV para crianças de ${av.paciente.idade} anos.`;
+  txt += `<br><br>`;
+  txt += `Os escores foram obtidos a partir das normas do WISC-IV para crianças de ${av.paciente.idade} anos. Recomenda-se que estes resultados sejam integrados aos dados clínicos, observacionais e de outros instrumentos para uma compreensão global do funcionamento cognitivo do avaliando.`;
   return txt;
 }
 
@@ -433,7 +449,8 @@ function exportarPDFWISC(avParam) {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8.5);
   doc.setTextColor(50, 50, 50);
-  const interpTxt = stripHTML(gerarInterpretacaoWISC(av));
+  const interpEl = document.getElementById("wisc-interp-texto");
+  const interpTxt = interpEl ? interpEl.innerText : stripHTML(gerarInterpretacaoWISC(av));
   const linhas = doc.splitTextToSize(interpTxt, W);
   doc.text(linhas, L, Y);
   Y += linhas.length * 5 + 8;

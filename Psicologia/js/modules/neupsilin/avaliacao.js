@@ -155,7 +155,16 @@ function buildResultadoHTML(av, ctx) {
       <div class="grafico-box"><p class="grafico-titulo">Perfil por z-score (Radar)</p><div class="grafico-wrap"><canvas id="chart-radar-${ctx}"></canvas></div></div>
       <div class="grafico-box"><p class="grafico-titulo">Desempenho por Área (%)</p><div class="grafico-wrap"><canvas id="chart-barras-${ctx}"></canvas></div></div>
     </div>
-    <div class="resultado-interp"><strong>Interpretação:</strong><br>${interp}</div>`;
+    <div class="resultado-interp-wrapper">
+      <div class="resultado-interp-header">
+        <strong>Interpretação Clínica</strong>
+        <button type="button" class="btn-editar-interp" onclick="toggleEditarInterp(this)" title="Editar interpretação">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Editar
+        </button>
+      </div>
+      <div class="resultado-interp" id="neup-interp-texto" data-editavel="false">${interp}</div>
+    </div>`;
 }
 
 // ──────────────────────────────────────────────────────
@@ -287,17 +296,22 @@ function gerarInterpretacao(av) {
   const fracos = areas.filter(a => av.resultados[a].z < -1.0).map(a => AREA_NOMES[a]);
   const fortes = areas.filter(a => av.resultados[a].z >= 1.0).map(a => AREA_NOMES[a]);
 
-  let txt = `O desempenho geral de <strong>${av.paciente.nome}</strong> foi classificado como <strong>${av.classeGeral.label}</strong>, ${av.classeGeral.interp}. `;
+  let txt = `O exame neuropsicológico breve de <strong>${av.paciente.nome}</strong>, conduzido por meio do NEUPSILIN, revelou um perfil cognitivo geral classificado como <strong>${av.classeGeral.label}</strong>, ${av.classeGeral.interp}.`;
 
-  if (fortes.length)
-    txt += `Destacaram-se positivamente: <em>${fortes.join(", ")}</em>. `;
+  txt += `<br><br>`;
 
-  if (fracos.length)
-    txt += `Foram observados escores inferiores ao esperado em: <em>${fracos.join(", ")}</em>, sugerindo necessidade de avaliação complementar nessas funções. `;
-  else
-    txt += `Não foram identificadas áreas com desempenho significativamente abaixo da média para o grupo normativo de referência. `;
+  if (fortes.length && fracos.length) {
+    txt += `Dentre as funções avaliadas, identificaram-se áreas de melhor desempenho em <em>${fortes.join(" e ")}</em>, as quais se situaram acima da média do grupo normativo. Por outro lado, as funções de <em>${fracos.join(" e ")}</em> apresentaram escores significativamente inferiores ao esperado (z < −1,0), configurando pontos de atenção clínica que requerem investigação complementar.`;
+  } else if (fortes.length) {
+    txt += `Dentre as funções avaliadas, destacaram-se positivamente <em>${fortes.join(" e ")}</em>, com desempenho acima da média normativa. As demais funções cognitivas mantiveram-se dentro dos parâmetros esperados para o grupo de referência.`;
+  } else if (fracos.length) {
+    txt += `Na análise por domínios, foram identificados escores significativamente abaixo do esperado em <em>${fracos.join(" e ")}</em> (z < −1,0), o que aponta para a necessidade de avaliação neuropsicológica mais detalhada dessas funções. As demais áreas situaram-se dentro da faixa normativa.`;
+  } else {
+    txt += `Todas as funções neurocognitivas avaliadas apresentaram desempenho dentro dos parâmetros esperados para o grupo normativo de referência, sem indicativos de déficits significativos.`;
+  }
 
-  txt += `Os escores brutos foram comparados às normas do NEUPSILIN Adulto estratificadas por faixa etária (${getFaixaEtaria(av.paciente.idade)} anos) e escolaridade.`;
+  txt += `<br><br>`;
+  txt += `Os escores brutos foram comparados às normas do NEUPSILIN Adulto, estratificadas por faixa etária (${getFaixaEtaria(av.paciente.idade)} anos) e nível de escolaridade. Recomenda-se que estes achados sejam interpretados à luz do contexto clínico, da história de vida e de eventuais queixas relatadas pelo paciente.`;
   return txt;
 }
 
@@ -477,7 +491,8 @@ function exportarPDF(avParam) {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8.5);
   doc.setTextColor(50, 50, 50);
-  const interpTxt = stripHTML(gerarInterpretacao(av));
+  const interpEl = document.getElementById("neup-interp-texto");
+  const interpTxt = interpEl ? interpEl.innerText : stripHTML(gerarInterpretacao(av));
   const linhas = doc.splitTextToSize(interpTxt, W);
   doc.text(linhas, L, Y);
   Y += linhas.length * 5 + 8;

@@ -193,7 +193,16 @@ function buildResultadoHTMLInf(av, ctx) {
       <div class="grafico-box"><p class="grafico-titulo">Perfil por z-score (Radar)</p><div class="grafico-wrap"><canvas id="ninf-chart-radar-${ctx}"></canvas></div></div>
       <div class="grafico-box"><p class="grafico-titulo">Desempenho por Área (%)</p><div class="grafico-wrap"><canvas id="ninf-chart-barras-${ctx}"></canvas></div></div>
     </div>
-    <div class="resultado-interp"><strong>Interpretação:</strong><br>${interp}</div>`;
+    <div class="resultado-interp-wrapper">
+      <div class="resultado-interp-header">
+        <strong>Interpretação Clínica</strong>
+        <button type="button" class="btn-editar-interp" onclick="toggleEditarInterp(this)" title="Editar interpretação">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Editar
+        </button>
+      </div>
+      <div class="resultado-interp" id="ninf-interp-texto" data-editavel="false">${interp}</div>
+    </div>`;
 }
 
 // ──────────────────────────────────────────────────────
@@ -313,18 +322,22 @@ function gerarInterpretacaoInf(av) {
   const fracos = areas.filter(a => av.resultados[a].z < -1.0).map(a => AREA_NOMES_INF[a]);
   const fortes = areas.filter(a => av.resultados[a].z >= 1.0).map(a => AREA_NOMES_INF[a]);
 
-  let txt = `O desempenho geral de <strong>${av.paciente.nome}</strong> (${av.paciente.idade} anos) `;
-  txt += `foi classificado como <strong>${av.classeGeral.label}</strong>, ${av.classeGeral.interp}. `;
+  let txt = `A avaliação neuropsicológica infantil de <strong>${av.paciente.nome}</strong> (${av.paciente.idade} anos), realizada por meio do NEUPSILIN-INF, revelou um perfil cognitivo global classificado como <strong>${av.classeGeral.label}</strong>, ${av.classeGeral.interp}.`;
 
-  if (fortes.length)
-    txt += `Destacaram-se positivamente: <em>${fortes.join(", ")}</em>. `;
+  txt += `<br><br>`;
 
-  if (fracos.length)
-    txt += `Foram observados escores abaixo do esperado para a faixa etária em: <em>${fracos.join(", ")}</em>, sugerindo necessidade de avaliação complementar. `;
-  else
-    txt += `Não foram identificadas áreas com desempenho significativamente abaixo da média para crianças de ${av.paciente.idade} anos. `;
+  if (fortes.length && fracos.length) {
+    txt += `Na análise por domínios, a criança demonstrou recursos preservados e acima da média em <em>${fortes.join(" e ")}</em>. Em contrapartida, os escores em <em>${fracos.join(" e ")}</em> situaram-se abaixo do esperado para a faixa etária (z < −1,0), sinalizando a importância de acompanhamento e avaliação complementar nessas áreas do desenvolvimento.`;
+  } else if (fortes.length) {
+    txt += `Na análise por domínios, a criança evidenciou desempenho acima da média em <em>${fortes.join(" e ")}</em>, sugerindo bom desenvolvimento dessas funções. As demais áreas avaliadas mantiveram-se dentro dos parâmetros esperados para crianças de ${av.paciente.idade} anos.`;
+  } else if (fracos.length) {
+    txt += `Na análise por domínios, identificaram-se escores abaixo do esperado para a faixa etária em <em>${fracos.join(" e ")}</em> (z < −1,0), o que indica a necessidade de investigação mais detalhada dessas funções e, conforme o caso, encaminhamento para estimulação ou acompanhamento especializado. As demais funções situaram-se dentro da faixa normativa.`;
+  } else {
+    txt += `Todas as funções neurocognitivas avaliadas apresentaram desempenho compatível com o esperado para crianças de ${av.paciente.idade} anos, sem indicativos de déficits significativos nas áreas investigadas.`;
+  }
 
-  txt += `Os escores foram comparados às normas do NEUPSILIN-INF (Salles et al., 2011) para a faixa etária de ${av.paciente.idade} anos.`;
+  txt += `<br><br>`;
+  txt += `Os dados foram comparados às normas do NEUPSILIN-INF (Salles et al., 2011), específicas para a faixa etária de ${av.paciente.idade} anos. Recomenda-se que estes resultados sejam articulados com as informações da anamnese, observações clínicas e dados escolares para uma compreensão integrada do perfil da criança.`;
   return txt;
 }
 
@@ -515,7 +528,8 @@ function exportarPDFInf(avParam) {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8.5);
   doc.setTextColor(50, 50, 50);
-  const interp = gerarInterpretacaoInf(av).replace(/<[^>]+>/g, "");
+  const interpEl = document.getElementById("ninf-interp-texto");
+  const interp = interpEl ? interpEl.innerText : gerarInterpretacaoInf(av).replace(/<[^>]+>/g, "");
   const linhas = doc.splitTextToSize(interp, W);
   doc.text(linhas, L, Y);
   Y += linhas.length * 5 + 8;
