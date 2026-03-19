@@ -3,14 +3,8 @@
 // Wechsler, D. (2013). Adaptação e padronização brasileira:
 // Ambiel, N.F., Santos, A.A.A. dos, & Castro, N.R. de. Pearson.
 //
-// ⚠️  ATENÇÃO — NORMAS ESTIMADAS:
-// Os escores de índice (EI) e o QI Total (FSIQ) calculados aqui são
-// ESTIMATIVAS baseadas em fórmulas z simplificadas (média e dp teóricos).
-// O instrumento oficial utiliza tabelas de normatização por grupos de
-// idade com intervalo de 4 meses (manual Pearson, 2013).
-// Quando os dados normativos do manual forem informados, substituir as
-// constantes WISC_NORMAS pelos valores reais e alterar
-// normalizacaoUsada de "estimada" para "real".
+// Tabelas normativas carregadas do Firestore em runtime (após login).
+// Nenhum dado normativo é distribuído no bundle público.
 // ─────────────────────────────────────────────────────────
 
 const WISC_META = {
@@ -28,17 +22,10 @@ const WISC_INDICES = {
   vp: "Velocidade de Processamento"
 };
 
-/**
- * Médias e DPs teóricos da SOMA de escores ponderados por índice.
- * (Escores ponderados: média=10, dp≈3 por subteste)
- * CV  = 3 subtestes → media≈30, dp≈5.2
- * RP  = 3 subtestes → media≈30, dp≈5.2
- * IMO = 2 subtestes → media≈20, dp≈4.2
- * IVP = 2 subtestes → media≈20, dp≈4.2
- *
- * Para o FSIQ: soma dos 10 subtestes → media≈100, dp≈9.5
- * Substituir pelos valores das tabelas do manual quando disponíveis.
- */
+// Tabelas normativas carregadas do Firestore em runtime (após login).
+// Fallback vazio — sem dados no bundle público.
+const WISC_NORMAS = {};
+
 /** Subtestes por índice */
 const WISC_SUBTESTES_POR_INDICE = {
   cv: ["semelhancas", "vocabulario", "compreensao"],
@@ -66,7 +53,8 @@ const WISC_SUB_NOMES = {
  * EI = 100 + 15 × (soma − média) / dp, clampado a [40, 160].
  */
 function calcularIndiceWISC(soma, indice) {
-  const norma = WISC_NORMAS[indice];
+  const tabelas = getServidorNormas()?.wisc ?? WISC_NORMAS;
+  const norma = tabelas[indice];
   if (!norma) return 100;
   return Math.max(40, Math.min(160, Math.round(100 + 15 * (soma - norma.media) / norma.dp)));
 }

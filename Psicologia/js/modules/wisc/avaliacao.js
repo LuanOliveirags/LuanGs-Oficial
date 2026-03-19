@@ -77,7 +77,8 @@ function calcularESalvarWISC() {
   // QI Total (FSIQ) — estimativa via soma dos 10 escores ponderados
   // (instrumento oficial usa tabelas de normatização por grupo de 4 meses — Pearson, 2013)
   const somaTotal = Object.values(subtestes).reduce((acc, v) => acc + v, 0);
-  const normaFsiq = WISC_NORMAS.fsiq;
+  const tabelasWisc = getServidorNormas()?.wisc ?? WISC_NORMAS;
+  const normaFsiq = tabelasWisc.fsiq;
   const fsiqScore = Math.max(40, Math.min(160, Math.round(100 + 15 * (somaTotal - normaFsiq.media) / normaFsiq.dp)));
   indices.fsiq = { score: fsiqScore, classe: classificarQI(fsiqScore), normalizacaoUsada: "estimada" };
 

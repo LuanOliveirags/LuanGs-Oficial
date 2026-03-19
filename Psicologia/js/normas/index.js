@@ -3,18 +3,15 @@
    Fonte de verdade dos dados normativos.
 
    Arquitetura de proteção em camadas:
-     Nível 1 (bundle): normas/*.js contém funções e META.
+     Nível 1 (bundle): normas/*.js contém apenas funções e META (sem tabelas).
      Nível 2 (runtime): tabelas só ficam na memória APÓS login.
-     Nível 3 (servidor): tabelas migradas pro Firestore sobrepõem
-                          o bundle via getter → getServidorNormas().
+     Nível 3 (servidor): tabelas carregadas do Firestore
+                          via getter → getServidorNormas().
 
    Uso:
      const { wisc }      = NORMAS;
-     wisc.tabelas        → prioriza Firestore, fallback no bundle
+     wisc.tabelas        → carrega do Firestore (fallback vazio)
      NORMAS.meta("wisc") → { id, versao, fonte, tipo, nota }
-
-   Seed Firestore (admin, 1x apenas):
-     await seedNormasFirestore()
 ═══════════════════════════════════════════════════════ */
 
 // ── Ponto de acesso unificado ─────────────────────────
@@ -79,14 +76,6 @@ const NORMAS = Object.freeze({
 
 });
 
-// ── Acesso admin para seed ────────────────────────────
-// `const` não vai para `window`, então expomos explicitamente.
-// seedNormasFirestore() usa este objeto para popular o Firestore.
-window._getNormasBundleCompleto = function () {
-  return {
-    wisc:            WISC_NORMAS,
-    neupsilin:       NEUPSILIN_NORMAS,
-    "neupsilin-inf": NORMAS_INF,
-    bfp:             BFP_NORMAS_FACETA
-  };
-};
+// ── Seed já executado ────────────────────────────────────
+// Tabelas normativas estão no Firestore.
+// Não há dados expostos no bundle.

@@ -3,7 +3,7 @@
    Carregamento seguro de tabelas normativas do Firestore.
 
    CAMADAS DE PROTEÇÃO:
-   1. Bundle    : normas/*.js contém só funções e META (tabelas removidas após seed)
+   1. Bundle    : normas/*.js contém apenas funções e META (sem tabelas)
    2. Session   : carregarNormas() só chamado após login validado pela aplicação
    3. Firestore : regras verificam _sessoes/{uid}.role (não só request.auth)
    4. Cache     : tabelas cifradas em sessionStorage (AES-GCM, chave em memória)
@@ -13,11 +13,6 @@
      _normas/{instrumento}  →  { tabelas: {...}, _seedAt, _seedPor, _versao }
      _sessoes/{uid}         →  { role, email, validoAte }
      _audit/{autoId}        →  { uid, email, instrumentos, ts, ua }
-
-   Para popular o Firestore pela primeira vez (admin, UMA VEZ):
-     await seedNormasFirestore()
-   Após confirmar dados no Firestore, remova os objetos de tabelas dos
-   normas/*.js para que não sejam distribuídos no bundle público.
 ═══════════════════════════════════════════════════════ */
 
 // null = pré-login | {} = carregado, servidor sem dados | {...} = tabelas prontas
@@ -190,73 +185,12 @@ function normasCarregadas() {
 }
 
 /**
- * Admin: popula o Firestore com as tabelas do bundle local.
- * Cria 4 documentos separados (_normas/{instrumento}) via batch.
- *
- * Executar UMA VEZ no console, logado como admin:
- *   await seedNormasFirestore()
- *
- * Após confirmar os dados no Firestore, remova os objetos de tabelas
- * dos arquivos normas/*.js (WISC_NORMAS, NEUPSILIN_NORMAS, NORMAS_INF,
- * BFP_NORMAS_FACETA) para que não sejam distribuídos no bundle público.
- *
- * @returns {Promise<boolean>}
+ * Admin: popula o Firestore com tabelas normativas.
+ * Seed já executado — tabelas não estão mais no bundle.
+ * Mantido apenas para referência; os dados já estão no Firestore.
  */
 async function seedNormasFirestore() {
-  const _u = (typeof window.__getUsuarioLogado === "function")
-    ? window.__getUsuarioLogado()
-    : window.usuarioLogado;
-  if (!_u || _u.role !== "admin") {
-    throw new Error("[normas] Apenas administradores podem executar a seed.");
-  }
-
-  // _getNormasBundleCompleto() é exposta por normas/index.js.
-  // Usar window._getNormasBundleCompleto em vez de window[varName] porque
-  // `const` em <script> NÃO é acessível via window["NOME_DA_CONST"].
-  if (typeof window._getNormasBundleCompleto !== "function") {
-    throw new Error("[normas] _getNormasBundleCompleto não encontrado — certifique-se que js/normas/index.js está carregado.");
-  }
-  const bundle = window._getNormasBundleCompleto();
-
-  const mapa = [
-    ["wisc",          "wisc"],
-    ["neupsilin",     "neupsilin"],
-    ["neupsilin-inf", "neupsilin-inf"],
-    ["bfp",           "bfp"]
-  ];
-
-  for (const [id] of mapa) {
-    if (!bundle[id] || typeof bundle[id] !== "object") {
-      throw new Error(`[normas] tabela "${id}" está vazia — certifique-se que as tabelas ainda estão nos normas/*.js antes do seed.`);
-    }
-  }
-
-  const meta = {
-    _seedAt:  new Date().toISOString(),
-    _seedPor: _u.email,
-    _versao:  "2.0"
-  };
-
-  // Batch garante atomicidade: ou tudo gravado, ou nada
-  const batch = _firestoreDB.batch();
-  for (const [id] of mapa) {
-    batch.set(
-      _firestoreDB.collection("_normas").doc(id),
-      { tabelas: bundle[id], ...meta }
-    );
-  }
-  await batch.commit();
-
-  // Atualiza memória imediatamente (evita re-fetch)
-  _servidor = Object.fromEntries(mapa.map(([id]) => [id, bundle[id]]));
-
-  console.info("═══════════════════════════════════════════════════════");
-  console.info("[normas] ✓ Seed v2 concluído — 4 documentos escritos:");
-  mapa.forEach(([id]) => console.info(`  _normas/${id}`));
-  console.info("[normas] Próximo passo: remova os objetos de tabelas:");
-  console.info("  WISC_NORMAS, NEUPSILIN_NORMAS, NORMAS_INF, BFP_NORMAS_FACETA");
-  console.info("═══════════════════════════════════════════════════════");
-  return true;
+  throw new Error("[normas] Seed já executado. Tabelas estão no Firestore. Não há dados no bundle para enviar.");
 }
 
 // Expõe ao console do navegador (admin pode chamar diretamente)

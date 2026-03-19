@@ -33,80 +33,9 @@ const NEUPSILIN_INF_META = {
   nota:    "Estratificacao: faixa etaria x tipo escola x regiao. Consultar Manual Vetor Editora."
 };
 
-const NORMAS_INF = {
-  orientacao: {
-    "6":  { media: 3.5, dp: 1.2 },
-    "7":  { media: 4.1, dp: 1.1 },
-    "8":  { media: 4.7, dp: 1.0 },
-    "9":  { media: 5.1, dp: 0.9 },
-    "10": { media: 5.3, dp: 0.8 },
-    "11": { media: 5.5, dp: 0.7 },
-    "12": { media: 5.7, dp: 0.5 }
-  },
-  atencao: {
-    "6":  { media: 7.8,  dp: 2.9 },
-    "7":  { media: 9.8,  dp: 2.7 },
-    "8":  { media: 11.8, dp: 2.6 },
-    "9":  { media: 13.5, dp: 2.5 },
-    "10": { media: 15.2, dp: 2.4 },
-    "11": { media: 16.8, dp: 2.3 },
-    "12": { media: 18.1, dp: 2.2 }
-  },
-  percepcao: {
-    "6":  { media: 10.0, dp: 2.6 },
-    "7":  { media: 11.8, dp: 2.5 },
-    "8":  { media: 13.4, dp: 2.3 },
-    "9":  { media: 14.9, dp: 2.2 },
-    "10": { media: 16.1, dp: 2.0 },
-    "11": { media: 17.1, dp: 1.8 },
-    "12": { media: 17.9, dp: 1.6 }
-  },
-  memoria: {
-    "6":  { media: 11.5, dp: 3.6 },
-    "7":  { media: 14.0, dp: 3.4 },
-    "8":  { media: 16.5, dp: 3.3 },
-    "9":  { media: 18.8, dp: 3.2 },
-    "10": { media: 20.8, dp: 3.0 },
-    "11": { media: 22.5, dp: 2.8 },
-    "12": { media: 24.2, dp: 2.7 }
-  },
-  habilidades: {
-    "6":  { media: 2.5, dp: 1.2 },
-    "7":  { media: 3.3, dp: 1.2 },
-    "8":  { media: 4.2, dp: 1.1 },
-    "9":  { media: 5.0, dp: 1.0 },
-    "10": { media: 5.8, dp: 1.0 },
-    "11": { media: 6.3, dp: 0.9 },
-    "12": { media: 6.9, dp: 0.8 }
-  },
-  linguagem: {
-    "6":  { media: 11.5, dp: 3.3 },
-    "7":  { media: 13.9, dp: 3.2 },
-    "8":  { media: 16.3, dp: 3.0 },
-    "9":  { media: 18.5, dp: 2.9 },
-    "10": { media: 20.4, dp: 2.8 },
-    "11": { media: 21.9, dp: 2.5 },
-    "12": { media: 23.3, dp: 2.3 }
-  },
-  funcoes: {
-    "6":  { media: 6.0,  dp: 2.3 },
-    "7":  { media: 7.6,  dp: 2.2 },
-    "8":  { media: 9.2,  dp: 2.1 },
-    "9":  { media: 10.8, dp: 2.0 },
-    "10": { media: 12.3, dp: 1.9 },
-    "11": { media: 13.6, dp: 1.8 },
-    "12": { media: 14.9, dp: 1.6 }
-  },
-  praxias: {
-    "6":  { media: 7.2,  dp: 2.3 },
-    "7":  { media: 8.7,  dp: 2.2 },
-    "8":  { media: 10.2, dp: 2.1 },
-    "9":  { media: 11.6, dp: 2.0 },
-    "10": { media: 12.7, dp: 1.8 },
-    "11": { media: 13.6, dp: 1.7 },
-    "12": { media: 14.5, dp: 1.5 }
-  }
-};
+// Tabelas normativas carregadas do Firestore em runtime (após login).
+// Fallback vazio — sem dados no bundle público.
+const NORMAS_INF = {};
 
 /* Escores máximos por área — NEUPSILIN-INF */
 const MAX_SCORES_INF = {
@@ -208,13 +137,14 @@ function getFaixaEtariaInf(idadeAnos) {
  */
 function calcularZAreaInf(area, score, idadeAnos, tipoEscola = "", regiao = "") {
   const faixa = getFaixaEtariaInf(idadeAnos);
+  const tabelas = getServidorNormas()?.["neupsilin-inf"] ?? NORMAS_INF;
 
   // 1ª tentativa: norma completa (idade × tipo de escola × região)
   const chaveCompleta = tipoEscola && regiao ? `${faixa}_${tipoEscola}_${regiao}` : null;
-  const normaCompleta = chaveCompleta ? NORMAS_INF[area]?.[chaveCompleta] : null;
+  const normaCompleta = chaveCompleta ? tabelas[area]?.[chaveCompleta] : null;
 
   // 2ª tentativa: fallback por idade apenas
-  const normaFallback = NORMAS_INF[area]?.[faixa];
+  const normaFallback = tabelas[area]?.[faixa];
 
   const norma = normaCompleta ?? normaFallback;
   const normalizacaoUsada = normaCompleta ? "completa" : "parcial_idade";

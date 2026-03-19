@@ -71,36 +71,14 @@ const BFP_FACETAS = {
   A4: { nome: "Atualização",              fator: "A", desc: "Busca ativa por informações, aprendizado e desenvolvimento" }
 };
 
-// ──────────────────────────────────────────────────────────────────
-// Normas aproximadas (µ, σ) por faceta para adultos brasileiros (17+)
-// Referência: Nunes, Hutz & Nunes (2010). BFP — Bateria Fatorial de Personalidade.
-// ATENÇÃO: valores são estimativas orientativas. Consulte o manual BFP
-// para tabelas normativas completas estratificadas por sexo e faixa etária.
-// ──────────────────────────────────────────────────────────────────
-const BFP_NORMAS_FACETA = {
-  N1: { media: 22, dp: 8.0 },
-  N2: { media: 23, dp: 8.5 },
-  N3: { media: 21, dp: 7.5 },
-  N4: { media: 19, dp: 7.5 },
-  E1: { media: 32, dp: 7.5 },
-  E2: { media: 28, dp: 7.5 },
-  E3: { media: 31, dp: 7.5 },
-  E4: { media: 26, dp: 8.5 },
-  S1: { media: 35, dp: 6.5 },
-  S2: { media: 34, dp: 6.5 },
-  S3: { media: 31, dp: 7.5 },
-  R1: { media: 32, dp: 7.0 },
-  R2: { media: 33, dp: 7.0 },
-  R3: { media: 34, dp: 7.0 },
-  A1: { media: 34, dp: 7.5 },
-  A2: { media: 27, dp: 7.5 },
-  A3: { media: 30, dp: 8.0 },
-  A4: { media: 33, dp: 7.0 }
-};
+// Tabelas normativas carregadas do Firestore em runtime (após login).
+// Fallback vazio — sem dados no bundle público.
+const BFP_NORMAS_FACETA = {};
 
 /** Calcula o T-score (T = 50 + 10 × (raw − µ) / σ) */
 function bfpTScore(rawScore, facetaCod) {
-  const n = BFP_NORMAS_FACETA[facetaCod];
+  const tabelas = getServidorNormas()?.bfp ?? BFP_NORMAS_FACETA;
+  const n = tabelas[facetaCod];
   if (!n) return 50;
   return Math.round(50 + 10 * (rawScore - n.media) / n.dp);
 }
