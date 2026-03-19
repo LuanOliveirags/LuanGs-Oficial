@@ -36,6 +36,17 @@ async function fazerLogin() {
     return;
   }
 
+  // Pré-validação de formato CRP (client-side, antes de consultar o Firestore)
+  const crpInput = document.getElementById("login-crp").value.trim();
+  if (crpInput) {
+    const fmtCheck = validarFormatoCRP(crpInput);
+    if (!fmtCheck.ok) {
+      errDiv.textContent = fmtCheck.mensagem;
+      errDiv.classList.remove("hidden");
+      return;
+    }
+  }
+
   if (btnLogin) { btnLogin.disabled = true; btnLogin.textContent = "Entrando…"; }
 
   try {
@@ -71,6 +82,16 @@ async function fazerLogin() {
       return;
     }
 
+    // Validação completa de CRP (psicólogos apenas — admin é automaticamente isento)
+    const crpCheck = await validarCRPLogin(
+      document.getElementById("login-crp").value,
+      usuarioData, email);
+    if (!crpCheck.ok) {
+      errDiv.textContent = crpCheck.mensagem;
+      errDiv.classList.remove("hidden");
+      return;
+    }
+
     await DB.carregarTodos(usuarioData.role === "admin", email);
     await DB_PAC.carregarCache(email, usuarioData.role === "admin");
     await carregarAvaliacoes(email, usuarioData.role === "admin");
@@ -87,6 +108,7 @@ async function fazerLogin() {
     sessionStorage.setItem("neupsilin_user", JSON.stringify(usuarioLogado));
     limparFormulario();
     abrirDashboard();
+    exibirAvisoObrigatorio();
   } catch (e) {
     console.error(e);
     errDiv.textContent = "Erro ao conectar. Verifique sua conexão e tente novamente.";
@@ -109,6 +131,30 @@ function fazerLogout() {
   document.getElementById("page-dashboard").classList.add("hidden");
   document.getElementById("login-email").value = "";
   document.getElementById("login-senha").value = "";
+}
+
+// ── Aviso Obrigatório CFP ────────────────────────────────────
+
+/** Exibe o aviso obrigatório CFP após login (uma vez por sessão de aba). */
+function exibirAvisoObrigatorio() {
+  if (sessionStorage.getItem("psi_aviso_aceito")) return;
+  const el = document.getElementById("modal-aviso-overlay");
+  if (el) el.classList.remove("hidden");
+}
+
+/** Habilita o botão de aceitar conforme o checkbox. */
+function atualizarBotaoAviso() {
+  const cb  = document.getElementById("aviso-checkbox");
+  const btn = document.getElementById("aviso-btn-aceitar");
+  if (btn) btn.disabled = !cb?.checked;
+}
+
+/** Registra a aceitação do aviso e fecha o modal. */
+function aceitarAviso() {
+  if (!document.getElementById("aviso-checkbox")?.checked) return;
+  sessionStorage.setItem("psi_aviso_aceito", "1");
+  const el = document.getElementById("modal-aviso-overlay");
+  if (el) el.classList.add("hidden");
 }
 
 /** Transita da tela de login para o dashboard após autenticação. */

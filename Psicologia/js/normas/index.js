@@ -78,3 +78,15 @@ const NORMAS = Object.freeze({
   meta(id) { return this[id]?.meta ?? null; }
 
 });
+
+// ── Acesso admin para seed ────────────────────────────
+// `const` não vai para `window`, então expomos explicitamente.
+// seedNormasFirestore() usa este objeto para popular o Firestore.
+window._getNormasBundleCompleto = function () {
+  return {
+    wisc:            WISC_NORMAS,
+    neupsilin:       NEUPSILIN_NORMAS,
+    "neupsilin-inf": NORMAS_INF,
+    bfp:             BFP_NORMAS_FACETA
+  };
+};

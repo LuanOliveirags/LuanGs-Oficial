@@ -207,16 +207,24 @@ async function seedNormasFirestore() {
     throw new Error("[normas] Apenas administradores podem executar a seed.");
   }
 
+  // _getNormasBundleCompleto() é exposta por normas/index.js.
+  // Usar window._getNormasBundleCompleto em vez de window[varName] porque
+  // `const` em <script> NÃO é acessível via window["NOME_DA_CONST"].
+  if (typeof window._getNormasBundleCompleto !== "function") {
+    throw new Error("[normas] _getNormasBundleCompleto não encontrado — certifique-se que js/normas/index.js está carregado.");
+  }
+  const bundle = window._getNormasBundleCompleto();
+
   const mapa = [
-    ["wisc",          "WISC_NORMAS",        "normas/wisc.js"],
-    ["neupsilin",     "NEUPSILIN_NORMAS",    "normas/neupsilin.js"],
-    ["neupsilin-inf", "NORMAS_INF",          "normas/neupsilin-inf.js"],
-    ["bfp",           "BFP_NORMAS_FACETA",   "normas/bfp.js"]
+    ["wisc",          "wisc"],
+    ["neupsilin",     "neupsilin"],
+    ["neupsilin-inf", "neupsilin-inf"],
+    ["bfp",           "bfp"]
   ];
 
-  for (const [, varName, arquivo] of mapa) {
-    if (typeof window[varName] === "undefined") {
-      throw new Error(`[normas] "${varName}" não encontrado — certifique-se que ${arquivo} está carregado com as tabelas.`);
+  for (const [id] of mapa) {
+    if (!bundle[id] || typeof bundle[id] !== "object") {
+      throw new Error(`[normas] tabela "${id}" está vazia — certifique-se que as tabelas ainda estão nos normas/*.js antes do seed.`);
     }
   }
 
@@ -228,16 +236,16 @@ async function seedNormasFirestore() {
 
   // Batch garante atomicidade: ou tudo gravado, ou nada
   const batch = _firestoreDB.batch();
-  for (const [id, varName] of mapa) {
+  for (const [id] of mapa) {
     batch.set(
       _firestoreDB.collection("_normas").doc(id),
-      { tabelas: window[varName], ...meta }
+      { tabelas: bundle[id], ...meta }
     );
   }
   await batch.commit();
 
   // Atualiza memória imediatamente (evita re-fetch)
-  _servidor = Object.fromEntries(mapa.map(([id, varName]) => [id, window[varName]]));
+  _servidor = Object.fromEntries(mapa.map(([id]) => [id, bundle[id]]));
 
   console.info("═══════════════════════════════════════════════════════");
   console.info("[normas] ✓ Seed v2 concluído — 4 documentos escritos:");
@@ -247,3 +255,6 @@ async function seedNormasFirestore() {
   console.info("═══════════════════════════════════════════════════════");
   return true;
 }
+
+// Expõe ao console do navegador (admin pode chamar diretamente)
+window.seedNormasFirestore = seedNormasFirestore;

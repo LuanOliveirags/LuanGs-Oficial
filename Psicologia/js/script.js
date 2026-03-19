@@ -38,6 +38,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       await carregarNormas(usuarioLogado.email, usuarioLogado.role);  // registra sessão + busca tabelas
       DB.verificarExpiracoes();
       abrirDashboard();
+      exibirAvisoObrigatorio();
     } catch (_) {
       sessionStorage.removeItem("neupsilin_user");
       usuarioLogado = null;
@@ -45,6 +46,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // Listener Enter no login
+  document.getElementById("login-crp").addEventListener("keydown", e => {
+    if (e.key === "Enter") document.getElementById("login-senha").focus();
+  });
   document.getElementById("login-senha").addEventListener("keydown", e => {
     if (e.key === "Enter") fazerLogin();
   });
