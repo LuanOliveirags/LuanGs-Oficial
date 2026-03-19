@@ -1092,16 +1092,29 @@
     <!-- ─── Seção: Usuários (admin only) ─── -->
     <section id="sec-usuarios" class="sec hidden">
 
-      <!-- Card Seed Normas (admin) -->
+      <!-- Card Importar Normas (admin) -->
       <div class="card" style="margin-bottom:16px;border-left:4px solid var(--warning,#f59e0b);padding:16px 20px">
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
           <div>
-            <h3 style="margin:0 0 4px">&#128640; Sincronizar Normas com o Firebase</h3>
-            <small style="color:var(--text-muted)">Grava as tabelas normativas no Firestore. Execute <strong>uma vez</strong> após configurar o sistema. Somente admin.</small>
+            <h3 style="margin:0 0 4px">&#128640; Importar Normas para o Firebase</h3>
+            <small style="color:var(--text-muted)">Cole o JSON das tabelas normativas e selecione o instrumento. Os dados vão direto para o Firestore — nada fica no código.</small>
           </div>
-          <button class="btn btn-accent" id="btn-seed-normas" onclick="executarSeedNormas()">&#128190; Fazer Seed das Normas</button>
         </div>
-        <div id="seed-normas-status" style="margin-top:10px;font-size:13px;display:none"></div>
+        <div style="margin-top:12px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+            <label style="font-weight:600;font-size:13px">Instrumento:</label>
+            <select id="import-normas-instrumento" style="padding:6px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px">
+              <option value="wisc">WISC-IV</option>
+              <option value="neupsilin">NEUPSILIN Adulto</option>
+              <option value="neupsilin-inf">NEUPSILIN-INF</option>
+              <option value="bfp">BFP</option>
+            </select>
+            <button class="btn btn-accent" id="btn-import-normas" onclick="executarImportNormas()">&#128190; Gravar no Firestore</button>
+          </div>
+          <textarea id="import-normas-json" rows="10" placeholder='Cole aqui o JSON das tabelas (ex: { "cv": { "media": 30, "dp": 7.5 }, ... })'
+            style="width:100%;font-family:monospace;font-size:12px;padding:10px;border:1px solid var(--border);border-radius:8px;resize:vertical;background:var(--bg-card);color:var(--text)"></textarea>
+        </div>
+        <div id="import-normas-status" style="margin-top:10px;font-size:13px;display:none"></div>
       </div>
       <div class="card" style="padding:16px 20px">
         <div class="card-header-flex" style="flex-wrap:wrap;gap:10px">

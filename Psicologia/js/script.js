@@ -300,25 +300,51 @@ function fecharModalUsuario() {
   _editandoEmail = null;
 }
 
-async function executarSeedNormas() {
-  const btn = document.getElementById("btn-seed-normas");
-  const status = document.getElementById("seed-normas-status");
-  if (!btn || !status) return;
+async function executarImportNormas() {
+  const btn    = document.getElementById("btn-import-normas");
+  const status = document.getElementById("import-normas-status");
+  const selInst = document.getElementById("import-normas-instrumento");
+  const txtJson = document.getElementById("import-normas-json");
+  if (!btn || !status || !selInst || !txtJson) return;
+
+  const instrumento = selInst.value;
+  const jsonRaw     = txtJson.value.trim();
+
+  if (!jsonRaw) {
+    status.style.display = "block";
+    status.style.color = "var(--danger)";
+    status.textContent = "\u274C Cole o JSON das tabelas antes de gravar.";
+    return;
+  }
+
+  let tabelas;
+  try {
+    tabelas = JSON.parse(jsonRaw);
+  } catch (e) {
+    status.style.display = "block";
+    status.style.color = "var(--danger)";
+    status.textContent = "\u274C JSON inválido: " + e.message;
+    return;
+  }
+
   btn.disabled = true;
   btn.textContent = "Gravando...";
   status.style.display = "block";
   status.style.color = "var(--text-muted)";
-  status.textContent = "\u23F3 Gravando tabelas no Firestore...";
+  status.textContent = "\u23F3 Gravando tabelas de " + instrumento + " no Firestore...";
+
   try {
-    await seedNormasFirestore();
+    await importarNormasFirestore(instrumento, tabelas);
     status.style.color = "var(--success)";
-    status.textContent = "\u2705 Normas gravadas com sucesso no Firestore! Agora as tabelas est\u00e3o protegidas no servidor.";
-    btn.textContent = "\u2705 Conclu\u00eddo";
+    status.textContent = "\u2705 Normas de " + instrumento.toUpperCase() + " gravadas com sucesso! (" + Object.keys(tabelas).length + " entradas)";
+    btn.textContent = "\u2705 Concluído";
+    txtJson.value = "";
+    setTimeout(() => { btn.disabled = false; btn.textContent = "\uD83D\uDCBE Gravar no Firestore"; }, 3000);
   } catch (e) {
     status.style.color = "var(--danger)";
     status.textContent = "\u274C Erro: " + e.message;
     btn.disabled = false;
-    btn.textContent = "\uD83D\uDCBE Fazer Seed das Normas";
+    btn.textContent = "\uD83D\uDCBE Gravar no Firestore";
   }
 }
 

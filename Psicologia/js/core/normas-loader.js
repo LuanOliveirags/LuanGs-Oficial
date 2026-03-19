@@ -279,13 +279,32 @@ function _mostrarStatusNormas(mensagem, tipo) {
 }
 
 /**
- * Admin: popula o Firestore com tabelas normativas.
- * Seed já executado — tabelas não estão mais no bundle.
- * Mantido apenas para referência; os dados já estão no Firestore.
+ * Admin: importa tabelas normativas para o Firestore.
+ * Recebe o instrumento e o objeto de tabelas (já parseado).
+ * @param {"wisc"|"neupsilin"|"neupsilin-inf"|"bfp"} instrumento
+ * @param {object} tabelas — objeto com as normas (média/dp por condição)
  */
-async function seedNormasFirestore() {
-  throw new Error("[normas] Seed já executado. Tabelas estão no Firestore. Não há dados no bundle para enviar.");
-}
+async function importarNormasFirestore(instrumento, tabelas) {
+  if (!_INSTRUMENTOS.includes(instrumento)) {
+    throw new Error("Instrumento inválido: " + instrumento);
+  }
+  if (!tabelas || typeof tabelas !== "object" || Object.keys(tabelas).length === 0) {
+    throw new Error("Tabelas vazias ou inválidas.");
+  }
+  const uid = firebase.auth().currentUser?.uid;
+  if (!uid) throw new Error("Não autenticado.");
 
-// Expõe ao console do navegador (admin pode chamar diretamente)
-window.seedNormasFirestore = seedNormasFirestore;
+  await _firestoreDB.collection("_normas").doc(instrumento).set({
+    tabelas,
+    _versao: tabelas._versao || "manual_oficial",
+    _seedPor: usuarioLogado?.email || "admin",
+    _seedAt: new Date().toISOString()
+  });
+
+  // Atualiza memória e cache local imediatamente
+  if (!_servidor) _servidor = {};
+  _servidor[instrumento] = tabelas;
+  _loadState = "loaded";
+  try { sessionStorage.setItem(_SS_PREFIX + instrumento, await _criptografar(tabelas)); }
+  catch (_) { /* ok */ }
+}
