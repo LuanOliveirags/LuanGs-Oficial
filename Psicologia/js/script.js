@@ -13,6 +13,7 @@
 // ESTADO GLOBAL
 // ──────────────────────────────────────────────────────
 let usuarioLogado    = null;  // preenchido por core/auth.js
+window.__getUsuarioLogado = () => usuarioLogado;
 let avaliacaoAtiva   = null;  // última avaliação calculada (NEUPSILIN adulto)
 let modalAvaliacaoId = null;
 const _charts        = {};   // instâncias Chart.js activas por ctx
@@ -299,7 +300,29 @@ function fecharModalUsuario() {
   _editandoEmail = null;
 }
 
-async function salvarUsuario() {
+async function executarSeedNormas() {
+  const btn = document.getElementById("btn-seed-normas");
+  const status = document.getElementById("seed-normas-status");
+  if (!btn || !status) return;
+  btn.disabled = true;
+  btn.textContent = "Gravando...";
+  status.style.display = "block";
+  status.style.color = "var(--text-muted)";
+  status.textContent = "\u23F3 Gravando tabelas no Firestore...";
+  try {
+    await seedNormasFirestore();
+    status.style.color = "var(--success)";
+    status.textContent = "\u2705 Normas gravadas com sucesso no Firestore! Agora as tabelas est\u00e3o protegidas no servidor.";
+    btn.textContent = "\u2705 Conclu\u00eddo";
+  } catch (e) {
+    status.style.color = "var(--danger)";
+    status.textContent = "\u274C Erro: " + e.message;
+    btn.disabled = false;
+    btn.textContent = "\uD83D\uDCBE Fazer Seed das Normas";
+  }
+}
+
+
   const nome  = document.getElementById("usr-nome").value.trim();
   const email = document.getElementById("usr-email").value.trim();
   const senha = document.getElementById("usr-senha").value;

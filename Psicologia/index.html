@@ -1092,7 +1092,17 @@
     <!-- ─── Seção: Usuários (admin only) ─── -->
     <section id="sec-usuarios" class="sec hidden">
 
-      <!-- Barra de busca + botão novo -->
+      <!-- Card Seed Normas (admin) -->
+      <div class="card" style="margin-bottom:16px;border-left:4px solid var(--warning,#f59e0b);padding:16px 20px">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+          <div>
+            <h3 style="margin:0 0 4px">&#128640; Sincronizar Normas com o Firebase</h3>
+            <small style="color:var(--text-muted)">Grava as tabelas normativas no Firestore. Execute <strong>uma vez</strong> após configurar o sistema. Somente admin.</small>
+          </div>
+          <button class="btn btn-accent" id="btn-seed-normas" onclick="executarSeedNormas()">&#128190; Fazer Seed das Normas</button>
+        </div>
+        <div id="seed-normas-status" style="margin-top:10px;font-size:13px;display:none"></div>
+      </div>
       <div class="card" style="padding:16px 20px">
         <div class="card-header-flex" style="flex-wrap:wrap;gap:10px">
           <h3 style="margin:0">&#128101; Gerenciar Usuários</h3>

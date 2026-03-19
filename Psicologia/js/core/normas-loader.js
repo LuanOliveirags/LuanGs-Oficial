@@ -203,7 +203,10 @@ function normasCarregadas() {
  * @returns {Promise<boolean>}
  */
 async function seedNormasFirestore() {
-  if (!window.usuarioLogado || window.usuarioLogado.role !== "admin") {
+  const _u = (typeof window.__getUsuarioLogado === "function")
+    ? window.__getUsuarioLogado()
+    : window.usuarioLogado;
+  if (!_u || _u.role !== "admin") {
     throw new Error("[normas] Apenas administradores podem executar a seed.");
   }
 
