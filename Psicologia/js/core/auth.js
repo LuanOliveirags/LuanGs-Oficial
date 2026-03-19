@@ -36,14 +36,26 @@ async function fazerLogin() {
     return;
   }
 
-  // Pré-validação de formato CRP (client-side, antes de consultar o Firestore)
-  const crpInput = document.getElementById("login-crp").value.trim();
-  if (crpInput) {
-    const fmtCheck = validarFormatoCRP(crpInput);
-    if (!fmtCheck.ok) {
-      errDiv.textContent = fmtCheck.mensagem;
+  // Pré-validação do campo identificador (CRP ou CPF) — antes de consultar o Firestore
+  const _identField = document.getElementById("login-crp");
+  const _identMode  = _identField?.dataset.mode ?? "crp";
+  const _identValue = _identField?.value.trim() ?? "";
+
+  if (_identMode === "cpf") {
+    const cpfCheck = validarFormatoCPF(_identValue);
+    if (!cpfCheck.ok) {
+      errDiv.textContent = cpfCheck.mensagem;
       errDiv.classList.remove("hidden");
       return;
+    }
+  } else {
+    if (_identValue) {
+      const fmtCheck = validarFormatoCRP(_identValue);
+      if (!fmtCheck.ok) {
+        errDiv.textContent = fmtCheck.mensagem;
+        errDiv.classList.remove("hidden");
+        return;
+      }
     }
   }
 
@@ -82,14 +94,28 @@ async function fazerLogin() {
       return;
     }
 
-    // Validação completa de CRP (psicólogos apenas — admin é automaticamente isento)
-    const crpCheck = await validarCRPLogin(
-      document.getElementById("login-crp").value,
-      usuarioData, email);
-    if (!crpCheck.ok) {
-      errDiv.textContent = crpCheck.mensagem;
-      errDiv.classList.remove("hidden");
-      return;
+    // Validação do identificador: CPF (admin) ou CRP (psicólogo)
+    if (_identMode === "cpf") {
+      // Admin: confirma CPF válido e, se cadastrado, confere com o armazenado
+      const cpfFinal = validarFormatoCPF(_identValue);
+      if (!cpfFinal.ok) {
+        errDiv.textContent = cpfFinal.mensagem;
+        errDiv.classList.remove("hidden");
+        return;
+      }
+      if (usuarioData.cpf && normalizarCPF(_identValue) !== normalizarCPF(usuarioData.cpf)) {
+        errDiv.textContent = "CPF não confere com o cadastro. Verifique os dados.";
+        errDiv.classList.remove("hidden");
+        return;
+      }
+    } else {
+      // Psicólogo: validação completa de CRP (admin já seria isento internamente)
+      const crpCheck = await validarCRPLogin(_identValue, usuarioData, email);
+      if (!crpCheck.ok) {
+        errDiv.textContent = crpCheck.mensagem;
+        errDiv.classList.remove("hidden");
+        return;
+      }
     }
 
     await DB.carregarTodos(usuarioData.role === "admin", email);
@@ -103,6 +129,7 @@ async function fazerLogin() {
       email: usuarioData.email,
       nome:  usuarioData.nome,
       crp:   usuarioData.crp,
+      cpf:   _identMode === "cpf" ? normalizarCPF(_identValue) : undefined,
       role:  usuarioData.role
     };
     sessionStorage.setItem("neupsilin_user", JSON.stringify(usuarioLogado));
@@ -118,6 +145,46 @@ async function fazerLogin() {
   }
 }
 
+/**
+ * Detecta o papel do usuário pelo e-mail e alterna o campo identificador
+ * entre CRP (psicólogo) e CPF (admin). Chamado no onblur do campo e-mail.
+ */
+async function detectarCampoIdentificador() {
+  const email = document.getElementById("login-email").value.trim().toLowerCase();
+  if (!email) return;
+
+  const crpGroup  = document.getElementById("login-crp-group");
+  const crpInput  = document.getElementById("login-crp");
+  const crpHint   = document.getElementById("crp-hint");
+  const crpStatus = document.getElementById("crp-status");
+  if (!crpInput) return;
+
+  try {
+    const doc = await _firestoreDB.collection("usuarios").doc(email).get();
+    if (!doc.exists) return;
+
+    crpInput.value          = "";
+    crpStatus.textContent   = "";
+    crpHint.className       = "crp-hint";
+
+    if (doc.data().role === "admin") {
+      crpInput.dataset.mode = "cpf";
+      crpGroup.querySelector("label").innerHTML =
+        'CPF <span class="crp-label-badge crp-label-badge--admin">Admin</span>';
+      crpInput.placeholder = "000.000.000-00";
+      crpInput.maxLength   = 14;
+      crpHint.textContent  = "Formato: 000.000.000-00  \u00b7  CPF do administrador";
+    } else {
+      crpInput.dataset.mode = "crp";
+      crpGroup.querySelector("label").innerHTML =
+        'CRP <span class="crp-label-badge">Psic\u00f3logo</span>';
+      crpInput.placeholder = "06/123456";
+      crpInput.maxLength   = 12;
+      crpHint.textContent  = "Formato: 06/123456  \u00b7  Exigido pelo CFP para psic\u00f3logos";
+    }
+  } catch { /* silencioso — não bloqueia login */ }
+}
+
 /** Encerra a sessão e limpa os caches em memória. */
 function fazerLogout() {
   sessionStorage.removeItem("neupsilin_user");
@@ -131,6 +198,20 @@ function fazerLogout() {
   document.getElementById("page-dashboard").classList.add("hidden");
   document.getElementById("login-email").value = "";
   document.getElementById("login-senha").value = "";
+  // Resetar campo identificador para modo CRP (padrão)
+  const _identReset = document.getElementById("login-crp");
+  if (_identReset) {
+    _identReset.value = "";
+    _identReset.dataset.mode  = "crp";
+    _identReset.placeholder   = "06/123456";
+    _identReset.maxLength     = 12;
+    const _lbl = document.querySelector("#login-crp-group label");
+    if (_lbl) _lbl.innerHTML = 'CRP <span class="crp-label-badge">Psic\u00f3logo</span>';
+    const _hint = document.getElementById("crp-hint");
+    if (_hint) { _hint.textContent = "Formato: 06/123456 \u00b7 Exigido pelo CFP para psic\u00f3logos"; _hint.className = "crp-hint"; }
+    const _st = document.getElementById("crp-status");
+    if (_st) _st.textContent = "";
+  }
 }
 
 // ── Aviso Obrigatório CFP ────────────────────────────────────
@@ -162,7 +243,9 @@ function abrirDashboard() {
   document.getElementById("page-login").classList.add("hidden");
   document.getElementById("page-dashboard").classList.remove("hidden");
   document.getElementById("sidebar-user-nome").textContent = usuarioLogado.nome;
-  document.getElementById("sidebar-user-crp").textContent  = usuarioLogado.crp ? `CRP ${usuarioLogado.crp}` : "";
+  document.getElementById("sidebar-user-crp").textContent =
+    usuarioLogado.crp ? `CRP ${usuarioLogado.crp}` :
+    usuarioLogado.role === "admin" ? "Administrador" : "";
   document.getElementById("topbar-user-name").textContent  = usuarioLogado.nome;
 
   document.querySelectorAll(".sec").forEach(s => {
@@ -267,7 +350,9 @@ async function salvarPerfil() {
     usuarioLogado.crp  = atualizado.crp;
     sessionStorage.setItem("neupsilin_user", JSON.stringify(usuarioLogado));
     document.getElementById("sidebar-user-nome").textContent = usuarioLogado.nome;
-    document.getElementById("sidebar-user-crp").textContent  = usuarioLogado.crp ? `CRP ${usuarioLogado.crp}` : "";
+    document.getElementById("sidebar-user-crp").textContent =
+      usuarioLogado.crp ? `CRP ${usuarioLogado.crp}` :
+      usuarioLogado.role === "admin" ? "Administrador" : "";
     document.getElementById("topbar-user-name").textContent  = usuarioLogado.nome;
     okEl.textContent = "Perfil atualizado com sucesso!";
     okEl.classList.remove("hidden");

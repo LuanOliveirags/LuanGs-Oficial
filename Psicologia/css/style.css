@@ -742,6 +742,10 @@ textarea { resize: vertical; }
   margin-left: 6px;
   vertical-align: middle;
 }
+.crp-label-badge--admin {
+  background: rgba(234,179,8,.15);
+  color: #92400e;
+}
 
 /* Ícone ✓ / ✗ dentro do input */
 .crp-status-icon {

@@ -132,6 +132,34 @@ async function validarCRPExternoAsync(crp, email) {
   }
 }
 
+// ── CPF (admin) ─────────────────────────────────────
+
+/** Remove caracteres não numéricos do CPF. */
+function normalizarCPF(raw = "") {
+  return String(raw).replace(/\D/g, "");
+}
+
+/**
+ * Valida formato e dígitos verificadores do CPF.
+ * @param {string} cpf — raw (pode ter máscara) ou só dígitos
+ * @returns {{ ok: boolean, mensagem: string }}
+ */
+function validarFormatoCPF(cpf) {
+  const d = normalizarCPF(cpf);
+  if (!d) return { ok: false, mensagem: "Informe o CPF para continuar." };
+  if (d.length !== 11) return { ok: false, mensagem: "CPF inválido — deve conter 11 dígitos." };
+  if (/^(\d)\1{10}$/.test(d)) return { ok: false, mensagem: "CPF inválido." };
+  let s = 0;
+  for (let i = 0; i < 9; i++) s += +d[i] * (10 - i);
+  let v1 = (s * 10) % 11; if (v1 >= 10) v1 = 0;
+  if (v1 !== +d[9]) return { ok: false, mensagem: "CPF inválido (dígito verificador)." };
+  s = 0;
+  for (let i = 0; i < 10; i++) s += +d[i] * (11 - i);
+  let v2 = (s * 10) % 11; if (v2 >= 10) v2 = 0;
+  if (v2 !== +d[10]) return { ok: false, mensagem: "CPF inválido (dígito verificador)." };
+  return { ok: true, mensagem: "" };
+}
+
 // ── Validação completa no login ───────────────────────
 
 /**
@@ -175,11 +203,31 @@ function atualizarStatusCRP(input) {
   const hint   = document.getElementById("crp-hint");
   if (!status || !hint) return;
 
-  const val = input.value.trim();
+  const isCpf = input.dataset.mode === "cpf";
+  const val   = input.value.trim();
+
   if (!val) {
     status.textContent = "";
-    hint.textContent   = "Formato: 06/123456  ·  Exigido pelo CFP";
-    hint.className     = "crp-hint";
+    hint.textContent   = isCpf
+      ? "Formato: 000.000.000-00  ·  CPF do administrador"
+      : "Formato: 06/123456  ·  Exigido pelo CFP";
+    hint.className = "crp-hint";
+    return;
+  }
+
+  if (isCpf) {
+    const { ok, mensagem } = validarFormatoCPF(val);
+    if (ok) {
+      status.textContent = "✓";
+      status.style.color = "var(--success)";
+      hint.textContent   = "CPF válido";
+      hint.className     = "crp-hint crp-hint--ok";
+    } else {
+      status.textContent = "✗";
+      status.style.color = "var(--danger)";
+      hint.textContent   = mensagem;
+      hint.className     = "crp-hint crp-hint--err";
+    }
     return;
   }
 
