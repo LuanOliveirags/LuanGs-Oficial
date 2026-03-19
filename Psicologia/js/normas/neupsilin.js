@@ -1,20 +1,28 @@
-/**
- * NEUPSILIN ADULTO — Tabelas Normativas
- * Referência: Fonseca, R.P., Salles, J.F., & Parente, M.A.M.P. (2009).
- *             NEUPSILIN — Instrumento de Avaliação Neuropsicológica Breve. Vetor Editora.
+﻿/**
+ * NEUPSILIN ADULTO â€” Tabelas Normativas
+ * ReferÃªncia: Fonseca, R.P., Salles, J.F., & Parente, M.A.M.P. (2009).
+ *             NEUPSILIN â€” Instrumento de AvaliaÃ§Ã£o NeuropsicolÃ³gica Breve. Vetor Editora.
  *
- * ATENÇÃO: Os valores de média e DP abaixo são estimativas para funcionamento do sistema.
- * Substitua pelos dados oficiais do Manual (Vetor Editora) quando disponíveis.
+ * ATENÃ‡ÃƒO: Os valores de mÃ©dia e DP abaixo sÃ£o estimativas para funcionamento do sistema.
+ * Substitua pelos dados oficiais do Manual (Vetor Editora) quando disponÃ­veis.
  *
- * Normas estratificadas por Escolaridade × Faixa Etária:
- *   Escolaridades : "baixa" (0–4 anos) | "media" (5–11 anos) | "alta" (12+ anos)
- *   Faixas etárias: "12-18" | "19-25" | "26-35" | "36-49" | "50-64" | "65+"
+ * Normas estratificadas por Escolaridade Ã— Faixa EtÃ¡ria:
+ *   Escolaridades : "baixa" (0â€“4 anos) | "media" (5â€“11 anos) | "alta" (12+ anos)
+ *   Faixas etÃ¡rias: "12-18" | "19-25" | "26-35" | "36-49" | "50-64" | "65+"
  *
- * Para adolescentes (12–18 anos), o NEUPSILIN possui normas em escore Z específicas.
- * Para adultos (19–90 anos), as normas são estratificadas por idade e escolaridade.
+ * Para adolescentes (12â€“18 anos), o NEUPSILIN possui normas em escore Z especÃ­ficas.
+ * Para adultos (19â€“90 anos), as normas sÃ£o estratificadas por idade e escolaridade.
  */
 
-const NORMAS = {
+const NEUPSILIN_META = {
+  id:      "neupsilin-adulto",
+  versao:  "2009_BR",
+  fonte:   "Fonseca, R.P., Salles, J.F. & Parente, M.A.M.P. (2009). NEUPSILIN. Vetor Editora.",
+  tipo:    "estimada",
+  nota:    "Media/DP sao estimativas. Substituir pelos dados do Manual Vetor Editora."
+};
+
+const NEUPSILIN_NORMAS = {
   orientacao: {
     baixa: { "12-18":{media:5.5,dp:0.9}, "19-25":{media:5.2,dp:1.1}, "26-35":{media:5.3,dp:1.0}, "36-49":{media:5.1,dp:1.1}, "50-64":{media:4.8,dp:1.3}, "65+":{media:4.5,dp:1.4} },
     media: { "12-18":{media:5.8,dp:0.5}, "19-25":{media:5.7,dp:0.6}, "26-35":{media:5.8,dp:0.5}, "36-49":{media:5.6,dp:0.7}, "50-64":{media:5.4,dp:0.9}, "65+":{media:5.1,dp:1.1} },
@@ -57,7 +65,7 @@ const NORMAS = {
   }
 };
 
-/* Escores máximos por área */
+/* Escores mÃ¡ximos por Ã¡rea */
 const MAX_SCORES = {
   orientacao: 6,
   atencao:    32,
@@ -69,31 +77,31 @@ const MAX_SCORES = {
   praxias:    20
 };
 
-/* Nomes de exibição */
+/* Nomes de exibiÃ§Ã£o */
 const AREA_NOMES = {
-  orientacao:  "Orientação Têmporo-Espacial",
-  atencao:     "Atenção",
-  percepcao:   "Percepção Visual",
-  memoria:     "Memória",
-  habilidades: "Cálculo",
+  orientacao:  "OrientaÃ§Ã£o TÃªmporo-Espacial",
+  atencao:     "AtenÃ§Ã£o",
+  percepcao:   "PercepÃ§Ã£o Visual",
+  memoria:     "MemÃ³ria",
+  habilidades: "CÃ¡lculo",
   linguagem:   "Linguagem",
-  funcoes:     "Funções Executivas",
+  funcoes:     "FunÃ§Ãµes Executivas",
   praxias:     "Praxias"
 };
 
 /* Sub-nomes */
 const SUB_NOMES = {
-  dia_semana:"Dia da semana", dia_mes:"Dia do mês", mes:"Mês", ano:"Ano", local:"Local", cidade:"Cidade",
-  digitos_direto:"Dígitos — Ordem Direta", digitos_inverso:"Dígitos — Ordem Inversa", cancelamento:"Cancelamento de Letras",
-  nomeacao:"Nomeação de Figuras", discriminacao:"Discriminação de Figuras",
-  trabalho_verbal:"Memória de Trabalho Verbal", evocacao_imediata:"Evocação Imediata", evocacao_tardia:"Evocação Tardia", reconhecimento:"Reconhecimento", semantica:"Memória Semântica",
-  calculo_mental:"Cálculo Mental", problemas:"Problemas Aritméticos",
-  fluencia:"Fluência Verbal", compreensao_oral:"Compreensão Oral", repeticao:"Repetição", leitura:"Leitura", escrita:"Escrita",
-  fluencia_fonemica:"Fluência Fonêmica", controle_inibitorico:"Controle Inibitório", resolucao_problemas:"Resolução de Problemas", abstracao:"Abstração Verbal",
+  dia_semana:"Dia da semana", dia_mes:"Dia do mÃªs", mes:"MÃªs", ano:"Ano", local:"Local", cidade:"Cidade",
+  digitos_direto:"DÃ­gitos â€” Ordem Direta", digitos_inverso:"DÃ­gitos â€” Ordem Inversa", cancelamento:"Cancelamento de Letras",
+  nomeacao:"NomeaÃ§Ã£o de Figuras", discriminacao:"DiscriminaÃ§Ã£o de Figuras",
+  trabalho_verbal:"MemÃ³ria de Trabalho Verbal", evocacao_imediata:"EvocaÃ§Ã£o Imediata", evocacao_tardia:"EvocaÃ§Ã£o Tardia", reconhecimento:"Reconhecimento", semantica:"MemÃ³ria SemÃ¢ntica",
+  calculo_mental:"CÃ¡lculo Mental", problemas:"Problemas AritmÃ©ticos",
+  fluencia:"FluÃªncia Verbal", compreensao_oral:"CompreensÃ£o Oral", repeticao:"RepetiÃ§Ã£o", leitura:"Leitura", escrita:"Escrita",
+  fluencia_fonemica:"FluÃªncia FonÃªmica", controle_inibitorico:"Controle InibitÃ³rio", resolucao_problemas:"ResoluÃ§Ã£o de Problemas", abstracao:"AbstraÃ§Ã£o Verbal",
   construtiva:"Praxia Construtiva", ideomotora:"Praxia Ideomotora"
 };
 
-/** Retorna faixa etária para acesso às normas do NEUPSILIN Adulto (12–90 anos) */
+/** Retorna faixa etÃ¡ria para acesso Ã s normas do NEUPSILIN Adulto (12â€“90 anos) */
 function getFaixaEtaria(idade) {
   if (idade <= 18) return "12-18";
   if (idade <= 25) return "19-25";
@@ -105,48 +113,49 @@ function getFaixaEtaria(idade) {
 
 /**
  * Classifica escore-Z em categoria qualitativa.
- * Critérios baseados em percentis (1 dp = ~16th, 1,5 dp = ~7th etc.)
+ * CritÃ©rios baseados em percentis (1 dp = ~16th, 1,5 dp = ~7th etc.)
  */
 function classificarZ(z) {
-  if (z >= 1.0)  return { label: "Superior",         badge: "badge-superior", interp: "desempenho acima do esperado para o grupo de referência" };
-  if (z >= 0.5)  return { label: "Médio-Superior",   badge: "badge-medio-sup", interp: "desempenho levemente acima da média" };
-  if (z >= -0.5) return { label: "Médio",             badge: "badge-medio", interp: "desempenho dentro da média esperada" };
-  if (z >= -1.0) return { label: "Médio-Inferior",   badge: "badge-medio-inf", interp: "desempenho levemente abaixo da média — acompanhamento recomendado" };
-  return           { label: "Inferior",              badge: "badge-inferior", interp: "desempenho significativamente abaixo da média — avaliação aprofundada indicada" };
+  if (z >= 1.0)  return { label: "Superior",         badge: "badge-superior", interp: "desempenho acima do esperado para o grupo de referÃªncia" };
+  if (z >= 0.5)  return { label: "MÃ©dio-Superior",   badge: "badge-medio-sup", interp: "desempenho levemente acima da mÃ©dia" };
+  if (z >= -0.5) return { label: "MÃ©dio",             badge: "badge-medio", interp: "desempenho dentro da mÃ©dia esperada" };
+  if (z >= -1.0) return { label: "MÃ©dio-Inferior",   badge: "badge-medio-inf", interp: "desempenho levemente abaixo da mÃ©dia â€” acompanhamento recomendado" };
+  return           { label: "Inferior",              badge: "badge-inferior", interp: "desempenho significativamente abaixo da mÃ©dia â€” avaliaÃ§Ã£o aprofundada indicada" };
 }
 
 /**
- * Calcula escore-Z para uma área.
- * @param {string} area - chave da área
- * @param {number} score - pontuação bruta
+ * Calcula escore-Z para uma Ã¡rea.
+ * @param {string} area - chave da Ã¡rea
+ * @param {number} score - pontuaÃ§Ã£o bruta
  * @param {string} escolaridade - "baixa"|"media"|"alta"
  * @param {number} idade - em anos
  * @returns {{ z: number, classe: object, media: number, dp: number }}
  */
 /**
- * Calcula escore-Z para uma área.
+ * Calcula escore-Z para uma Ã¡rea.
  *
  * normalizacaoUsada:
- *  "real"    — quando os dados oficiais do manual estiverem inseridos (futuro)
- *  "estimada" — enquanto os valores são aproximações (estado atual)
+ *  "real"    â€” quando os dados oficiais do manual estiverem inseridos (futuro)
+ *  "estimada" â€” enquanto os valores sÃ£o aproximaÃ§Ãµes (estado atual)
  *
- * Para inserir os dados reais do manual, substitua os valores de média e DP
+ * Para inserir os dados reais do manual, substitua os valores de mÃ©dia e DP
  * nas tabelas NORMAS acima pelas normas oficiais da Vetor Editora.
  */
 function calcularZArea(area, score, escolaridade, idade) {
   const faixa = getFaixaEtaria(idade);
-  const norma = NORMAS[area]?.[escolaridade]?.[faixa];
+  const norma = NEUPSILIN_NORMAS[area]?.[escolaridade]?.[faixa];
   if (!norma) return { z: 0, classe: classificarZ(0), media: 0, dp: 1, normalizacaoUsada: "indisponivel" };
   const z = (score - norma.media) / norma.dp;
-  // Altere para "real" após inserir os dados oficiais do Manual
+  // Altere para "real" apÃ³s inserir os dados oficiais do Manual
   const normalizacaoUsada = "estimada";
   return { z: +z.toFixed(2), classe: classificarZ(z), media: norma.media, dp: norma.dp, normalizacaoUsada };
 }
 
 /**
- * Classificação geral pela média dos z-scores de todas as áreas.
+ * ClassificaÃ§Ã£o geral pela mÃ©dia dos z-scores de todas as Ã¡reas.
  */
 function classificacaoGeral(zScores) {
   const media = zScores.reduce((a, b) => a + b, 0) / zScores.length;
   return classificarZ(media);
 }
+

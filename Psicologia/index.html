@@ -1463,18 +1463,37 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script src="js/firebase-config.js"></script>
-<script src="js/db.js"></script>
-<script src="js/db_pacientes/db_pacientes.js"></script>
-<script src="js/neupsilin/normas.js"></script>
-<script src="js/neupsilin/normas-inf.js"></script>
-<script src="js/wisc/normas.js"></script>
+
+<!-- ── Core: infraestrutura e serviços base ── -->
+<script src="js/core/firebase.js"></script>
+<script src="js/core/database.js"></script>
+<script src="js/core/utils.js"></script>
+<script src="js/core/storage.js"></script>
+<script src="js/core/auth.js"></script>
+<script src="js/core/navigation.js"></script>
+<script src="js/core/normas-loader.js"></script>
+
+<!-- ── Pacientes ── -->
+<script src="js/modules/pacientes/db_pacientes.js"></script>
+
+<!-- ── Normas: tabelas e funções normativas por instrumento ── -->
+<script src="js/normas/wisc.js"></script>
+<script src="js/normas/neupsilin.js"></script>
+<script src="js/normas/neupsilin-inf.js"></script>
+<script src="js/normas/bfp.js"></script>
+<script src="js/normas/index.js"></script>
+
+<!-- ── App: estado global e UI ── -->
 <script src="js/script.js"></script>
-<script src="js/neupsilin/avaliacao.js"></script>
-<script src="js/neupsilin/avaliacao-inf.js"></script>
-<script src="js/wisc/avaliacao.js"></script>
-<script src="js/bfp/normas.js"></script>
-<script src="js/bfp/avaliacao.js"></script>
+
+<!-- ── Engine: motor universal de avaliações ── -->
+<script src="js/engine/calculator.js"></script>
+
+<!-- ── Módulos: correção de cada instrumento ── -->
+<script src="js/modules/neupsilin/avaliacao.js"></script>
+<script src="js/modules/neupsilin/avaliacao-inf.js"></script>
+<script src="js/modules/wisc/avaliacao.js"></script>
+<script src="js/modules/bfp/avaliacao.js"></script>
 
 <!-- ── Registro do Service Worker (PWA) ── -->
 <script>

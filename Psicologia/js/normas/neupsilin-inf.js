@@ -1,4 +1,4 @@
-/**
+﻿/**
  * NEUPSILIN-INF — Tabelas Normativas
  * Referência: Salles, J.F., Fonseca, R.P., Cruz-Rodrigues, C., Mello, C.B., Barbosa, T.,
  *             & Miranda, M.C. (2011). Desenvolvimento do Instrumento de Avaliação
@@ -24,6 +24,14 @@
  *   Habilidades Visuoconstrutivas : 16
  *   TOTAL                         : 146
  */
+
+const NEUPSILIN_INF_META = {
+  id:      "neupsilin-inf",
+  versao:  "2011_BR",
+  fonte:   "Salles, J.F. et al. (2011). NEUPSILIN-Inf. Vetor Editora.",
+  tipo:    "estimada",
+  nota:    "Estratificacao: faixa etaria x tipo escola x regiao. Consultar Manual Vetor Editora."
+};
 
 const NORMAS_INF = {
   orientacao: {
@@ -216,3 +224,4 @@ function calcularZAreaInf(area, score, idadeAnos, tipoEscola = "", regiao = "") 
   const z = (score - norma.media) / norma.dp;
   return { z: +z.toFixed(2), media: norma.media, dp: norma.dp, classe: classificarZ(z), normalizacaoUsada };
 }
+

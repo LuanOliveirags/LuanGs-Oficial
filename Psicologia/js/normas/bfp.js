@@ -1,8 +1,16 @@
-/* ═══════════════════════════════════════════════════════════════════
+﻿/* ═══════════════════════════════════════════════════════════════════
    BFP — Bateria Fatorial de Personalidade
    Nunes, Hutz & Nunes (2010) — Casa do Psicólogo
    Configuração de fatores, facetas e normas de referência
 ═══════════════════════════════════════════════════════════════════ */
+
+const BFP_META = {
+  id:      "bfp",
+  versao:  "2010_BR",
+  fonte:   "Nunes, C.H.S.S., Hutz, C.S. & Nunes, M.F.O. (2010). BFP. Casa do Psicologo.",
+  tipo:    "estimada",
+  nota:    "Tabelas de referencia. Consultar Manual oficial para normas completas."
+};
 
 const BFP_FATORES = {
   N: {
@@ -145,3 +153,4 @@ function bfpClasseGenerica(tscore) {
   if (tscore >= 30) return { badge: "badge-medio-inf", label: `T=${tscore}` };
   return                    { badge: "badge-inferior",  label: `T=${tscore}` };
 }
+

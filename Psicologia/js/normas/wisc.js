@@ -1,4 +1,4 @@
-// ─────────────────────────────────────────────────────────
+﻿// ─────────────────────────────────────────────────────────
 // WISC-IV — Escala de Inteligência Wechsler para Crianças (4.ª edição)
 // Wechsler, D. (2013). Adaptação e padronização brasileira:
 // Ambiel, N.F., Santos, A.A.A. dos, & Castro, N.R. de. Pearson.
@@ -13,6 +13,13 @@
 // normalizacaoUsada de "estimada" para "real".
 // ─────────────────────────────────────────────────────────
 
+const WISC_META = {
+  id:      "wisc-iv",
+  versao:  "2013_BR",
+  fonte:   "Ambiel, N.F., Santos, A.A.A. & Castro, N.R. (2013). WISC-IV. Pearson.",
+  tipo:    "estimada",
+  nota:    "EI e FSIQ por formula z simplificada. Substituir pelos dados do Manual Pearson (2013)."
+};
 /** Nomes dos índices */
 const WISC_INDICES = {
   cv: "Compreensão Verbal",
@@ -82,3 +89,4 @@ function classificarQI(qi) {
   if (qi >= 70)  return { label: "Limítrofe",                   badge: "badge-inferior",   interp: "desempenho abaixo da média — investigação recomendada" };
   return                 { label: "Intelectualmente Deficiente", badge: "badge-inferior",  interp: "desempenho significativamente abaixo da média — avaliação aprofundada indicada" };
 }
+

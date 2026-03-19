@@ -12,8 +12,15 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // Tabelas normativas: leitura autenticada, escrita NUNCA via cliente
+    match /_normas/{doc} {
+      allow read:  if request.auth != null;
+      allow write: if false;
+    }
+
+    // Demais coleções: requer autenticação (anônima ou real)
     match /{document=**} {
-      // Apenas usuários autenticados (mesmo anonimamente) podem acessar
       allow read, write: if request.auth != null;
     }
   }
