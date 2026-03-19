@@ -89,15 +89,21 @@ async function fazerLogin() {
       return;
     }
 
-    // Validação do CPF: formato + conferência com cadastro
+    // Validação do CPF: formato + conferência obrigatória com cadastro
     const cpfFinal = validarFormatoCPF(_identValue);
     if (!cpfFinal.ok) {
       errDiv.textContent = cpfFinal.mensagem;
       errDiv.classList.remove("hidden");
       return;
     }
-    if (usuarioData.cpf && normalizarCPF(_identValue) !== normalizarCPF(usuarioData.cpf)) {
-      errDiv.textContent = "CPF não confere com o cadastro. Verifique os dados.";
+    if (!usuarioData.cpf) {
+      // Usuário sem CPF cadastrado — bloqueia login até admin corrigir
+      errDiv.textContent = "CPF não registrado no cadastro. Solicite ao administrador que atualize seus dados.";
+      errDiv.classList.remove("hidden");
+      return;
+    }
+    if (normalizarCPF(_identValue) !== normalizarCPF(usuarioData.cpf)) {
+      errDiv.textContent = "E-mail, senha ou CPF incorretos.";
       errDiv.classList.remove("hidden");
       return;
     }
