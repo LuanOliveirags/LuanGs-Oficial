@@ -19,22 +19,52 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
+  // ─── Active nav link highlight ───
+  const navSections = document.querySelectorAll('section[id]');
+  const navAnchors = document.querySelectorAll('.nav__links a[href^="#"]');
+  const sectionObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navAnchors.forEach(a => {
+          a.classList.toggle('nav--active', a.getAttribute('href') === '#' + entry.target.id);
+        });
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  navSections.forEach(s => sectionObserver.observe(s));
+
   // ─── Hamburger menu ───
   const hamburger = document.getElementById('navHamburger');
-  const navLinks = document.getElementById('navLinks');
-  const navActions = document.getElementById('navActions');
+  const navDrawer = document.getElementById('navDrawer');
+  const navOverlay = document.getElementById('navOverlay');
+
+  function openMenu() {
+    hamburger.classList.add('active');
+    if (navDrawer) navDrawer.classList.add('active');
+    if (navOverlay) navOverlay.classList.add('active');
+    document.body.classList.add('nav-open');
+  }
+
+  function closeMenu() {
+    hamburger.classList.remove('active');
+    if (navDrawer) navDrawer.classList.remove('active');
+    if (navOverlay) navOverlay.classList.remove('active');
+    document.body.classList.remove('nav-open');
+  }
+
   hamburger.addEventListener('click', () => {
-    const isOpen = hamburger.classList.toggle('active');
-    navLinks.classList.toggle('active', isOpen);
-    if (navActions) navActions.classList.toggle('active', isOpen);
+    hamburger.classList.contains('active') ? closeMenu() : openMenu();
   });
-  navLinks.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', () => {
-      hamburger.classList.remove('active');
-      navLinks.classList.remove('active');
-      if (navActions) navActions.classList.remove('active');
-    });
-  });
+
+  if (navOverlay) navOverlay.addEventListener('click', closeMenu);
+
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+
+  window.addEventListener('resize', () => { if (window.innerWidth > 768) closeMenu(); });
+
+  if (navDrawer) {
+    navDrawer.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
+  }
 
   // ─── Theme toggle ───
   const themeToggle = document.getElementById('themeToggle');
