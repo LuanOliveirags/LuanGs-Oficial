@@ -1,28 +1,43 @@
 // ─────────────────────────────────────────────────────────
-// WISC-IV — Normas simuladas (baseadas em Wechsler, 2013)
+// WISC-IV — Escala de Inteligência Wechsler para Crianças (4.ª edição)
+// Wechsler, D. (2013). Adaptação e padronização brasileira:
+// Ambiel, N.F., Santos, A.A.A. dos, & Castro, N.R. de. Pearson.
+//
+// ⚠️  ATENÇÃO — NORMAS ESTIMADAS:
+// Os escores de índice (EI) e o QI Total (FSIQ) calculados aqui são
+// ESTIMATIVAS baseadas em fórmulas z simplificadas (média e dp teóricos).
+// O instrumento oficial utiliza tabelas de normatização por grupos de
+// idade com intervalo de 4 meses (manual Pearson, 2013).
+// Quando os dados normativos do manual forem informados, substituir as
+// constantes WISC_NORMAS pelos valores reais e alterar
+// normalizacaoUsada de "estimada" para "real".
 // ─────────────────────────────────────────────────────────
 
 /** Nomes dos índices */
 const WISC_INDICES = {
   cv: "Compreensão Verbal",
   rp: "Raciocínio Perceptual",
-  mt: "Memória de Trabalho",
+  mt: "Memória Operacional",
   vp: "Velocidade de Processamento"
 };
 
 /**
- * Médias e DPs esperados da SOMA de escores ponderados por índice.
+ * Médias e DPs teóricos da SOMA de escores ponderados por índice.
  * (Escores ponderados: média=10, dp≈3 por subteste)
- * CV = 3 subtestes → media≈30, dp≈6
- * RP = 3 subtestes → media≈30, dp≈6
- * MT = 2 subtestes → media≈20, dp≈4.5
- * VP = 2 subtestes → media≈20, dp≈4.5
+ * CV  = 3 subtestes → media≈30, dp≈5.2
+ * RP  = 3 subtestes → media≈30, dp≈5.2
+ * IMO = 2 subtestes → media≈20, dp≈4.2
+ * IVP = 2 subtestes → media≈20, dp≈4.2
+ *
+ * Para o FSIQ: soma dos 10 subtestes → media≈100, dp≈9.5
+ * Substituir pelos valores das tabelas do manual quando disponíveis.
  */
 const WISC_NORMAS = {
-  cv: { media: 30, dp: 6.0 },
-  rp: { media: 30, dp: 6.0 },
-  mt: { media: 20, dp: 4.5 },
-  vp: { media: 20, dp: 4.5 }
+  cv: { media: 30, dp: 5.2 },
+  rp: { media: 30, dp: 5.2 },
+  mt: { media: 20, dp: 4.2 },
+  vp: { media: 20, dp: 4.2 },
+  fsiq: { media: 100, dp: 9.5 }   // soma dos 10 escores ponderados
 };
 
 /** Subtestes por índice */

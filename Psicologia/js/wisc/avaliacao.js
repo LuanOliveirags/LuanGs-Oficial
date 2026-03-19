@@ -74,10 +74,12 @@ function calcularESalvarWISC() {
     somaTodos += soma;
   }
 
-  // QI Total (FSIQ) — média ponderada dos 4 índices (simplificado)
-  const somaEI = Object.values(indices).reduce((acc, v) => acc + v.score, 0);
-  const fsiq   = Math.round(somaEI / 4);
-  indices.fsiq = { score: fsiq, classe: classificarQI(fsiq) };
+  // QI Total (FSIQ) — estimativa via soma dos 10 escores ponderados
+  // (instrumento oficial usa tabelas de normatização por grupo de 4 meses — Pearson, 2013)
+  const somaTotal = Object.values(subtestes).reduce((acc, v) => acc + v, 0);
+  const normaFsiq = WISC_NORMAS.fsiq;
+  const fsiqScore = Math.max(40, Math.min(160, Math.round(100 + 15 * (somaTotal - normaFsiq.media) / normaFsiq.dp)));
+  indices.fsiq = { score: fsiqScore, classe: classificarQI(fsiqScore), normalizacaoUsada: "estimada" };
 
   const avaliacao = {
     id: Date.now(),
@@ -126,7 +128,15 @@ function buildResultadoWISCHTML(av, ctx) {
   const fsiq   = av.indices.fsiq;
   const interp = gerarInterpretacaoWISC(av);
 
+  const bannerNorma = `
+    <div style="background:#fef3c7;border:1px solid #f59e0b;border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:#92400e">
+      ⚠️ <strong>Normas estimadas:</strong> Os escores de índice (EI) e o QI Total (FSIQ) foram calculados por
+      fórmula z simplificada. O instrumento oficial utiliza tabelas de normatização por grupos de idade de
+      4 meses (Pearson, 2013). Os resultados são uma aproximação clínica — confirme com as tabelas do manual.
+    </div>`;
+
   return `
+    ${bannerNorma}
     <div style="margin-bottom:12px;font-size:13px;color:var(--text-muted)">
       <strong>${av.paciente.nome}</strong> &nbsp;|&nbsp;
       ${av.paciente.idade} anos &nbsp;|&nbsp;
@@ -141,8 +151,8 @@ function buildResultadoWISCHTML(av, ctx) {
     </div>
     <div class="resultado-grid">${indicesHTML}</div>
     <div class="graficos-container">
-      <canvas id="chart-radar-${ctx}"></canvas>
-      <canvas id="chart-barras-${ctx}"></canvas>
+      <div class="grafico-box"><p class="grafico-titulo">Perfil de Índices (Radar)</p><div class="grafico-wrap"><canvas id="chart-radar-${ctx}"></canvas></div></div>
+      <div class="grafico-box"><p class="grafico-titulo">Escores por Índice</p><div class="grafico-wrap"><canvas id="chart-barras-${ctx}"></canvas></div></div>
     </div>
     <div class="resultado-interp"><strong>Interpretação:</strong><br>${interp}</div>`;
 }
@@ -150,7 +160,7 @@ function buildResultadoWISCHTML(av, ctx) {
 // ── Gráficos WISC ──
 function renderizarGraficosWISC(av, ctx) {
   const ordemIndices = ["cv", "rp", "mt", "vp"];
-  const labels = ["Compr. Verbal", "Rac. Perceptual", "Mem. Trabalho", "Vel. Processamento"];
+  const labels = ["Compr. Verbal", "Rac. Perceptual", "Mem. Operacional", "Vel. Processamento"];
 
   const corPorEI = ei => {
     if (ei >= 120) return { bg: "rgba(22,163,74,0.7)",   brd: "rgb(22,163,74)" };
@@ -345,7 +355,7 @@ function exportarPDFWISC(avParam) {
   doc.setFontSize(8.5);
   doc.setTextColor(...preto);
   doc.text("Instrumento: WISC-IV — Escala de Inteligência Wechsler para Crianças, 4.ª Edição", L + 4, Y + 13);
-  doc.text("Referência: Wechsler, D. (2013). Adaptação brasileira: Rueda et al. Normas para 6 a 16 anos.", L + 4, Y + 19);
+  doc.text("Ref.: Ambiel, N.F., Santos, A.A.A. & Castro, N.R. de (2013). WISC-IV. Pearson. Faixa: 6;0–16;11 anos.", L + 4, Y + 19);
   doc.text(`Data de aplicação: ${formatarDataBR(av.data)}   |   Modalidade: individual e presencial`, L + 4, Y + 25);
   Y += 34;
 
