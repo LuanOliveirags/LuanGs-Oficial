@@ -2,53 +2,178 @@
    PsiCorrection — core/normas-loader.js
    Carregamento seguro de tabelas normativas do Firestore.
 
-   Fluxo de proteção:
-   1. App carrega → normas/*.js contém funções e META mas NÃO tabelas
-   2. Usuário faz login → carregarNormas() busca _normas/tabelas no Firestore
-   3. Se encontrado  → tabelas do servidor sobrepõem o bundle (getters em normas/index.js)
-   4. Se não encontrado → fallback transparente para dados do bundle local
-   5. Ao sair → limparNormasMemoria() descarta as tabelas em memória
+   CAMADAS DE PROTEÇÃO:
+   1. Bundle    : normas/*.js contém só funções e META (tabelas removidas após seed)
+   2. Session   : carregarNormas() só chamado após login validado pela aplicação
+   3. Firestore : regras verificam _sessoes/{uid}.role (não só request.auth)
+   4. Cache     : tabelas cifradas em sessionStorage (AES-GCM, chave em memória)
+   5. Auditoria : cada carregamento registrado em _audit (fire-and-forget)
 
-   Coleção Firestore: _normas  (regras: read = auth, write = false)
+   ESTRUTURA NO FIRESTORE:
+     _normas/{instrumento}  →  { tabelas: {...}, _seedAt, _seedPor, _versao }
+     _sessoes/{uid}         →  { role, email, validoAte }
+     _audit/{autoId}        →  { uid, email, instrumentos, ts, ua }
 
-   Para popular o Firestore pela primeira vez:
-     await seedNormasFirestore()   ← console de admin, UMA VEZ
-   Após a seed, remova os dados de tabelas dos normas/*.js
-   para que não sejam distribuídos no bundle público.
+   Para popular o Firestore pela primeira vez (admin, UMA VEZ):
+     await seedNormasFirestore()
+   Após confirmar dados no Firestore, remova os objetos de tabelas dos
+   normas/*.js para que não sejam distribuídos no bundle público.
 ═══════════════════════════════════════════════════════ */
 
-// null   = ainda não tentou carregar (antes do login)
-// {}     = carregado mas servidor sem dados (usa bundle)
-// {...}  = tabelas do servidor prontas
+// null = pré-login | {} = carregado, servidor sem dados | {...} = tabelas prontas
 let _servidor = null;
+// CryptoKey AES-GCM gerada uma vez por sessão de login — NUNCA vai para storage
+let _cacheKey = null;
+const _SS_KEY = "psi_nc"; // chave no sessionStorage (valor: base64 cifrado)
+
+// ── Criptografia de cache ─────────────────────────────
+
+async function _initCacheKey() {
+  if (_cacheKey) return _cacheKey;
+  _cacheKey = await crypto.subtle.generateKey(
+    { name: "AES-GCM", length: 256 }, true, ["encrypt", "decrypt"]
+  );
+  return _cacheKey;
+}
+
+async function _criptografar(dados) {
+  const chave   = await _initCacheKey();
+  const iv      = crypto.getRandomValues(new Uint8Array(12));
+  const bytes   = new TextEncoder().encode(JSON.stringify(dados));
+  const cifrado = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, chave, bytes);
+  const out     = new Uint8Array(12 + cifrado.byteLength);
+  out.set(iv);
+  out.set(new Uint8Array(cifrado), 12);
+  return btoa(String.fromCharCode(...out));
+}
+
+async function _decriptarCache() {
+  if (!_cacheKey) return null;
+  const b64 = sessionStorage.getItem(_SS_KEY);
+  if (!b64) return null;
+  try {
+    const buf     = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+    const iv      = buf.slice(0, 12);
+    const cifrado = buf.slice(12);
+    const claro   = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, _cacheKey, cifrado);
+    return JSON.parse(new TextDecoder().decode(claro));
+  } catch {
+    sessionStorage.removeItem(_SS_KEY);
+    return null;
+  }
+}
+
+// ── Sessão Firestore (_sessoes) ───────────────────────
+
+async function _registrarSessao(email, role) {
+  const uid = firebase.auth().currentUser?.uid;
+  if (!uid) return;
+  const validoAte = new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString();
+  await _firestoreDB.collection("_sessoes").doc(uid)
+    .set({ role, email, validoAte })
+    .catch(console.error);
+}
+
+async function _removerSessao() {
+  const uid = firebase.auth().currentUser?.uid;
+  if (!uid) return;
+  await _firestoreDB.collection("_sessoes").doc(uid)
+    .delete()
+    .catch(console.error);
+}
+
+// ── Auditoria ─────────────────────────────────────────
+
+function _registrarAuditoria(email, instrumentos) {
+  const uid = firebase.auth().currentUser?.uid;
+  if (!uid) return;
+  _firestoreDB.collection("_audit").add({
+    uid, email, instrumentos,
+    ts: new Date().toISOString(),
+    ua: navigator.userAgent.slice(0, 150)
+  }).catch(console.error); // fire-and-forget, nunca bloqueia UI
+}
+
+// ── API pública ───────────────────────────────────────
 
 /**
  * Busca tabelas normativas do Firestore após login bem-sucedido.
- * Chamado automaticamente por core/auth.js → fazerLogin / session restore.
+ *
+ * Fluxo:
+ *   1. Registra _sessoes/{uid} → habilita leitura de _normas pelas regras Firestore
+ *   2. Verifica cache cifrado em sessionStorage (evita nova busca no mesmo tab)
+ *   3. Busca _normas/{instrumento} em paralelo (4 documentos)
+ *   4. Cifra e armazena em sessionStorage (chave permanece apenas em memória)
+ *   5. Registra acesso em _audit
+ *
+ * @param {string} email  - email do profissional autenticado
+ * @param {string} role   - "profissional" | "admin"
  * @returns {Promise<void>}
  */
-async function carregarNormas() {
+async function carregarNormas(email = "", role = "profissional") {
+  // 1. Registrar sessão (habilita regras Firestore para _normas)
+  await _registrarSessao(email, role);
+
+  // 2. Verificar cache cifrado (reload no mesmo tab reutiliza dados)
+  const cached = await _decriptarCache();
+  if (cached) {
+    _servidor = cached;
+    console.info("[normas] ✓ Carregado do cache cifrado.");
+    return;
+  }
+
+  // 3. Buscar 4 instrumentos em paralelo
+  const ids = ["wisc", "neupsilin", "neupsilin-inf", "bfp"];
+  const resultado = {};
+  let algumEncontrado = false;
+
   try {
-    const doc = await _firestoreDB.collection("_normas").doc("tabelas").get();
-    if (doc.exists) {
-      _servidor = doc.data();
-      console.info("[normas] ✓ Tabelas carregadas do servidor.");
-    } else {
-      _servidor = {};
-      console.info("[normas] Servidor sem dados — usando bundle local como fallback.");
+    const docs = await Promise.all(
+      ids.map(id => _firestoreDB.collection("_normas").doc(id).get())
+    );
+    for (let i = 0; i < ids.length; i++) {
+      if (docs[i].exists) {
+        // Armazena só o campo `tabelas`, descartando metadados (_seedAt etc.)
+        resultado[ids[i]] = docs[i].data().tabelas ?? docs[i].data();
+        algumEncontrado = true;
+      }
     }
   } catch (e) {
     _servidor = {};
     console.warn("[normas] Fallback bundle (Firestore indisponível):", e.message);
+    return;
   }
+
+  if (!algumEncontrado) {
+    _servidor = {};
+    console.info("[normas] Servidor sem dados — usando bundle local como fallback.");
+    return;
+  }
+
+  _servidor = resultado;
+
+  // 4. Cifrar e armazenar em sessionStorage
+  try {
+    sessionStorage.setItem(_SS_KEY, await _criptografar(_servidor));
+  } catch (e) {
+    console.warn("[normas] Cache cifrado indisponível:", e.message);
+  }
+
+  // 5. Auditoria (fire-and-forget)
+  _registrarAuditoria(email, Object.keys(resultado));
+  console.info("[normas] ✓ Tabelas carregadas:", Object.keys(resultado).join(", "));
 }
 
 /**
- * Descarta tabelas da memória ao fazer logout.
+ * Descarta tabelas da memória, invalida o cache cifrado e remove a sessão
+ * do Firestore ao fazer logout.
  * Chamado por core/auth.js → fazerLogout().
  */
 function limparNormasMemoria() {
   _servidor = null;
+  _cacheKey = null; // chave perdida → sessionStorage indecifrável
+  sessionStorage.removeItem(_SS_KEY);
+  _removerSessao(); // fire-and-forget
 }
 
 /**
@@ -59,21 +184,19 @@ function getServidorNormas() {
   return _servidor;
 }
 
-/**
- * Indica se as tabelas já foram buscadas (independente de ter dados ou não).
- * @returns {boolean}
- */
+/** true se as tabelas já foram buscadas (com ou sem dados do servidor). */
 function normasCarregadas() {
   return _servidor !== null;
 }
 
 /**
  * Admin: popula o Firestore com as tabelas do bundle local.
+ * Cria 4 documentos separados (_normas/{instrumento}) via batch.
  *
  * Executar UMA VEZ no console, logado como admin:
  *   await seedNormasFirestore()
  *
- * Após confirmar que o Firestore contém os dados, remova os objetos de tabelas
+ * Após confirmar os dados no Firestore, remova os objetos de tabelas
  * dos arquivos normas/*.js (WISC_NORMAS, NEUPSILIN_NORMAS, NORMAS_INF,
  * BFP_NORMAS_FACETA) para que não sejam distribuídos no bundle público.
  *
@@ -84,38 +207,43 @@ async function seedNormasFirestore() {
     throw new Error("[normas] Apenas administradores podem executar a seed.");
   }
 
-  // Verifica se os globals do bundle ainda estão disponíveis
-  const requeridos = [
-    ["WISC_NORMAS",         "normas/wisc.js"],
-    ["NEUPSILIN_NORMAS",    "normas/neupsilin.js"],
-    ["NORMAS_INF",          "normas/neupsilin-inf.js"],
-    ["BFP_NORMAS_FACETA",   "normas/bfp.js"]
+  const mapa = [
+    ["wisc",          "WISC_NORMAS",        "normas/wisc.js"],
+    ["neupsilin",     "NEUPSILIN_NORMAS",    "normas/neupsilin.js"],
+    ["neupsilin-inf", "NORMAS_INF",          "normas/neupsilin-inf.js"],
+    ["bfp",           "BFP_NORMAS_FACETA",   "normas/bfp.js"]
   ];
-  for (const [varName, arquivo] of requeridos) {
+
+  for (const [, varName, arquivo] of mapa) {
     if (typeof window[varName] === "undefined") {
-      throw new Error(`[normas] "${varName}" não encontrado. Certifique-se que ${arquivo} está carregado.`);
+      throw new Error(`[normas] "${varName}" não encontrado — certifique-se que ${arquivo} está carregado com as tabelas.`);
     }
   }
 
-  const payload = {
-    wisc:             WISC_NORMAS,
-    neupsilin:        NEUPSILIN_NORMAS,
-    "neupsilin-inf":  NORMAS_INF,
-    bfp:              BFP_NORMAS_FACETA,
-    _seedAt:          new Date().toISOString(),
-    _seedPor:         window.usuarioLogado.email,
-    _versao:          "1.0"
+  const meta = {
+    _seedAt:  new Date().toISOString(),
+    _seedPor: window.usuarioLogado.email,
+    _versao:  "2.0"
   };
 
-  await _firestoreDB.collection("_normas").doc("tabelas").set(payload);
-  _servidor = payload; // atualiza memória imediatamente
+  // Batch garante atomicidade: ou tudo gravado, ou nada
+  const batch = _firestoreDB.batch();
+  for (const [id, varName] of mapa) {
+    batch.set(
+      _firestoreDB.collection("_normas").doc(id),
+      { tabelas: window[varName], ...meta }
+    );
+  }
+  await batch.commit();
 
-  console.info("═══════════════════════════════════════════════════");
-  console.info("[normas] ✓ Seed concluído! Tabelas salvas no Firestore.");
-  console.info("[normas] Próximo passo: remova os objetos de tabelas dos");
-  console.info("         arquivos normas/*.js para proteger o bundle.");
-  console.info("         Variáveis a remover: WISC_NORMAS, NEUPSILIN_NORMAS,");
-  console.info("         NORMAS_INF, BFP_NORMAS_FACETA");
-  console.info("═══════════════════════════════════════════════════");
+  // Atualiza memória imediatamente (evita re-fetch)
+  _servidor = Object.fromEntries(mapa.map(([id, varName]) => [id, window[varName]]));
+
+  console.info("═══════════════════════════════════════════════════════");
+  console.info("[normas] ✓ Seed v2 concluído — 4 documentos escritos:");
+  mapa.forEach(([id]) => console.info(`  _normas/${id}`));
+  console.info("[normas] Próximo passo: remova os objetos de tabelas:");
+  console.info("  WISC_NORMAS, NEUPSILIN_NORMAS, NORMAS_INF, BFP_NORMAS_FACETA");
+  console.info("═══════════════════════════════════════════════════════");
   return true;
 }

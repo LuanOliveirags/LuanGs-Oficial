@@ -74,7 +74,7 @@ async function fazerLogin() {
     await DB.carregarTodos(usuarioData.role === "admin", email);
     await DB_PAC.carregarCache(email, usuarioData.role === "admin");
     await carregarAvaliacoes(email, usuarioData.role === "admin");
-    await carregarNormas();  // busca tabelas do Firestore (fallback: bundle)
+    await carregarNormas(email, usuarioData.role);  // registra sessão + busca tabelas
     DB.verificarExpiracoes();
 
     errDiv.classList.add("hidden");

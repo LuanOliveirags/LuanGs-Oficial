@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       await DB.carregarTodos(usuarioLogado.role === "admin", usuarioLogado.email);
       await DB_PAC.carregarCache(usuarioLogado.email, usuarioLogado.role === "admin");
       await carregarAvaliacoes(usuarioLogado.email, usuarioLogado.role === "admin");
-      await carregarNormas();  // busca tabelas do Firestore (fallback: bundle)
+      await carregarNormas(usuarioLogado.email, usuarioLogado.role);  // registra sessão + busca tabelas
       DB.verificarExpiracoes();
       abrirDashboard();
     } catch (_) {
