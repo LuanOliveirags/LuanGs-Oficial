@@ -39,14 +39,6 @@ const WISC_INDICES = {
  * Para o FSIQ: soma dos 10 subtestes → media≈100, dp≈9.5
  * Substituir pelos valores das tabelas do manual quando disponíveis.
  */
-const WISC_NORMAS = {
-  cv: { media: 30, dp: 5.2 },
-  rp: { media: 30, dp: 5.2 },
-  mt: { media: 20, dp: 4.2 },
-  vp: { media: 20, dp: 4.2 },
-  fsiq: { media: 100, dp: 9.5 }   // soma dos 10 escores ponderados
-};
-
 /** Subtestes por índice */
 const WISC_SUBTESTES_POR_INDICE = {
   cv: ["semelhancas", "vocabulario", "compreensao"],
