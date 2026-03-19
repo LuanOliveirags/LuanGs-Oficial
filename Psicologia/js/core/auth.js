@@ -49,6 +49,13 @@ async function fazerLogin() {
 
   if (btnLogin) { btnLogin.disabled = true; btnLogin.textContent = "Entrando…"; }
 
+  // Garante que a auth anônima já está pronta antes de qualquer query ao Firestore
+  try {
+    if (!firebase.auth().currentUser) {
+      await firebase.auth().signInAnonymously();
+    }
+  } catch (_) { /* silencioso — Firestore pode ter regras abertas */ }
+
   try {
     const doc = await _firestoreDB.collection("usuarios").doc(email).get();
     if (!doc.exists) {
@@ -118,8 +125,8 @@ async function fazerLogin() {
     abrirDashboard();
     exibirAvisoObrigatorio();
   } catch (e) {
-    console.error(e);
-    errDiv.textContent = "Erro ao conectar. Verifique sua conexão e tente novamente.";
+    console.error("[login] erro:", e);
+    errDiv.textContent = "Erro: " + (e?.message || e?.code || JSON.stringify(e) || "desconhecido");
     errDiv.classList.remove("hidden");
   } finally {
     if (btnLogin) { btnLogin.disabled = false; btnLogin.textContent = "Entrar"; }
@@ -234,17 +241,7 @@ function abrirDashboard() {
     usuarioLogado.role === "admin" ? "Administrador" : "";
   document.getElementById("topbar-user-name").textContent  = usuarioLogado.nome;
 
-  document.querySelectorAll(".sec").forEach(s => {
-    s.style.display = "none";
-    s.classList.remove("active");
-  });
-  const dashSec = document.getElementById("sec-dashboard");
-  dashSec.style.display = "block";
-  dashSec.classList.add("active");
-
-  atualizarStats();
-  renderizarTabelaRecentes();
-
+  // ── Exibir/ocultar abas ANTES de qualquer renderização ──
   document.querySelectorAll(".nav-admin").forEach(el => {
     el.style.display = usuarioLogado.role === "admin" ? "flex" : "none";
   });
@@ -254,6 +251,17 @@ function abrirDashboard() {
   });
   const btnSenha = document.getElementById("btn-alterar-senha");
   if (btnSenha) btnSenha.style.display = usuarioLogado.role !== "admin" ? "block" : "none";
+
+  document.querySelectorAll(".sec").forEach(s => {
+    s.style.display = "none";
+    s.classList.remove("active");
+  });
+  const dashSec = document.getElementById("sec-dashboard");
+  dashSec.style.display = "block";
+  dashSec.classList.add("active");
+
+  try { atualizarStats(); } catch(e) { console.warn("[dashboard] atualizarStats:", e); }
+  try { renderizarTabelaRecentes(); } catch(e) { console.warn("[dashboard] renderizarTabelaRecentes:", e); }
 }
 
 // ── Modal de Perfil ────────────────────────────────────
