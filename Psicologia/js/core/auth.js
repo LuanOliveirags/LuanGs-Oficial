@@ -268,6 +268,7 @@ function abrirDashboard() {
 
 /** Abre o modal de edição de perfil do profissional logado. */
 function abrirModalPerfil() {
+  if (!usuarioLogado) return;
   const u = DB.findByEmail(usuarioLogado.email);
   document.getElementById("perfil-nome").value  = u ? u.nome  : "";
   document.getElementById("perfil-crp").value   = u ? u.crp   : "";

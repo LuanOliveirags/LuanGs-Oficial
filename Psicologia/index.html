@@ -1111,7 +1111,7 @@
               <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none">&#128269;</span>
               <input type="text" id="usr-busca" placeholder="Buscar por nome ou e-mail…"
                 style="padding:8px 12px 8px 34px;border:1px solid var(--border);border-radius:8px;font-size:14px;min-width:240px"
-                oninput="renderizarUsuarios()">
+                oninput="_pintarUsuarios()">
             </div>
             <button class="btn btn-primary" onclick="abrirModalUsuario()">+ Novo Usuário</button>
           </div>
@@ -1188,6 +1188,27 @@
     </section>
 
   </main>
+</div>
+
+<!-- Modal Aviso Obrigatório CFP -->
+<div id="modal-aviso-overlay" class="modal-overlay hidden">
+  <div class="modal-card" onclick="event.stopPropagation()" style="max-width:520px">
+    <div class="modal-header">
+      <h3>⚠️ Aviso Legal Obrigatório</h3>
+    </div>
+    <div style="padding:0 24px 8px;font-size:14px;line-height:1.7;color:var(--text)">
+      <p>O uso deste sistema é <strong>restrito a psicólogos registrados no CFP</strong>, conforme Resolução CFP nº 009/2018.</p>
+      <p>As tabelas normativas e instrumentos disponíveis são de uso exclusivo de profissionais habilitados. A utilização indevida constitui infração ética e pode ter consequências legais.</p>
+      <p>Ao continuar, você declara estar devidamente registrado e habilitado para aplicar os instrumentos disponíveis neste sistema.</p>
+      <div style="display:flex;align-items:flex-start;gap:10px;margin:18px 0 6px;padding:14px;background:var(--surface,#f8fafc);border-radius:8px;border:1px solid var(--border)">
+        <input type="checkbox" id="aviso-checkbox" onchange="atualizarBotaoAviso()" style="margin-top:3px;flex-shrink:0;width:16px;height:16px;cursor:pointer">
+        <label for="aviso-checkbox" style="cursor:pointer;font-size:13px">Li e concordo com as condições de uso. Declaro ser psicólogo registrado no CFP e responsável pelo uso ético deste sistema.</label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" id="aviso-btn-aceitar" disabled onclick="aceitarAviso()">Confirmar e Continuar</button>
+    </div>
+  </div>
 </div>
 
 <!-- Modal Selecionar Teste para Paciente -->

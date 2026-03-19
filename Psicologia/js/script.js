@@ -322,7 +322,7 @@ async function executarSeedNormas() {
   }
 }
 
-
+async function salvarUsuario() {
   const nome  = document.getElementById("usr-nome").value.trim();
   const email = document.getElementById("usr-email").value.trim();
   const senha = document.getElementById("usr-senha").value;
@@ -347,7 +347,7 @@ async function executarSeedNormas() {
     }
     okEl.classList.remove("hidden");
     setTimeout(() => fecharModalUsuario(), 1200);
-    renderizarUsuarios();
+    _pintarUsuarios();
   } catch (e) {
     errEl.textContent = e.message;
     errEl.classList.remove("hidden");
@@ -358,14 +358,14 @@ function excluirUsuarioAdmin(email) {
   if (email === usuarioLogado.email) { alert("Você não pode excluir sua própria conta."); return; }
   if (!confirm(`Deseja excluir o usuário "${email}"? Esta ação não pode ser desfeita.`)) return;
   DB.delete(email);
-  renderizarUsuarios();
+  _pintarUsuarios();
 }
 
 function bloquearUsuario(email) {
   if (email === usuarioLogado.email) { alert("Você não pode bloquear sua própria conta."); return; }
   if (!confirm(`Bloquear o acesso de "${email}"?`)) return;
   DB.bloquear(email);
-  renderizarUsuarios();
+  _pintarUsuarios();
 }
 
 function abrirModalAtivacao(email) {
@@ -385,10 +385,11 @@ function confirmarAtivacao() {
   if (!_ativandoEmail) return;
   DB.ativar(_ativandoEmail, document.getElementById("ativacao-plano").value);
   fecharModalAtivacao();
-  renderizarUsuarios();
+  _pintarUsuarios();
 }
 
-function renderizarUsuarios() {
+/** Renderiza o DOM da lista de usuários a partir do cache. */
+function _pintarUsuarios() {
   DB.verificarExpiracoes();
   const busca     = (document.getElementById("usr-busca")?.value || "").toLowerCase().trim();
   const todos     = DB.getAll();
@@ -459,4 +460,22 @@ function renderizarUsuarios() {
     </tr>`).join("");
     }
   }
+}
+
+/**
+ * Busca usuários frescos do Firestore e então renderiza.
+ * Chamado na navegação. Operações de mutação (criar/bloquear/excluir)
+ * já atualizam o cache e chamam _pintarUsuarios() diretamente.
+ */
+async function renderizarUsuarios() {
+  const tbA = document.getElementById("tbody-usuarios-ativos");
+  if (tbA) tbA.innerHTML = '<tr><td colspan="7" class="empty-row">Carregando…</td></tr>';
+  try {
+    await DB.carregarTodos(true, usuarioLogado.email);
+  } catch (e) {
+    console.error("[usuarios] erro ao carregar:", e);
+    if (tbA) tbA.innerHTML = '<tr><td colspan="7" class="empty-row" style="color:var(--danger)">Erro ao carregar usuários. Verifique a conexão.</td></tr>';
+    return;
+  }
+  _pintarUsuarios();
 }
