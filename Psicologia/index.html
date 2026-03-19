@@ -542,78 +542,120 @@
 
       <!-- Botão voltar -->
       <div style="margin-bottom:16px">
-        <button class="btn btn-secondary" onclick="navegarPara('testes', null)">← Voltar aos Instrumentos</button>
+        <button class="btn btn-secondary" onclick="navegarPara('testes', null)" style="border-radius:10px;display:inline-flex;align-items:center;gap:6px">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Voltar aos Instrumentos
+        </button>
       </div>
 
-      <!-- Dados da criança -->
-      <div class="card">
-        <h3>Dados da Criança — NEUPSILIN-INF <span style="font-size:12px;font-weight:400;color:var(--text-muted);margin-left:8px">6 a 12 anos e 11 meses</span></h3>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Nome Completo *</label>
-            <input type="text" id="ninf-nome" placeholder="Nome da criança">
-          </div>
-          <div class="form-group">
-            <label>Data de Nascimento *</label>
-            <input type="date" id="ninf-nasc">
-          </div>
-          <div class="form-group">
-            <label>Série / Ano Escolar</label>
-            <select id="ninf-serie">
-              <option value="">Selecione…</option>
-              <option value="EF1">1º ano — Ensino Fundamental</option>
-              <option value="EF2">2º ano — Ensino Fundamental</option>
-              <option value="EF3">3º ano — Ensino Fundamental</option>
-              <option value="EF4">4º ano — Ensino Fundamental</option>
-              <option value="EF5">5º ano — Ensino Fundamental</option>
-              <option value="EF6">6º ano — Ensino Fundamental</option>
-              <option value="NEE">Não frequenta escola</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Sexo</label>
-            <select id="ninf-sexo">
-              <option value="M">Masculino</option>
-              <option value="F">Feminino</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Tipo de Escola</label>
-            <select id="ninf-tipo-escola">
-              <option value="publica">Pública</option>
-              <option value="particular">Particular</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Região Geográfica</label>
-            <select id="ninf-regiao">
-              <option value="norte">Norte</option>
-              <option value="nordeste">Nordeste</option>
-              <option value="centro_oeste">Centro-Oeste</option>
-              <option value="sudeste">Sudeste</option>
-              <option value="sul">Sul</option>
-            </select>
+      <!-- Hero Banner -->
+      <div class="ninf-hero">
+        <div class="ninf-hero-content">
+          <div class="ninf-hero-icon">🧒</div>
+          <div class="ninf-hero-text">
+            <h2>NEUPSILIN Infantil</h2>
+            <p>Instrumento de Avaliação Neuropsicológica Breve — Versão Infantil.<br>Preencha os escores brutos obtidos em cada subteste para gerar a correção automática.</p>
+            <span class="ninf-hero-badge">👶 6 a 12 anos e 11 meses</span>
           </div>
         </div>
       </div>
 
-      <!-- Abas dos domínios INF -->
-      <div class="card">
-        <div class="tab-bar" id="ninf-tab-bar">
-          <button class="ninf-tab active" data-ninf-tab="orientacao">Orientação</button>
-          <button class="ninf-tab" data-ninf-tab="atencao">Atenção</button>
-          <button class="ninf-tab" data-ninf-tab="percepcao">Percepção</button>
-          <button class="ninf-tab" data-ninf-tab="memoria">Memória</button>
-          <button class="ninf-tab" data-ninf-tab="habilidades">Hab. Aritméticas</button>
-          <button class="ninf-tab" data-ninf-tab="linguagem">Linguagem</button>
-          <button class="ninf-tab" data-ninf-tab="funcoes">Funções Exec.</button>
-          <button class="ninf-tab" data-ninf-tab="praxias">Hab. Visuoconstr.</button>
+      <!-- Instruções -->
+      <div class="ninf-instructions">
+        <div class="ninf-instructions-title">💡 Instruções</div>
+        <ul>
+          <li>Aplicável para crianças de 6 a 12 anos e 11 meses</li>
+          <li>As normas são estratificadas por tipo de escola, cidade de referência e idade</li>
+          <li>Campos com "(segundos)" indicam medidas de tempo — valores menores indicam melhor desempenho</li>
+          <li>Preencha apenas os subtestes que foram aplicados</li>
+        </ul>
+      </div>
+
+      <!-- STEP 1: Dados da criança -->
+      <div class="ninf-section-card">
+        <div class="ninf-section-header">
+          <div class="ninf-step-badge">1</div>
+          <h3>Dados da Criança <span>Informações básicas do avaliando</span></h3>
+        </div>
+        <div class="ninf-section-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nome Completo *</label>
+              <input type="text" id="ninf-nome" placeholder="Nome da criança">
+            </div>
+            <div class="form-group">
+              <label>Data de Nascimento *</label>
+              <input type="date" id="ninf-nasc">
+            </div>
+            <div class="form-group">
+              <label>Série / Ano Escolar</label>
+              <select id="ninf-serie">
+                <option value="">Selecione…</option>
+                <option value="EF1">1º ano — Ensino Fundamental</option>
+                <option value="EF2">2º ano — Ensino Fundamental</option>
+                <option value="EF3">3º ano — Ensino Fundamental</option>
+                <option value="EF4">4º ano — Ensino Fundamental</option>
+                <option value="EF5">5º ano — Ensino Fundamental</option>
+                <option value="EF6">6º ano — Ensino Fundamental</option>
+                <option value="NEE">Não frequenta escola</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Sexo</label>
+              <select id="ninf-sexo">
+                <option value="M">Masculino</option>
+                <option value="F">Feminino</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Tipo de Escola</label>
+              <select id="ninf-tipo-escola">
+                <option value="publica">Pública</option>
+                <option value="particular">Particular</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Região Geográfica</label>
+              <select id="ninf-regiao">
+                <option value="norte">Norte</option>
+                <option value="nordeste">Nordeste</option>
+                <option value="centro_oeste">Centro-Oeste</option>
+                <option value="sudeste">Sudeste</option>
+                <option value="sul">Sul</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2: Domínios -->
+      <div class="ninf-section-card">
+        <div class="ninf-section-header">
+          <div class="ninf-step-badge">2</div>
+          <h3>Escores por Domínio <span>Registre os pontos obtidos em cada área</span></h3>
+        </div>
+
+        <!-- Tab Bar com Pills -->
+        <div class="ninf-tab-bar" id="ninf-tab-bar">
+          <button class="ninf-tab active" data-ninf-tab="orientacao"><span class="tab-emoji">🧭</span> Orientação</button>
+          <button class="ninf-tab" data-ninf-tab="atencao"><span class="tab-emoji">🎯</span> Atenção</button>
+          <button class="ninf-tab" data-ninf-tab="percepcao"><span class="tab-emoji">👁️</span> Percepção</button>
+          <button class="ninf-tab" data-ninf-tab="memoria"><span class="tab-emoji">🧠</span> Memória</button>
+          <button class="ninf-tab" data-ninf-tab="habilidades"><span class="tab-emoji">🔢</span> Hab. Aritméticas</button>
+          <button class="ninf-tab" data-ninf-tab="linguagem"><span class="tab-emoji">💬</span> Linguagem</button>
+          <button class="ninf-tab" data-ninf-tab="funcoes"><span class="tab-emoji">⚙️</span> Funções Exec.</button>
+          <button class="ninf-tab" data-ninf-tab="praxias"><span class="tab-emoji">✏️</span> Hab. Visuoconstr.</button>
         </div>
 
         <!-- ORIENTAÇÃO -->
         <div class="ninf-tab-content active" id="ninf-tab-orientacao">
-          <h4>Orientação Têmporo-Espacial</h4>
-          <p class="tab-desc">Registre quantas questões a criança respondeu corretamente.</p>
+          <div class="ninf-domain-header">
+            <div class="ninf-domain-icon orientacao">🧭</div>
+            <div class="ninf-domain-info">
+              <h4>Orientação Têmporo-Espacial</h4>
+              <p>Registre quantas questões a criança respondeu corretamente.</p>
+            </div>
+          </div>
           <div class="subteste-grid">
             <div class="subteste-item">
               <label>Dia da semana <span class="max">/1</span></label>
@@ -640,13 +682,18 @@
               <input type="number" min="0" max="1" class="ninf-score" data-area="orientacao" data-sub="inf_cidade" placeholder="0">
             </div>
           </div>
-          <div class="subtotal-bar">Subtotal Orientação: <strong id="ninf-sub-orientacao">0</strong> / 6</div>
+          <div class="subtotal-bar">🧭 Subtotal Orientação: <strong id="ninf-sub-orientacao">0</strong> / 6</div>
         </div>
 
         <!-- ATENÇÃO -->
         <div class="ninf-tab-content hidden" id="ninf-tab-atencao">
-          <h4>Atenção</h4>
-          <p class="tab-desc">Subtestes de atenção com sequências adaptadas para crianças.</p>
+          <div class="ninf-domain-header">
+            <div class="ninf-domain-icon atencao">🎯</div>
+            <div class="ninf-domain-info">
+              <h4>Atenção</h4>
+              <p>Subtestes de atenção com sequências adaptadas para crianças.</p>
+            </div>
+          </div>
           <div class="subteste-grid">
             <div class="subteste-item">
               <label>Dígitos — Ordem Direta <span class="max">/8</span></label>
@@ -661,13 +708,18 @@
               <input type="number" min="0" max="8" class="ninf-score" data-area="atencao" data-sub="inf_cancelamento" placeholder="0">
             </div>
           </div>
-          <div class="subtotal-bar">Subtotal Atenção: <strong id="ninf-sub-atencao">0</strong> / 22</div>
+          <div class="subtotal-bar">🎯 Subtotal Atenção: <strong id="ninf-sub-atencao">0</strong> / 22</div>
         </div>
 
         <!-- PERCEPÇÃO -->
         <div class="ninf-tab-content hidden" id="ninf-tab-percepcao">
-          <h4>Percepção Visual</h4>
-          <p class="tab-desc">Nomeação de figuras e discriminação visual.</p>
+          <div class="ninf-domain-header">
+            <div class="ninf-domain-icon percepcao">👁️</div>
+            <div class="ninf-domain-info">
+              <h4>Percepção Visual</h4>
+              <p>Nomeação de figuras e discriminação visual.</p>
+            </div>
+          </div>
           <div class="subteste-grid">
             <div class="subteste-item">
               <label>Nomeação de Figuras <span class="max">/10</span></label>
@@ -678,13 +730,18 @@
               <input type="number" min="0" max="10" class="ninf-score" data-area="percepcao" data-sub="inf_discriminacao" placeholder="0">
             </div>
           </div>
-          <div class="subtotal-bar">Subtotal Percepção: <strong id="ninf-sub-percepcao">0</strong> / 20</div>
+          <div class="subtotal-bar">👁️ Subtotal Percepção: <strong id="ninf-sub-percepcao">0</strong> / 20</div>
         </div>
 
         <!-- MEMÓRIA -->
         <div class="ninf-tab-content hidden" id="ninf-tab-memoria">
-          <h4>Memória</h4>
-          <p class="tab-desc">Memória de trabalho, episódica verbal e semântica adaptadas para crianças.</p>
+          <div class="ninf-domain-header">
+            <div class="ninf-domain-icon memoria">🧠</div>
+            <div class="ninf-domain-info">
+              <h4>Memória</h4>
+              <p>Memória de trabalho, episódica verbal e semântica adaptadas para crianças.</p>
+            </div>
+          </div>
           <div class="subteste-grid">
             <div class="subteste-item">
               <label>Memória de Trabalho Verbal <span class="max">/6</span></label>
@@ -707,13 +764,18 @@
               <input type="number" min="0" max="4" class="ninf-score" data-area="memoria" data-sub="inf_semantica" placeholder="0">
             </div>
           </div>
-          <div class="subtotal-bar">Subtotal Memória: <strong id="ninf-sub-memoria">0</strong> / 30</div>
+          <div class="subtotal-bar">🧠 Subtotal Memória: <strong id="ninf-sub-memoria">0</strong> / 30</div>
         </div>
 
         <!-- HABILIDADES ARITMÉTICAS -->
         <div class="ninf-tab-content hidden" id="ninf-tab-habilidades">
-          <h4>Habilidades Aritméticas</h4>
-          <p class="tab-desc">Cálculo simples e resolução de problemas adequados à faixa etária.</p>
+          <div class="ninf-domain-header">
+            <div class="ninf-domain-icon habilidades">🔢</div>
+            <div class="ninf-domain-info">
+              <h4>Habilidades Aritméticas</h4>
+              <p>Cálculo simples e resolução de problemas adequados à faixa etária.</p>
+            </div>
+          </div>
           <div class="subteste-grid">
             <div class="subteste-item">
               <label>Cálculo Simples <span class="max">/4</span></label>
@@ -724,13 +786,18 @@
               <input type="number" min="0" max="4" class="ninf-score" data-area="habilidades" data-sub="inf_problemas" placeholder="0">
             </div>
           </div>
-          <div class="subtotal-bar">Subtotal Habilidades: <strong id="ninf-sub-habilidades">0</strong> / 8</div>
+          <div class="subtotal-bar">🔢 Subtotal Habilidades: <strong id="ninf-sub-habilidades">0</strong> / 8</div>
         </div>
 
         <!-- LINGUAGEM -->
         <div class="ninf-tab-content hidden" id="ninf-tab-linguagem">
-          <h4>Linguagem</h4>
-          <p class="tab-desc">Fluência verbal, compreensão, repetição, leitura e escrita adaptadas.</p>
+          <div class="ninf-domain-header">
+            <div class="ninf-domain-icon linguagem">💬</div>
+            <div class="ninf-domain-info">
+              <h4>Linguagem</h4>
+              <p>Fluência verbal, compreensão, repetição, leitura e escrita adaptadas.</p>
+            </div>
+          </div>
           <div class="subteste-grid">
             <div class="subteste-item">
               <label>Fluência Verbal (categorias) <span class="max">/8</span></label>
@@ -753,13 +820,18 @@
               <input type="number" min="0" max="4" class="ninf-score" data-area="linguagem" data-sub="inf_escrita" placeholder="0">
             </div>
           </div>
-          <div class="subtotal-bar">Subtotal Linguagem: <strong id="ninf-sub-linguagem">0</strong> / 26</div>
+          <div class="subtotal-bar">💬 Subtotal Linguagem: <strong id="ninf-sub-linguagem">0</strong> / 26</div>
         </div>
 
         <!-- FUNÇÕES EXECUTIVAS -->
         <div class="ninf-tab-content hidden" id="ninf-tab-funcoes">
-          <h4>Funções Executivas</h4>
-          <p class="tab-desc">Fluência fonêmica, controle inibitório, resolução de problemas e abstração.</p>
+          <div class="ninf-domain-header">
+            <div class="ninf-domain-icon funcoes">⚙️</div>
+            <div class="ninf-domain-info">
+              <h4>Funções Executivas</h4>
+              <p>Fluência fonêmica, controle inibitório, resolução de problemas e abstração.</p>
+            </div>
+          </div>
           <div class="subteste-grid">
             <div class="subteste-item">
               <label>Fluência Fonêmica (letra P) <span class="max">/6</span></label>
@@ -778,13 +850,18 @@
               <input type="number" min="0" max="3" class="ninf-score" data-area="funcoes" data-sub="inf_abstracao" placeholder="0">
             </div>
           </div>
-          <div class="subtotal-bar">Subtotal Funções Exec.: <strong id="ninf-sub-funcoes">0</strong> / 18</div>
+          <div class="subtotal-bar">⚙️ Subtotal Funções Exec.: <strong id="ninf-sub-funcoes">0</strong> / 18</div>
         </div>
 
         <!-- HABILIDADES VISUOCONSTRUTIVAS -->
         <div class="ninf-tab-content hidden" id="ninf-tab-praxias">
-          <h4>Habilidades Visuoconstrutivas</h4>
-          <p class="tab-desc">Praxia construtiva (cópia de figuras) e praxia ideomotora (gestos) adaptadas para crianças.</p>
+          <div class="ninf-domain-header">
+            <div class="ninf-domain-icon praxias">✏️</div>
+            <div class="ninf-domain-info">
+              <h4>Habilidades Visuoconstrutivas</h4>
+              <p>Praxia construtiva (cópia de figuras) e praxia ideomotora (gestos) adaptadas para crianças.</p>
+            </div>
+          </div>
           <div class="subteste-grid">
             <div class="subteste-item">
               <label>Praxia Construtiva <span class="max">/8</span></label>
@@ -795,28 +872,33 @@
               <input type="number" min="0" max="8" class="ninf-score" data-area="praxias" data-sub="inf_ideomotora" placeholder="0">
             </div>
           </div>
-          <div class="subtotal-bar">Subtotal Habilidades Visuoconstrutivas: <strong id="ninf-sub-praxias">0</strong> / 16</div>
+          <div class="subtotal-bar">✏️ Subtotal Habilidades Visuoconstrutivas: <strong id="ninf-sub-praxias">0</strong> / 16</div>
         </div>
 
-      </div><!-- /card abas INF -->
+      </div><!-- /ninf-section-card domínios -->
 
-      <!-- Observações -->
-      <div class="card">
-        <h3>Observações Clínicas</h3>
-        <textarea id="ninf-obs" rows="4" placeholder="Comportamento durante a avaliação, intercorrências, observações relevantes sobre a criança…"></textarea>
+      <!-- STEP 3: Observações -->
+      <div class="ninf-section-card ninf-obs-card">
+        <div class="ninf-section-header">
+          <div class="ninf-step-badge">3</div>
+          <h3>Observações Clínicas <span>Comportamento e intercorrências</span></h3>
+        </div>
+        <div class="ninf-section-body">
+          <textarea id="ninf-obs" rows="4" placeholder="Comportamento durante a avaliação, intercorrências, observações relevantes sobre a criança…"></textarea>
+        </div>
       </div>
 
-      <div class="form-actions">
-        <button class="btn btn-secondary" onclick="limparFormularioInf()">Limpar</button>
-        <button class="btn btn-sm" style="background:var(--success);color:#fff;border-radius:8px;padding:10px 22px;font-size:14px;font-weight:600;cursor:pointer;border:none" onclick="calcularESalvarInf()">&#128196; Calcular &amp; Gerar Laudo INF</button>
+      <div class="ninf-actions">
+        <button class="ninf-btn-clear" onclick="limparFormularioInf()">🗑️ Limpar</button>
+        <button class="ninf-btn-calculate" onclick="calcularESalvarInf()">📊 Calcular &amp; Gerar Laudo INF</button>
       </div>
 
       <!-- Resultado inline INF -->
       <div id="ninf-resultado-inline" class="card hidden resultado-card" style="border-left-color:var(--success)">
         <h3>Resultado — NEUPSILIN-INF</h3>
         <div id="ninf-resultado-conteudo"></div>
-        <div class="form-actions">
-          <button class="btn" style="background:var(--success);color:#fff;border-radius:8px;padding:10px 22px;font-size:14px;font-weight:600;cursor:pointer;border:none" onclick="exportarPDFInf()">&#128196; Exportar Laudo PDF</button>
+        <div class="ninf-actions" style="padding:0 24px 24px">
+          <button class="ninf-btn-calculate" onclick="exportarPDFInf()">📄 Exportar Laudo PDF</button>
         </div>
       </div>
 
