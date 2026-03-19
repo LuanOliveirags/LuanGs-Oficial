@@ -55,7 +55,10 @@ const WISC_SUB_NOMES = {
 function calcularIndiceWISC(soma, indice) {
   const tabelas = getServidorNormas()?.wisc ?? WISC_NORMAS;
   const norma = tabelas[indice];
-  if (!norma) return 100;
+  if (!norma) {
+    if (!getServidorNormas()) console.warn("[wisc] Normas não carregadas do servidor.");
+    return 100;
+  }
   return Math.max(40, Math.min(160, Math.round(100 + 15 * (soma - norma.media) / norma.dp)));
 }
 

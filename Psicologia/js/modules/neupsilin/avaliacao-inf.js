@@ -46,7 +46,7 @@ function atualizarSubtotalInf(e) {
 // ──────────────────────────────────────────────────────
 // CALCULAR & SALVAR — INF
 // ──────────────────────────────────────────────────────
-function calcularESalvarInf() {
+async function calcularESalvarInf() {
   const nome       = document.getElementById("ninf-nome").value.trim();
   const nasc        = document.getElementById("ninf-nasc").value;
   const serie       = document.getElementById("ninf-serie").value;
@@ -56,6 +56,11 @@ function calcularESalvarInf() {
 
   if (!nome || !nasc) {
     alert("Preencha Nome e Data de Nascimento da criança.");
+    return;
+  }
+
+  if (!await garantirNormas()) {
+    alert("Normas indisponíveis. Verifique sua conexão e tente novamente.");
     return;
   }
 
@@ -547,6 +552,9 @@ function exportarPDFInf(avParam) {
   doc.setTextColor(...cinza);
   doc.text(`Local e data: _________________________________, ${formatarData(new Date().toISOString())}`, R, Y + 5, { align: "right" });
 
+  doc.setFontSize(6.5);
+  doc.setTextColor(120, 120, 120);
+  doc.text("Nota técnica: resultados calculados com as normas carregadas do servidor no momento da avaliação.", 105, 286, { align: "center" });
   doc.setFontSize(7);
   doc.text("Elaborado em conformidade com a Resolução CFP nº 06/2019. Uso exclusivo do profissional responsável.", 105, 292, { align: "center" });
 

@@ -84,7 +84,10 @@ function calcularZArea(area, score, escolaridade, idade) {
   const faixa = getFaixaEtaria(idade);
   const tabelas = getServidorNormas()?.neupsilin ?? NEUPSILIN_NORMAS;
   const norma = tabelas[area]?.[escolaridade]?.[faixa];
-  if (!norma) return { z: 0, classe: classificarZ(0), media: 0, dp: 1, normalizacaoUsada: "indisponivel" };
+  if (!norma) {
+    if (!getServidorNormas()) console.warn("[neupsilin] Normas não carregadas do servidor.");
+    return { z: 0, classe: classificarZ(0), media: 0, dp: 1, normalizacaoUsada: "indisponivel" };
+  }
   const z = (score - norma.media) / norma.dp;
   const normalizacaoUsada = "estimada";
   return { z: +z.toFixed(2), classe: classificarZ(z), media: norma.media, dp: norma.dp, normalizacaoUsada };

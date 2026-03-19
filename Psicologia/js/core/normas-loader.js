@@ -19,7 +19,12 @@
 let _servidor = null;
 // CryptoKey AES-GCM gerada uma vez por sessão de login — NUNCA vai para storage
 let _cacheKey = null;
-const _SS_KEY = "psi_nc"; // chave no sessionStorage (valor: base64 cifrado)
+const _SS_KEY = "psi_nc"; // chave no sessionStorage (legado — valor único)
+const _SS_PREFIX = "psi_nc_"; // prefixo per-instrument (ex: psi_nc_wisc)
+const _INSTRUMENTOS = ["wisc", "neupsilin", "neupsilin-inf", "bfp"];
+let _loadState = "idle";   // "idle" | "loading" | "loaded" | "error"
+let _lastError = null;
+let _loadPromise = null;
 
 // ── Criptografia de cache ─────────────────────────────
 
@@ -42,9 +47,9 @@ async function _criptografar(dados) {
   return btoa(String.fromCharCode(...out));
 }
 
-async function _decriptarCache() {
+async function _decriptarBlob(storageKey) {
   if (!_cacheKey) return null;
-  const b64 = sessionStorage.getItem(_SS_KEY);
+  const b64 = sessionStorage.getItem(storageKey);
   if (!b64) return null;
   try {
     const buf     = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
@@ -53,9 +58,27 @@ async function _decriptarCache() {
     const claro   = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, _cacheKey, cifrado);
     return JSON.parse(new TextDecoder().decode(claro));
   } catch {
-    sessionStorage.removeItem(_SS_KEY);
+    sessionStorage.removeItem(storageKey);
     return null;
   }
+}
+
+async function _decriptarCache() {
+  if (!_cacheKey) return null;
+  // Legado: chave única (migra para per-instrument)
+  const legado = await _decriptarBlob(_SS_KEY);
+  if (legado) {
+    sessionStorage.removeItem(_SS_KEY);
+    return legado;
+  }
+  // Per-instrument
+  const resultado = {};
+  let algum = false;
+  for (const id of _INSTRUMENTOS) {
+    const dados = await _decriptarBlob(_SS_PREFIX + id);
+    if (dados) { resultado[id] = dados; algum = true; }
+  }
+  return algum ? resultado : null;
 }
 
 // ── Sessão Firestore (_sessoes) ───────────────────────
@@ -106,56 +129,73 @@ function _registrarAuditoria(email, instrumentos) {
  * @returns {Promise<void>}
  */
 async function carregarNormas(email = "", role = "profissional") {
+  _loadState = "loading";
+  _lastError = null;
+  _mostrarStatusNormas("Carregando normas…", "loading");
+
+  _loadPromise = _carregarNormasInterno(email, role);
+  await _loadPromise;
+  _loadPromise = null;
+}
+
+async function _carregarNormasInterno(email, role) {
   // 1. Registrar sessão (habilita regras Firestore para _normas)
   await _registrarSessao(email, role);
 
-  // 2. Verificar cache cifrado (reload no mesmo tab reutiliza dados)
+  // 2. Verificar cache cifrado per-instrument
   const cached = await _decriptarCache();
   if (cached) {
     _servidor = cached;
+    _loadState = "loaded";
+    _mostrarStatusNormas("✓ Normas carregadas", "success");
     console.info("[normas] ✓ Carregado do cache cifrado.");
     return;
   }
 
-  // 3. Buscar 4 instrumentos em paralelo
-  const ids = ["wisc", "neupsilin", "neupsilin-inf", "bfp"];
+  // 3. Buscar instrumentos em paralelo
   const resultado = {};
   let algumEncontrado = false;
 
   try {
     const docs = await Promise.all(
-      ids.map(id => _firestoreDB.collection("_normas").doc(id).get())
+      _INSTRUMENTOS.map(id => _firestoreDB.collection("_normas").doc(id).get())
     );
-    for (let i = 0; i < ids.length; i++) {
+    for (let i = 0; i < _INSTRUMENTOS.length; i++) {
       if (docs[i].exists) {
-        // Armazena só o campo `tabelas`, descartando metadados (_seedAt etc.)
-        resultado[ids[i]] = docs[i].data().tabelas ?? docs[i].data();
+        resultado[_INSTRUMENTOS[i]] = docs[i].data().tabelas ?? docs[i].data();
         algumEncontrado = true;
       }
     }
   } catch (e) {
     _servidor = {};
-    console.warn("[normas] Fallback bundle (Firestore indisponível):", e.message);
+    _loadState = "error";
+    _lastError = e.message;
+    _mostrarStatusNormas("Erro ao carregar normas — resultados podem estar imprecisos", "error");
+    console.warn("[normas] Fallback (Firestore indisponível):", e.message);
     return;
   }
 
   if (!algumEncontrado) {
     _servidor = {};
-    console.info("[normas] Servidor sem dados — usando bundle local como fallback.");
+    _loadState = "error";
+    _lastError = "Nenhum instrumento encontrado no servidor";
+    _mostrarStatusNormas("Normas indisponíveis no servidor", "error");
+    console.info("[normas] Servidor sem dados.");
     return;
   }
 
   _servidor = resultado;
+  _loadState = "loaded";
 
-  // 4. Cifrar e armazenar em sessionStorage
-  try {
-    sessionStorage.setItem(_SS_KEY, await _criptografar(_servidor));
-  } catch (e) {
-    console.warn("[normas] Cache cifrado indisponível:", e.message);
+  // 4. Cifrar e armazenar per-instrument em sessionStorage
+  for (const id of Object.keys(resultado)) {
+    try { sessionStorage.setItem(_SS_PREFIX + id, await _criptografar(resultado[id])); }
+    catch (e) { console.warn("[normas] Cache " + id + ":", e.message); }
   }
 
   // 5. Auditoria (fire-and-forget)
   _registrarAuditoria(email, Object.keys(resultado));
+  _mostrarStatusNormas("✓ Normas carregadas: " + Object.keys(resultado).join(", "), "success");
   console.info("[normas] ✓ Tabelas carregadas:", Object.keys(resultado).join(", "));
 }
 
@@ -166,9 +206,13 @@ async function carregarNormas(email = "", role = "profissional") {
  */
 function limparNormasMemoria() {
   _servidor = null;
-  _cacheKey = null; // chave perdida → sessionStorage indecifrável
-  sessionStorage.removeItem(_SS_KEY);
-  _removerSessao(); // fire-and-forget
+  _cacheKey = null;
+  _loadState = "idle";
+  _lastError = null;
+  _loadPromise = null;
+  sessionStorage.removeItem(_SS_KEY); // legado
+  for (const id of _INSTRUMENTOS) sessionStorage.removeItem(_SS_PREFIX + id);
+  _removerSessao();
 }
 
 /**
@@ -182,6 +226,56 @@ function getServidorNormas() {
 /** true se as tabelas já foram buscadas (com ou sem dados do servidor). */
 function normasCarregadas() {
   return _servidor !== null;
+}
+
+/** Retorna o estado atual do carregamento de normas. */
+function estadoNormas() {
+  return { state: _loadState, error: _lastError };
+}
+
+/**
+ * Garante que as normas estejam disponíveis.
+ * Tenta cache → Firestore re-fetch. Retorna true se normas prontas.
+ */
+async function garantirNormas() {
+  if (_loadState === "loaded" && _servidor && Object.keys(_servidor).length > 0) return true;
+  if (_loadState === "loading" && _loadPromise) {
+    await _loadPromise;
+    return _servidor !== null && Object.keys(_servidor).length > 0;
+  }
+  const cached = await _decriptarCache();
+  if (cached && Object.keys(cached).length > 0) {
+    _servidor = cached;
+    _loadState = "loaded";
+    return true;
+  }
+  const user = JSON.parse(sessionStorage.getItem("neupsilin_user") || "null");
+  if (user && firebase.auth().currentUser) {
+    await carregarNormas(user.email, user.role || "profissional");
+    return _servidor !== null && Object.keys(_servidor).length > 0;
+  }
+  return false;
+}
+
+/** Exibe toast temporário com status do carregamento de normas. */
+function _mostrarStatusNormas(mensagem, tipo) {
+  let el = document.getElementById("normas-status-toast");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "normas-status-toast";
+    document.body.appendChild(el);
+  }
+  const estilos = {
+    loading: "background:#eff6ff;color:#1e40af;border:1px solid #93c5fd",
+    success: "background:#f0fdf4;color:#166534;border:1px solid #86efac",
+    error:   "background:#fef2f2;color:#991b1b;border:1px solid #fca5a5"
+  };
+  el.style.cssText = "position:fixed;top:16px;right:16px;z-index:10000;padding:12px 20px;border-radius:8px;font-size:13px;font-weight:500;max-width:380px;box-shadow:0 4px 12px rgba(0,0,0,.15);transition:opacity .3s;" + (estilos[tipo] || estilos.loading);
+  el.textContent = mensagem;
+  el.style.opacity = "1";
+  if (tipo !== "loading") {
+    setTimeout(() => { el.style.opacity = "0"; setTimeout(() => el.remove(), 300); }, tipo === "error" ? 6000 : 3000);
+  }
 }
 
 /**

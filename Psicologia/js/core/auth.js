@@ -110,6 +110,9 @@ async function fazerLogin() {
     await DB_PAC.carregarCache(email, usuarioData.role === "admin");
     await carregarAvaliacoes(email, usuarioData.role === "admin");
     await carregarNormas(email, usuarioData.role);  // registra sessão + busca tabelas
+    if (estadoNormas().state === "error") {
+      console.warn("[login] Normas não carregadas:", estadoNormas().error);
+    }
     DB.verificarExpiracoes();
 
     errDiv.classList.add("hidden");

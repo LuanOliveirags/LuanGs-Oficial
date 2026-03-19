@@ -40,13 +40,18 @@ function limparWISC() {
 }
 
 // ── Calcular & Salvar WISC ──
-function calcularESalvarWISC() {
+async function calcularESalvarWISC() {
   const nome = document.getElementById("wisc-nome").value.trim();
   const nasc = document.getElementById("wisc-nasc").value;
   const sexo = document.getElementById("wisc-sexo").value;
 
   if (!nome || !nasc) {
     alert("Preencha o Nome e a Data de Nascimento do paciente.");
+    return;
+  }
+
+  if (!await garantirNormas()) {
+    alert("Normas indisponíveis. Verifique sua conexão e tente novamente.");
     return;
   }
 
@@ -463,6 +468,9 @@ function exportarPDFWISC(avParam) {
   doc.text(crpTxt, L, Y + 10);
   doc.setTextColor(...cinza);
   doc.text(`Local e data: _________________________________, ${formatarData(new Date().toISOString())}`, R, Y + 5, { align: "right" });
+  doc.setFontSize(6.5);
+  doc.setTextColor(120, 120, 120);
+  doc.text("Nota técnica: resultados calculados com as normas carregadas do servidor no momento da avaliação.", 105, 286, { align: "center" });
   doc.setFontSize(7);
   doc.text("Elaborado em conformidade com a Resolução CFP nº 06/2019. Uso exclusivo do profissional responsável.", 105, 292, { align: "center" });
 

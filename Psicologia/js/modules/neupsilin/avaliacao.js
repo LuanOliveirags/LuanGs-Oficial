@@ -20,7 +20,7 @@ function atualizarSubtotal(e) {
 // ──────────────────────────────────────────────────────
 // CALCULAR & SALVAR
 // ──────────────────────────────────────────────────────
-function calcularEsalvar() {
+async function calcularEsalvar() {
   const nome = document.getElementById("pac-nome").value.trim();
   const nasc = document.getElementById("pac-nasc").value;
   const esc  = document.getElementById("pac-esc").value;
@@ -28,6 +28,11 @@ function calcularEsalvar() {
 
   if (!nome || !nasc || !esc) {
     alert("Preencha Nome, Data de Nascimento e Escolaridade do paciente.");
+    return;
+  }
+
+  if (!await garantirNormas()) {
+    alert("Normas indisponíveis. Verifique sua conexão e tente novamente.");
     return;
   }
 
@@ -509,6 +514,9 @@ function exportarPDF(avParam) {
   doc.setTextColor(...cinza);
   doc.text(`Local e data: _________________________________, ${formatarData(new Date().toISOString())}`, R, Y + 5, { align: "right" });
 
+  doc.setFontSize(6.5);
+  doc.setTextColor(120, 120, 120);
+  doc.text("Nota técnica: resultados calculados com as normas carregadas do servidor no momento da avaliação.", 105, 286, { align: "center" });
   doc.setFontSize(7);
   doc.text("Elaborado em conformidade com a Resolução CFP nº 06/2019. Uso exclusivo do profissional responsável.", 105, 292, { align: "center" });
 

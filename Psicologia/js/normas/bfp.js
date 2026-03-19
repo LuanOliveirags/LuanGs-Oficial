@@ -79,7 +79,10 @@ const BFP_NORMAS_FACETA = {};
 function bfpTScore(rawScore, facetaCod) {
   const tabelas = getServidorNormas()?.bfp ?? BFP_NORMAS_FACETA;
   const n = tabelas[facetaCod];
-  if (!n) return 50;
+  if (!n) {
+    if (!getServidorNormas()) console.warn("[bfp] Normas não carregadas do servidor.");
+    return 50;
+  }
   return Math.round(50 + 10 * (rawScore - n.media) / n.dp);
 }
 

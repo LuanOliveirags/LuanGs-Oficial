@@ -149,7 +149,10 @@ function calcularZAreaInf(area, score, idadeAnos, tipoEscola = "", regiao = "") 
   const norma = normaCompleta ?? normaFallback;
   const normalizacaoUsada = normaCompleta ? "completa" : "parcial_idade";
 
-  if (!norma) return { z: 0, media: 0, dp: 1, classe: classificarZ(0), normalizacaoUsada: "indisponivel" };
+  if (!norma) {
+    if (!getServidorNormas()) console.warn("[neupsilin-inf] Normas não carregadas do servidor.");
+    return { z: 0, media: 0, dp: 1, classe: classificarZ(0), normalizacaoUsada: "indisponivel" };
+  }
 
   const z = (score - norma.media) / norma.dp;
   return { z: +z.toFixed(2), media: norma.media, dp: norma.dp, classe: classificarZ(z), normalizacaoUsada };
