@@ -80,6 +80,17 @@
           </div>
         </div>
 
+        <div class="form-group" id="login-crp-group">
+          <label for="login-crp">CRP <span class="crp-label-badge">Psicólogo</span></label>
+          <div class="input-icon-wrap">
+            <svg class="input-prefix-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            <input type="text" id="login-crp" placeholder="06/123456" autocomplete="off"
+                   oninput="atualizarStatusCRP(this)" maxlength="12" spellcheck="false">
+            <span id="crp-status" class="crp-status-icon"></span>
+          </div>
+          <span id="crp-hint" class="crp-hint">Formato: 06/123456 · Exigido pelo CFP para psicólogos</span>
+        </div>
+
         <div class="form-group">
           <label for="login-senha">Senha</label>
           <div class="input-icon-wrap">
@@ -1459,6 +1470,48 @@
   </div>
 </div>
 
+<!-- ═══════════════════ AVISO OBRIGATÓRIO (CFP) ═══════════════════ -->
+<div id="modal-aviso-overlay" class="aviso-overlay" style="display:none">
+  <div class="aviso-modal" role="dialog" aria-modal="true" aria-labelledby="aviso-titulo">
+
+    <div class="aviso-header">
+      <div class="aviso-icone">⚖️</div>
+      <div>
+        <div class="aviso-titulo" id="aviso-titulo">Aviso Obrigatório</div>
+        <div class="aviso-subtitulo">CFP / Resolução CFP nº 031/2022</div>
+      </div>
+    </div>
+
+    <div class="aviso-corpo">
+      <p class="aviso-destaque">
+        Este sistema é uma <strong>ferramenta de apoio à avaliação psicológica</strong>.
+        A interpretação clínica, o diagnóstico e a conclusão final são de
+        <strong>responsabilidade exclusiva do psicólogo</strong> habilitado.
+      </p>
+      <ul class="aviso-lista">
+        <li>Os escores gerados são estimativas baseadas em normas padronizadas.</li>
+        <li>Os resultados devem ser contextualizados com a história clínica do paciente.</li>
+        <li>Este sistema <strong>não substitui</strong> a anámnese, entrevista clínica ou juízo profissional.</li>
+        <li>O laudo gerado automaticamente é um <em>rascunho de apoio</em> — revise antes de assinar.</li>
+        <li>O uso indevido por não-psicólogos é vedado pelo Código de Ética Profissional (CFP).</li>
+      </ul>
+
+      <label class="aviso-check-label">
+        <input type="checkbox" id="aviso-check" onchange="atualizarBotaoAviso()">
+        Li, compreendi e assumo responsabilidade profissional pelo uso deste sistema.
+      </label>
+    </div>
+
+    <div class="aviso-rodape">
+      <button id="aviso-btn-aceitar" class="aviso-btn-aceitar"
+              onclick="aceitarAviso()" disabled>
+        ✓ Continuar para o Sistema
+      </button>
+    </div>
+
+  </div>
+</div>
+
 <!-- Firebase SDK (compat - necessário para Firestore) -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -1469,6 +1522,7 @@
 <script src="js/core/database.js"></script>
 <script src="js/core/utils.js"></script>
 <script src="js/core/storage.js"></script>
+<script src="js/core/crp-validator.js"></script>
 <script src="js/core/auth.js"></script>
 <script src="js/core/navigation.js"></script>
 <script src="js/core/normas-loader.js"></script>
