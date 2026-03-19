@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PsiCorrection — Correção de Testes Psicológicos em Minutos</title>
+  <meta name="description" content="Plataforma clínica para correção automatizada de testes psicológicos. NEUPSILIN, WISC-IV, BFP e mais. Economize horas de trabalho.">
+  <link rel="icon" href="../Psicologia/img/Psi.png" type="image/png">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/landing.css">
+</head>
+<body>
+
+  <!-- ═══════════════ HEADER / NAV ═══════════════ -->
+  <header class="nav" id="nav">
+    <div class="container nav__inner">
+      <a href="#hero" class="nav__logo">
+        <img src="../Psicologia/img/Psi.png" alt="PsiCorrection" class="nav__logo-img">
+        <span>PsiCorrection</span>
+      </a>
+      <nav class="nav__links" id="navLinks">
+        <a href="#como-funciona">Como Funciona</a>
+        <a href="#testes">Testes</a>
+        <a href="#beneficios">Benefícios</a>
+        <a href="#planos">Planos</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+      <div class="nav__actions">
+        <a href="../Psicologia/index.html" class="btn btn--ghost">Entrar</a>
+        <a href="../Psicologia/index.html" class="btn btn--primary">Começar Grátis</a>
+      </div>
+      <button class="nav__hamburger" id="navHamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ═══════════════ HERO ═══════════════ -->
+  <section class="hero" id="hero">
+    <div class="container hero__inner">
+      <div class="hero__content">
+        <div class="hero__badge">
+          <span class="hero__badge-dot"></span>
+          Plataforma 100% online
+        </div>
+        <h1 class="hero__title">
+          Transforme <span class="gradient-text">horas de correção</span> em poucos minutos
+        </h1>
+        <p class="hero__subtitle">
+          Corrija testes psicológicos instantaneamente com precisão clínica. NEUPSILIN, WISC-IV, BFP e muito mais — tudo conforme as normas do CFP.
+        </p>
+        <div class="hero__cta">
+          <a href="../Psicologia/index.html" class="btn btn--primary btn--lg">
+            Começar Gratuitamente
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+          <a href="#como-funciona" class="btn btn--outline btn--lg">Ver Demonstração</a>
+        </div>
+        <div class="hero__trust">
+          <div class="hero__trust-avatars">
+            <span class="avatar-circle" style="background:#2563eb;">P</span>
+            <span class="avatar-circle" style="background:#7c3aed;">M</span>
+            <span class="avatar-circle" style="background:#0284c7;">A</span>
+            <span class="avatar-circle" style="background:#16a34a;">R</span>
+          </div>
+          <p>Utilizado por <strong>psicólogos em todo o Brasil</strong></p>
+        </div>
+      </div>
+      <div class="hero__visual">
+        <div class="hero__mockup">
+          <div class="mockup-card">
+            <div class="mockup-header">
+              <span class="mockup-dot red"></span>
+              <span class="mockup-dot yellow"></span>
+              <span class="mockup-dot green"></span>
+              <span class="mockup-title">PsiCorrection — Avaliação</span>
+            </div>
+            <div class="mockup-body">
+              <div class="mockup-stat">
+                <span class="mockup-label">Teste</span>
+                <span class="mockup-value">WISC-IV</span>
+              </div>
+              <div class="mockup-stat">
+                <span class="mockup-label">QI Total</span>
+                <span class="mockup-value accent">108</span>
+              </div>
+              <div class="mockup-stat">
+                <span class="mockup-label">Classificação</span>
+                <span class="mockup-value success">Médio</span>
+              </div>
+              <div class="mockup-bar-group">
+                <div class="mockup-bar-item">
+                  <span>ICV</span>
+                  <div class="mockup-bar"><div class="mockup-bar-fill" style="width:78%"></div></div>
+                </div>
+                <div class="mockup-bar-item">
+                  <span>IOP</span>
+                  <div class="mockup-bar"><div class="mockup-bar-fill" style="width:85%"></div></div>
+                </div>
+                <div class="mockup-bar-item">
+                  <span>IMO</span>
+                  <div class="mockup-bar"><div class="mockup-bar-fill" style="width:65%"></div></div>
+                </div>
+                <div class="mockup-bar-item">
+                  <span>IVP</span>
+                  <div class="mockup-bar"><div class="mockup-bar-fill" style="width:72%"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hero__wave">
+      <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+        <path d="M0 60L48 52C96 44 192 28 288 24C384 20 480 28 576 40C672 52 768 68 864 72C960 76 1056 68 1152 56C1248 44 1344 28 1392 20L1440 12V120H1392C1344 120 1248 120 1152 120C1056 120 960 120 864 120C768 120 672 120 576 120C480 120 384 120 288 120C192 120 96 120 48 120H0V60Z" fill="white"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ═══════════════ STATS ═══════════════ -->
+  <section class="stats">
+    <div class="container stats__grid">
+      <div class="stat-card" data-count="500">
+        <span class="stat-card__number">0</span>
+        <span class="stat-card__suffix">+</span>
+        <p class="stat-card__label">Testes Corrigidos</p>
+      </div>
+      <div class="stat-card" data-count="90">
+        <span class="stat-card__number">0</span>
+        <span class="stat-card__suffix">%</span>
+        <p class="stat-card__label">Menos Tempo de Correção</p>
+      </div>
+      <div class="stat-card" data-count="100">
+        <span class="stat-card__number">0</span>
+        <span class="stat-card__suffix">%</span>
+        <p class="stat-card__label">Conforme Normas CFP</p>
+      </div>
+      <div class="stat-card" data-count="5">
+        <span class="stat-card__number">0</span>
+        <span class="stat-card__suffix">/5</span>
+        <p class="stat-card__label">Avaliação dos Usuários</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ COMO FUNCIONA ═══════════════ -->
+  <section class="how-it-works" id="como-funciona">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Simples e Rápido</span>
+        <h2 class="section-title">Como funciona o PsiCorrection?</h2>
+        <p class="section-subtitle">Em 4 passos simples, você economiza horas de trabalho</p>
+      </div>
+      <div class="steps">
+        <div class="step" data-aos>
+          <div class="step__number">1</div>
+          <div class="step__icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+          </div>
+          <h3>Aplique o Teste</h3>
+          <p>Realize a aplicação do teste psicológico com seu paciente, seguindo os procedimentos padrão.</p>
+        </div>
+        <div class="step" data-aos>
+          <div class="step__number">2</div>
+          <div class="step__icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </div>
+          <h3>Insira os Dados</h3>
+          <p>Digite os dados coletados na plataforma PsiCorrection de forma rápida e intuitiva.</p>
+        </div>
+        <div class="step" data-aos>
+          <div class="step__number">3</div>
+          <div class="step__icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          </div>
+          <h3>Obtenha os Resultados</h3>
+          <p>Receba cálculos, classificações, percentis e interpretações automaticamente em segundos.</p>
+        </div>
+        <div class="step" data-aos>
+          <div class="step__number">4</div>
+          <div class="step__icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </div>
+          <h3>Elabore sua Síntese</h3>
+          <p>Foque no que realmente importa: a análise clínica e a elaboração do parecer profissional.</p>
+        </div>
+      </div>
+
+      <!-- Comparativo -->
+      <div class="comparison">
+        <div class="comparison__card comparison__card--manual">
+          <div class="comparison__icon">📝</div>
+          <h4>Correção Manual</h4>
+          <span class="comparison__time">1 – 4 horas</span>
+          <p>Por teste completo</p>
+        </div>
+        <div class="comparison__vs">VS</div>
+        <div class="comparison__card comparison__card--auto">
+          <div class="comparison__icon">⚡</div>
+          <h4>Com PsiCorrection</h4>
+          <span class="comparison__time">5 – 10 min</span>
+          <p>Por teste completo</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ TESTES DISPONÍVEIS ═══════════════ -->
+  <section class="tests" id="testes">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Instrumentos</span>
+        <h2 class="section-title">Testes Disponíveis</h2>
+        <p class="section-subtitle">Instrumentos psicológicos validados para sua prática clínica</p>
+      </div>
+      <div class="tests__grid">
+        <div class="test-card">
+          <span class="test-card__category test-card__category--rastreio">Rastreio</span>
+          <h3 class="test-card__name">NEUPSILIN Adulto</h3>
+          <p class="test-card__desc">Instrumento de Avaliação Neuropsicológica Breve. Avaliação de orientação, atenção, percepção, memória, linguagem e funções executivas.</p>
+          <span class="test-card__badge">Disponível</span>
+        </div>
+        <div class="test-card">
+          <span class="test-card__category test-card__category--rastreio">Rastreio</span>
+          <h3 class="test-card__name">NEUPSILIN Infantil</h3>
+          <p class="test-card__desc">Versão infantil do instrumento de avaliação neuropsicológica breve com normas específicas para crianças.</p>
+          <span class="test-card__badge">Disponível</span>
+        </div>
+        <div class="test-card">
+          <span class="test-card__category test-card__category--inteligencia">Inteligência</span>
+          <h3 class="test-card__name">WISC-IV</h3>
+          <p class="test-card__desc">Escala Wechsler de Inteligência para Crianças. Correção completa com QI Total, índices fatoriais e laudo automático.</p>
+          <span class="test-card__badge">Disponível</span>
+        </div>
+        <div class="test-card">
+          <span class="test-card__category test-card__category--personalidade">Personalidade</span>
+          <h3 class="test-card__name">BFP</h3>
+          <p class="test-card__desc">Bateria Fatorial de Personalidade. Avalia os cinco grandes fatores de personalidade com normas atualizadas.</p>
+          <span class="test-card__badge">Disponível</span>
+        </div>
+        <div class="test-card test-card--soon">
+          <span class="test-card__category test-card__category--atencao">Atenção</span>
+          <h3 class="test-card__name">Novos Testes</h3>
+          <p class="test-card__desc">Estamos trabalhando continuamente para adicionar novos instrumentos à plataforma. Cadastre-se para ser notificado!</p>
+          <span class="test-card__badge test-card__badge--soon">Em breve</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ BENEFÍCIOS ═══════════════ -->
+  <section class="benefits" id="beneficios">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Vantagens</span>
+        <h2 class="section-title">Transforme sua Prática Clínica</h2>
+        <p class="section-subtitle">Descubra os benefícios que vão otimizar seu trabalho</p>
+      </div>
+      <div class="benefits__grid">
+        <div class="benefit-card benefit-card--featured" data-aos>
+          <div class="benefit-card__metric">90%</div>
+          <h3>Menos Tempo Gasto</h3>
+          <p>Transforme 1-4 horas de correção manual em apenas 5-10 minutos. Mais tempo para o que realmente importa: seus pacientes.</p>
+        </div>
+        <div class="benefit-card benefit-card--featured" data-aos>
+          <div class="benefit-card__metric">100%</div>
+          <h3>Conforme CFP</h3>
+          <p>Todas as interpretações e cálculos seguem rigorosamente as normas atualizadas do Conselho Federal de Psicologia.</p>
+        </div>
+        <div class="benefit-card" data-aos>
+          <div class="benefit-card__icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          </div>
+          <h3>Produtividade Máxima</h3>
+          <p>Aumente sua capacidade de atendimento sem comprometer a qualidade das avaliações.</p>
+        </div>
+        <div class="benefit-card" data-aos>
+          <div class="benefit-card__icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <h3>Precisão Total</h3>
+          <p>Elimine erros de cálculo e tenha resultados sempre precisos e confiáveis.</p>
+        </div>
+        <div class="benefit-card" data-aos>
+          <div class="benefit-card__icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <h3>Gestão de Pacientes</h3>
+          <p>Cadastre pacientes, acompanhe histórico e organize suas avaliações em um só lugar.</p>
+        </div>
+        <div class="benefit-card" data-aos>
+          <div class="benefit-card__icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
+          <h3>Acesso Universal</h3>
+          <p>Trabalhe de qualquer lugar, em qualquer dispositivo com acesso à internet.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ PLANOS ═══════════════ -->
+  <section class="pricing" id="planos">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Investimento</span>
+        <h2 class="section-title">Escolha Seu Plano</h2>
+        <p class="section-subtitle">Acesso completo a todos os instrumentos da plataforma</p>
+      </div>
+      <div class="pricing__grid">
+        <div class="pricing-card">
+          <h3 class="pricing-card__name">Gratuito</h3>
+          <div class="pricing-card__price">
+            <span class="pricing-card__currency">R$</span>
+            <span class="pricing-card__amount">0</span>
+          </div>
+          <p class="pricing-card__period">Para começar a explorar</p>
+          <ul class="pricing-card__features">
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Acesso aos testes disponíveis
+            </li>
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Correções limitadas
+            </li>
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Cadastro de pacientes
+            </li>
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Suporte por e-mail
+            </li>
+          </ul>
+          <a href="../Psicologia/index.html" class="btn btn--outline btn--block">Criar Conta</a>
+        </div>
+        <div class="pricing-card pricing-card--popular">
+          <span class="pricing-card__badge">Mais Popular</span>
+          <h3 class="pricing-card__name">Profissional</h3>
+          <div class="pricing-card__price">
+            <span class="pricing-card__currency">R$</span>
+            <span class="pricing-card__amount">49</span>
+            <span class="pricing-card__cents">,90</span>
+          </div>
+          <p class="pricing-card__period">por mês</p>
+          <ul class="pricing-card__features">
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <strong>Correções ilimitadas</strong>
+            </li>
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Todos os testes disponíveis
+            </li>
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Laudos automatizados
+            </li>
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Gestão ilimitada de pacientes
+            </li>
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Suporte prioritário
+            </li>
+            <li>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              Atualizações gratuitas
+            </li>
+          </ul>
+          <a href="../Psicologia/index.html" class="btn btn--primary btn--block">Assinar Agora</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ FAQ ═══════════════ -->
+  <section class="faq" id="faq">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Dúvidas</span>
+        <h2 class="section-title">Perguntas Frequentes</h2>
+        <p class="section-subtitle">Tire suas dúvidas sobre o PsiCorrection</p>
+      </div>
+      <div class="faq__list">
+        <details class="faq-item">
+          <summary class="faq-item__question">
+            Como posso começar a usar o PsiCorrection?
+            <span class="faq-item__icon"></span>
+          </summary>
+          <div class="faq-item__answer">
+            <p>Basta criar uma conta gratuita no sistema. Após o cadastro, você terá acesso imediato aos testes disponíveis e poderá começar a corrigir avaliações.</p>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-item__question">
+            Preciso ter registro no CRP para usar?
+            <span class="faq-item__icon"></span>
+          </summary>
+          <div class="faq-item__answer">
+            <p>Sim. O PsiCorrection é uma ferramenta exclusiva para profissionais de psicologia. É necessário informar seu número de CRP válido no cadastro.</p>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-item__question">
+            Os resultados estão de acordo com as normas do CFP?
+            <span class="faq-item__icon"></span>
+          </summary>
+          <div class="faq-item__answer">
+            <p>Sim. Todos os cálculos, tabelas normativas e interpretações seguem rigorosamente os manuais técnicos e normas atualizadas do Conselho Federal de Psicologia (CFP) e do SATEPSI.</p>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-item__question">
+            Quais testes estão disponíveis na plataforma?
+            <span class="faq-item__icon"></span>
+          </summary>
+          <div class="faq-item__answer">
+            <p>Atualmente oferecemos o NEUPSILIN (Adulto e Infantil), WISC-IV e BFP (Bateria Fatorial de Personalidade). Novos instrumentos são adicionados regularmente.</p>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-item__question">
+            Quanto tempo economizo usando o PsiCorrection?
+            <span class="faq-item__icon"></span>
+          </summary>
+          <div class="faq-item__answer">
+            <p>Em média, a correção manual de um teste leva de 1 a 4 horas. Com o PsiCorrection, o mesmo teste é corrigido em 5 a 10 minutos — uma economia de até 90% do seu tempo.</p>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-item__question">
+            A plataforma funciona em dispositivos móveis?
+            <span class="faq-item__icon"></span>
+          </summary>
+          <div class="faq-item__answer">
+            <p>Sim! O PsiCorrection é uma PWA (Progressive Web App) totalmente responsiva. Funciona em qualquer dispositivo com navegador moderno — celular, tablet ou computador.</p>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-item__question">
+            Meus dados ficam seguros na plataforma?
+            <span class="faq-item__icon"></span>
+          </summary>
+          <div class="faq-item__answer">
+            <p>Absolutamente. Utilizamos Firebase com autenticação segura e banco de dados Firestore com regras de segurança rigorosas. Os dados dos seus pacientes são protegidos e acessíveis apenas por você.</p>
+          </div>
+        </details>
+        <details class="faq-item">
+          <summary class="faq-item__question">
+            Vocês adicionam novos testes regularmente?
+            <span class="faq-item__icon"></span>
+          </summary>
+          <div class="faq-item__answer">
+            <p>Sim! Estamos constantemente expandindo o catálogo de instrumentos. Cadastre-se para ser notificado quando novos testes forem disponibilizados na plataforma.</p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ CTA FINAL ═══════════════ -->
+  <section class="cta-final">
+    <div class="container cta-final__inner">
+      <h2>Pronto para Revolucionar sua Prática?</h2>
+      <p>Junte-se aos psicólogos que já descobriram uma forma mais eficiente de trabalhar</p>
+      <a href="../Psicologia/index.html" class="btn btn--white btn--lg">
+        Começar Agora — É Grátis
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- ═══════════════ FOOTER ═══════════════ -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__brand">
+        <div class="footer__logo">
+          <img src="../Psicologia/img/Psi.png" alt="PsiCorrection" class="footer__logo-img">
+          <span>PsiCorrection</span>
+        </div>
+        <p>Plataforma clínica para correção automatizada de testes psicológicos, conforme normas do CFP.</p>
+      </div>
+      <div class="footer__links">
+        <h4>Plataforma</h4>
+        <a href="#como-funciona">Como Funciona</a>
+        <a href="#testes">Testes</a>
+        <a href="#planos">Planos</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <div class="footer__links">
+        <h4>Acesso</h4>
+        <a href="../Psicologia/index.html">Entrar</a>
+        <a href="../Psicologia/index.html">Criar Conta</a>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <div class="container">
+        <p>&copy; 2025 PsiCorrection. Todos os direitos reservados.</p>
+        <a href="https://www.instagram.com/luanoliveirags/" target="_blank" rel="noopener noreferrer" class="footer__credit">
+          Desenvolvido por <strong>Luan Gs</strong>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/landing.js"></script>
+</body>
+</html>
