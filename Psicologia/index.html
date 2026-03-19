@@ -76,20 +76,8 @@
           <label for="login-email">E-mail profissional</label>
           <div class="input-icon-wrap">
             <svg class="input-prefix-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
-            <input type="email" id="login-email" placeholder="profissional@exemplo.com" autocomplete="username"
-                   onblur="detectarCampoIdentificador()">
+            <input type="email" id="login-email" placeholder="profissional@exemplo.com" autocomplete="username" onblur="detectarCampoIdentificador()">
           </div>
-        </div>
-
-        <div class="form-group" id="login-crp-group">
-          <label for="login-crp">CRP <span class="crp-label-badge">Psicólogo</span></label>
-          <div class="input-icon-wrap">
-            <svg class="input-prefix-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-            <input type="text" id="login-crp" placeholder="06/123456" autocomplete="off"
-                   oninput="atualizarStatusCRP(this)" maxlength="12" spellcheck="false">
-            <span id="crp-status" class="crp-status-icon"></span>
-          </div>
-          <span id="crp-hint" class="crp-hint">Formato: 06/123456 · Exigido pelo CFP para psicólogos</span>
         </div>
 
         <div class="form-group">
@@ -104,6 +92,21 @@
               <svg id="eye-off" class="hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
             </button>
           </div>
+        </div>
+
+        <!-- Campo CPF — identifica admin e psicólogo; aparece após onblur do e-mail -->
+        <div class="form-group" id="login-crp-group">
+          <label for="login-crp">CPF <span class="crp-label-badge" id="crp-label-badge">Psicólogo</span></label>
+          <div class="input-icon-wrap">
+            <svg class="input-prefix-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+            <input type="text" id="login-crp" placeholder="000.000.000-00" autocomplete="off"
+                   maxlength="14" data-mode="cpf" oninput="atualizarStatusCRP(this)">
+            <span id="crp-status" class="crp-status-icon"></span>
+          </div>
+          <small id="crp-hint" class="crp-hint">Formato: 000.000.000-00 · Confirma seu registro no CFP</small>
+          <a id="crp-cfp-link" class="crp-hint crp-cfp-link hidden" href="https://cadastro.cfp.org.br/" target="_blank" rel="noopener noreferrer">
+            🔍 Verificar registro ativo no CFP ↗
+          </a>
         </div>
 
         <button class="btn btn-primary btn-full login-submit-btn" onclick="fazerLogin()">
@@ -1344,16 +1347,20 @@
       </div>
       <div class="form-row">
         <div class="form-group">
+          <label>CPF do Profissional</label>
+          <input type="text" id="usr-cpf" placeholder="000.000.000-00" maxlength="14">
+        </div>
+        <div class="form-group">
           <label>CRP (opcional)</label>
           <input type="text" id="usr-crp" placeholder="CRP 07/00000">
         </div>
-        <div class="form-group">
-          <label>Perfil</label>
-          <select id="usr-role">
-            <option value="profissional">Profissional</option>
-            <option value="admin">Administrador</option>
-          </select>
-        </div>
+      </div>
+      <div class="form-group">
+        <label>Perfil</label>
+        <select id="usr-role">
+          <option value="profissional">Profissional</option>
+          <option value="admin">Administrador</option>
+        </select>
       </div>
       <div class="form-group" id="usr-plano-group">
         <label>Tipo de Acesso</label>
@@ -1468,48 +1475,6 @@
       <button class="btn btn-accent" id="modal-pdf-btn">📄 Exportar PDF</button>
       <button class="btn btn-danger" id="modal-del-btn">🗑 Excluir</button>
     </div>
-  </div>
-</div>
-
-<!-- ═══════════════════ AVISO OBRIGATÓRIO (CFP) ═══════════════════ -->
-<div id="modal-aviso-overlay" class="aviso-overlay" style="display:none">
-  <div class="aviso-modal" role="dialog" aria-modal="true" aria-labelledby="aviso-titulo">
-
-    <div class="aviso-header">
-      <div class="aviso-icone">⚖️</div>
-      <div>
-        <div class="aviso-titulo" id="aviso-titulo">Aviso Obrigatório</div>
-        <div class="aviso-subtitulo">CFP / Resolução CFP nº 031/2022</div>
-      </div>
-    </div>
-
-    <div class="aviso-corpo">
-      <p class="aviso-destaque">
-        Este sistema é uma <strong>ferramenta de apoio à avaliação psicológica</strong>.
-        A interpretação clínica, o diagnóstico e a conclusão final são de
-        <strong>responsabilidade exclusiva do psicólogo</strong> habilitado.
-      </p>
-      <ul class="aviso-lista">
-        <li>Os escores gerados são estimativas baseadas em normas padronizadas.</li>
-        <li>Os resultados devem ser contextualizados com a história clínica do paciente.</li>
-        <li>Este sistema <strong>não substitui</strong> a anámnese, entrevista clínica ou juízo profissional.</li>
-        <li>O laudo gerado automaticamente é um <em>rascunho de apoio</em> — revise antes de assinar.</li>
-        <li>O uso indevido por não-psicólogos é vedado pelo Código de Ética Profissional (CFP).</li>
-      </ul>
-
-      <label class="aviso-check-label">
-        <input type="checkbox" id="aviso-check" onchange="atualizarBotaoAviso()">
-        Li, compreendi e assumo responsabilidade profissional pelo uso deste sistema.
-      </label>
-    </div>
-
-    <div class="aviso-rodape">
-      <button id="aviso-btn-aceitar" class="aviso-btn-aceitar"
-              onclick="aceitarAviso()" disabled>
-        ✓ Continuar para o Sistema
-      </button>
-    </div>
-
   </div>
 </div>
 

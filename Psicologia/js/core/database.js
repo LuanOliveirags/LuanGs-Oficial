@@ -54,7 +54,7 @@ const DB = {
   },
 
   // ── Criar usuário ──────────────────────────────────
-  async create({ email, senha, nome, crp = "", role = "profissional", plano = "1mes", ocultarAplicacao = false }) {
+  async create({ email, senha, nome, crp = "", cpf = "", role = "profissional", plano = "1mes", ocultarAplicacao = false }) {
     if (!email || !senha || !nome) throw new Error("Preencha todos os campos obrigatórios.");
     if (senha.length < 6) throw new Error("A senha deve ter ao menos 6 caracteres.");
 
@@ -66,6 +66,7 @@ const DB = {
       senhaHash: await hashSenha(senha),
       nome:  nome.trim(),
       crp:   crp.trim(),
+      cpf:   cpf.replace(/\D/g, ""),
       role,
       plano,
       expiracao: calcularExpiracao(plano),
@@ -79,7 +80,7 @@ const DB = {
   },
 
   // ── Atualizar usuário pelo admin ───────────────────
-  async updateAdmin(email, { nome, crp, role, ocultarAplicacao, novaSenha } = {}) {
+  async updateAdmin(email, { nome, crp, cpf, role, ocultarAplicacao, novaSenha } = {}) {
     const emailNorm = email.toLowerCase().trim();
     const idx = this._cache.findIndex(u => u.email === emailNorm);
     if (idx === -1) throw new Error("Usuário não encontrado.");
@@ -87,6 +88,7 @@ const DB = {
     const updates = {};
     if (nome !== undefined)             updates.nome = nome.trim();
     if (crp !== undefined)              updates.crp  = crp.trim();
+    if (cpf !== undefined)              updates.cpf  = cpf.replace(/\D/g, "");
     if (role !== undefined)             updates.role = role;
     if (ocultarAplicacao !== undefined) updates.ocultarAplicacao = ocultarAplicacao;
     if (novaSenha) {

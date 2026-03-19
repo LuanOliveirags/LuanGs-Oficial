@@ -36,27 +36,15 @@ async function fazerLogin() {
     return;
   }
 
-  // Pré-validação do campo identificador (CRP ou CPF) — antes de consultar o Firestore
+  // Pré-validação do CPF — antes de consultar o Firestore
   const _identField = document.getElementById("login-crp");
-  const _identMode  = _identField?.dataset.mode ?? "crp";
   const _identValue = _identField?.value.trim() ?? "";
 
-  if (_identMode === "cpf") {
-    const cpfCheck = validarFormatoCPF(_identValue);
-    if (!cpfCheck.ok) {
-      errDiv.textContent = cpfCheck.mensagem;
-      errDiv.classList.remove("hidden");
-      return;
-    }
-  } else {
-    if (_identValue) {
-      const fmtCheck = validarFormatoCRP(_identValue);
-      if (!fmtCheck.ok) {
-        errDiv.textContent = fmtCheck.mensagem;
-        errDiv.classList.remove("hidden");
-        return;
-      }
-    }
+  const _cpfPreCheck = validarFormatoCPF(_identValue);
+  if (!_cpfPreCheck.ok) {
+    errDiv.textContent = _cpfPreCheck.mensagem;
+    errDiv.classList.remove("hidden");
+    return;
   }
 
   if (btnLogin) { btnLogin.disabled = true; btnLogin.textContent = "Entrando…"; }
@@ -94,28 +82,21 @@ async function fazerLogin() {
       return;
     }
 
-    // Validação do identificador: CPF (admin) ou CRP (psicólogo)
-    if (_identMode === "cpf") {
-      // Admin: confirma CPF válido e, se cadastrado, confere com o armazenado
-      const cpfFinal = validarFormatoCPF(_identValue);
-      if (!cpfFinal.ok) {
-        errDiv.textContent = cpfFinal.mensagem;
-        errDiv.classList.remove("hidden");
-        return;
-      }
-      if (usuarioData.cpf && normalizarCPF(_identValue) !== normalizarCPF(usuarioData.cpf)) {
-        errDiv.textContent = "CPF não confere com o cadastro. Verifique os dados.";
-        errDiv.classList.remove("hidden");
-        return;
-      }
-    } else {
-      // Psicólogo: validação completa de CRP (admin já seria isento internamente)
-      const crpCheck = await validarCRPLogin(_identValue, usuarioData, email);
-      if (!crpCheck.ok) {
-        errDiv.textContent = crpCheck.mensagem;
-        errDiv.classList.remove("hidden");
-        return;
-      }
+    // Validação do CPF: formato + conferência com cadastro
+    const cpfFinal = validarFormatoCPF(_identValue);
+    if (!cpfFinal.ok) {
+      errDiv.textContent = cpfFinal.mensagem;
+      errDiv.classList.remove("hidden");
+      return;
+    }
+    if (usuarioData.cpf && normalizarCPF(_identValue) !== normalizarCPF(usuarioData.cpf)) {
+      errDiv.textContent = "CPF não confere com o cadastro. Verifique os dados.";
+      errDiv.classList.remove("hidden");
+      return;
+    }
+    // Para psicólogos: dispara verificação assíncrona no cadastro do CFP (não bloqueia o login)
+    if (usuarioData.role !== "admin") {
+      validarCRPExternoAsync(usuarioData.crp || "", email, _identValue);
     }
 
     await DB.carregarTodos(usuarioData.role === "admin", email);
@@ -129,7 +110,7 @@ async function fazerLogin() {
       email: usuarioData.email,
       nome:  usuarioData.nome,
       crp:   usuarioData.crp,
-      cpf:   _identMode === "cpf" ? normalizarCPF(_identValue) : undefined,
+      cpf:   normalizarCPF(_identValue),
       role:  usuarioData.role
     };
     sessionStorage.setItem("neupsilin_user", JSON.stringify(usuarioLogado));
@@ -167,6 +148,7 @@ async function detectarCampoIdentificador() {
     crpStatus.textContent   = "";
     crpHint.className       = "crp-hint";
 
+    const cfpLink = document.getElementById("crp-cfp-link");
     if (doc.data().role === "admin") {
       crpInput.dataset.mode = "cpf";
       crpGroup.querySelector("label").innerHTML =
@@ -174,13 +156,15 @@ async function detectarCampoIdentificador() {
       crpInput.placeholder = "000.000.000-00";
       crpInput.maxLength   = 14;
       crpHint.textContent  = "Formato: 000.000.000-00  \u00b7  CPF do administrador";
+      if (cfpLink) cfpLink.classList.add("hidden");
     } else {
-      crpInput.dataset.mode = "crp";
+      crpInput.dataset.mode = "cpf";
       crpGroup.querySelector("label").innerHTML =
-        'CRP <span class="crp-label-badge">Psic\u00f3logo</span>';
-      crpInput.placeholder = "06/123456";
-      crpInput.maxLength   = 12;
-      crpHint.textContent  = "Formato: 06/123456  \u00b7  Exigido pelo CFP para psic\u00f3logos";
+        'CPF <span class="crp-label-badge">Psic\u00f3logo</span>';
+      crpInput.placeholder = "000.000.000-00";
+      crpInput.maxLength   = 14;
+      crpHint.textContent  = "Formato: 000.000.000-00  \u00b7  Confirma seu registro no CFP";
+      if (cfpLink) cfpLink.classList.add("hidden"); // exibido só após validar formato
     }
   } catch { /* silencioso — não bloqueia login */ }
 }
@@ -198,19 +182,21 @@ function fazerLogout() {
   document.getElementById("page-dashboard").classList.add("hidden");
   document.getElementById("login-email").value = "";
   document.getElementById("login-senha").value = "";
-  // Resetar campo identificador para modo CRP (padrão)
+  // Resetar campo identificador para modo CPF (padrão)
   const _identReset = document.getElementById("login-crp");
   if (_identReset) {
     _identReset.value = "";
-    _identReset.dataset.mode  = "crp";
-    _identReset.placeholder   = "06/123456";
-    _identReset.maxLength     = 12;
+    _identReset.dataset.mode  = "cpf";
+    _identReset.placeholder   = "000.000.000-00";
+    _identReset.maxLength     = 14;
     const _lbl = document.querySelector("#login-crp-group label");
-    if (_lbl) _lbl.innerHTML = 'CRP <span class="crp-label-badge">Psic\u00f3logo</span>';
+    if (_lbl) _lbl.innerHTML = 'CPF <span class="crp-label-badge">Psic\u00f3logo</span>';
     const _hint = document.getElementById("crp-hint");
-    if (_hint) { _hint.textContent = "Formato: 06/123456 \u00b7 Exigido pelo CFP para psic\u00f3logos"; _hint.className = "crp-hint"; }
+    if (_hint) { _hint.textContent = "Formato: 000.000.000-00 \u00b7 Confirma seu registro no CFP"; _hint.className = "crp-hint"; }
     const _st = document.getElementById("crp-status");
     if (_st) _st.textContent = "";
+    const _cfpLink = document.getElementById("crp-cfp-link");
+    if (_cfpLink) _cfpLink.classList.add("hidden");
   }
 }
 

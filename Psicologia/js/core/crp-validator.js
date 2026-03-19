@@ -35,6 +35,9 @@
 const _CRP_API_URL_PADRAO = "";          // ← altere aqui quando tiver o endpoint
 const CRP_API_TIMEOUT_MS  = 5000;
 
+// URL base do Cadastro CFP para busca e verificação manual
+const CFP_BUSCA_URL = "https://cadastro.cfp.org.br/";
+
 /** Retorna a URL da API, preferindo override em window.PSI_CONFIG */
 function _getCRPApiUrl() {
   return window.PSI_CONFIG?.CRP_API_URL || _CRP_API_URL_PADRAO;
@@ -101,35 +104,82 @@ function validarCRPBancoDados(crpDigitado, usuarioData) {
 // ── Camada 3: API externa CFP (fire-and-forget) ───────
 
 /**
- * Consulta a API externa do CFP. Não bloqueia o login — apenas
- * registra o resultado em _audit para fins de auditoria e telemetria.
- * @param {string} crp   — normalizado
- * @param {string} email
+ * Consulta a API externa do CFP via proxy configurado. Não bloqueia o login.
+ * Se nenhum proxy estiver configurado, tenta consultar o CFP por CPF diretamente
+ * (funciona somente se o endpoint CFP suportar CORS — usa fallback silencioso).
+ * @param {string} crp   — normalizado (ex.: "06/123456")
+ * @param {string} email — e-mail do usuário (para auditoria)
+ * @param {string} [cpf] — CPF do profissional (opcional, melhora a validação)
  */
-async function validarCRPExternoAsync(crp, email) {
+async function validarCRPExternoAsync(crp, email, cpf) {
   const apiUrl = _getCRPApiUrl();
-  if (!apiUrl) return;
   const controller = new AbortController();
   const tid = setTimeout(() => controller.abort(), CRP_API_TIMEOUT_MS);
+
   try {
-    const resp = await fetch(`${apiUrl}?crp=${encodeURIComponent(crp)}`, {
-      signal:  controller.signal,
-      headers: { Accept: "application/json" }
-    });
-    const json = await resp.json();
+    let resp, json;
+
+    if (apiUrl) {
+      // Proxy/Cloud Function configurado: envia CRP + CPF (se disponível)
+      const params = new URLSearchParams({ crp });
+      if (cpf) params.set("cpf", normalizarCPF(cpf));
+      resp = await fetch(`${apiUrl}?${params}`, {
+        signal:  controller.signal,
+        headers: { Accept: "application/json" }
+      });
+      json = await resp.json();
+    } else {
+      // Sem proxy: tenta a API pública do CFP diretamente (pode ser bloqueado por CORS)
+      const cpfNum = cpf ? normalizarCPF(cpf) : null;
+      const cfpEndpoint = cpfNum
+        ? `https://cadastro.cfp.org.br/api/profissional/cpf/${encodeURIComponent(cpfNum)}`
+        : `https://cadastro.cfp.org.br/api/profissional/crp/${encodeURIComponent(crp)}`;
+      resp = await fetch(cfpEndpoint, {
+        signal:  controller.signal,
+        headers: { Accept: "application/json" },
+        mode:    "cors"
+      });
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const data = await resp.json();
+      // Normaliza resposta do CFP para o formato interno { ativo: bool, nome: string, crp: string }
+      const crpCFP = data?.numeroCRP ?? data?.crp ?? "";
+      json = {
+        ativo:    data?.situacao === "ATIVO" || data?.ativo === true,
+        nome:     data?.nome ?? "",
+        crpCFP:   crpCFP,
+        crpBate:  cpfNum ? normalizarCRP(crpCFP) === normalizarCRP(crp) : undefined
+      };
+    }
+
     const status = json.ativo ? "✓ ativo" : "⚠ inativo / não encontrado";
-    console.info(`[crp] API externa — CRP ${crp}: ${status}`);
+    console.info(`[crp] CFP — CRP ${crp}: ${status}` + (json.nome ? ` (${json.nome})` : ""));
+
     if (typeof _firestoreDB !== "undefined") {
       _firestoreDB.collection("_audit").add({
-        tipo: "crp_api_externa", email, crp, resultado: json,
+        tipo: "crp_api_externa", email, crp,
+        cpfUsado: cpf ? "sim" : "não",
+        resultado: { ativo: json.ativo, crpBate: json.crpBate ?? null },
         ts: new Date().toISOString()
       }).catch(() => {});
     }
   } catch (e) {
-    if (e.name !== "AbortError") console.warn("[crp] API externa indisponível:", e.message);
+    if (e.name !== "AbortError") {
+      console.info(`[crp] API CFP indisponível (${e.message}) — o login prosseguirá normalmente.`);
+    }
   } finally {
     clearTimeout(tid);
   }
+}
+
+/**
+ * Abre o Cadastro CFP em nova aba para verificação manual do profissional.
+ * @param {string} [cpf] — CPF para pré-preencher a busca (opcional)
+ * @param {string} [crp] — CRP para pré-preencher a busca (opcional)
+ */
+function abrirCadastroCFP(cpf, crp) {
+  // A URL do CFP não suporta parâmetros de busca diretamente por query string públicos;
+  // abrimos a página principal para o usuário fazer a verificação manual.
+  window.open(CFP_BUSCA_URL, "_blank", "noopener,noreferrer");
 }
 
 // ── CPF (admin) ─────────────────────────────────────
@@ -185,8 +235,9 @@ async function validarCRPLogin(crpDigitado, usuarioData, email) {
   const db = validarCRPBancoDados(crpDigitado, usuarioData);
   if (!db.ok) return { ...db, crpNorm };
 
-  // Camada 3: API externa (não aguarda)
-  validarCRPExternoAsync(crpNorm, email);
+  // Camada 3: API externa CFP (fire-and-forget — não bloqueia o login)
+  // Passa o CPF armazenado no Firestore (se houver) para validação cruzada CPF→CRP.
+  validarCRPExternoAsync(crpNorm, email, usuarioData.cpf ?? null);
 
   return { ok: true, mensagem: "", crpNorm };
 }
@@ -232,15 +283,26 @@ function atualizarStatusCRP(input) {
   }
 
   const { ok, mensagem } = validarFormatoCRP(val);
+  const cfpLink = document.getElementById("crp-cfp-link");
   if (ok) {
     status.textContent = "✓";
     status.style.color = "var(--success)";
     hint.textContent   = `CRP ${normalizarCRP(val)} — formato válido`;
     hint.className     = "crp-hint crp-hint--ok";
+    // Exibe link de verificação no Cadastro CFP
+    if (cfpLink) {
+      cfpLink.classList.remove("hidden");
+      const crpNorm = normalizarCRP(val);
+      cfpLink.onclick = (e) => {
+        e.preventDefault();
+        abrirCadastroCFP(null, crpNorm);
+      };
+    }
   } else {
     status.textContent = "✗";
     status.style.color = "var(--danger)";
     hint.textContent   = mensagem;
     hint.className     = "crp-hint crp-hint--err";
+    if (cfpLink) cfpLink.classList.add("hidden");
   }
 }

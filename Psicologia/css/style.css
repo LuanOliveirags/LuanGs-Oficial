@@ -768,6 +768,20 @@ textarea { resize: vertical; }
 .crp-hint--ok  { color: var(--success); }
 .crp-hint--err { color: var(--danger);  }
 
+/* Link "Verificar no CFP ↗" */
+.crp-cfp-link {
+  display: inline-block;
+  font-size: 11px;
+  color: var(--primary);
+  margin-top: 4px;
+  text-decoration: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color .15s, opacity .15s;
+}
+.crp-cfp-link:hover { color: var(--primary-dark, var(--primary)); text-decoration: underline; }
+.crp-cfp-link.hidden { display: none !important; }
+
 /* ══════════════════════════════════════════════
    MODAL AVISO OBRIGATÓRIO CFP
 ══════════════════════════════════════════════ */

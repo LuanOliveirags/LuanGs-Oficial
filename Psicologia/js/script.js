@@ -266,6 +266,7 @@ function abrirModalUsuario(emailEditar = null) {
     document.getElementById("usr-email").disabled = true;
     document.getElementById("usr-senha").value  = "";
     document.getElementById("usr-crp").value    = u.crp || "";
+    document.getElementById("usr-cpf").value    = u.cpf || "";
     document.getElementById("usr-role").value   = u.role || "profissional";
     const ocultarChk = document.getElementById("usr-ocultar-aplicacao");
     if (ocultarChk) ocultarChk.checked = !!(u.ocultarAplicacao);
@@ -280,6 +281,7 @@ function abrirModalUsuario(emailEditar = null) {
     document.getElementById("usr-email").disabled = false;
     document.getElementById("usr-senha").value  = "";
     document.getElementById("usr-crp").value    = "";
+    document.getElementById("usr-cpf").value    = "";
     document.getElementById("usr-role").value   = "profissional";
     document.getElementById("usr-plano").value  = "1mes";
     const ocultarChk = document.getElementById("usr-ocultar-aplicacao");
@@ -302,6 +304,7 @@ async function salvarUsuario() {
   const email = document.getElementById("usr-email").value.trim();
   const senha = document.getElementById("usr-senha").value;
   const crp   = document.getElementById("usr-crp").value.trim();
+  const cpf   = document.getElementById("usr-cpf").value.trim();
   const role  = document.getElementById("usr-role").value;
   const plano = document.getElementById("usr-plano")?.value || "1mes";
   const ocultarAplicacao = document.getElementById("usr-ocultar-aplicacao")?.checked || false;
@@ -313,10 +316,10 @@ async function salvarUsuario() {
 
   try {
     if (_editandoEmail) {
-      await DB.updateAdmin(_editandoEmail, { nome: nome || undefined, crp, role, ocultarAplicacao, novaSenha: senha || undefined });
+      await DB.updateAdmin(_editandoEmail, { nome: nome || undefined, crp, cpf, role, ocultarAplicacao, novaSenha: senha || undefined });
       okEl.textContent = "Usuário atualizado com sucesso!";
     } else {
-      await DB.create({ email, senha, nome, crp, role, plano, ocultarAplicacao });
+      await DB.create({ email, senha, nome, crp, cpf, role, plano, ocultarAplicacao });
       okEl.textContent = `Usuário "${nome}" criado com sucesso!`;
     }
     okEl.classList.remove("hidden");
