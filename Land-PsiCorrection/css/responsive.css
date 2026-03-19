@@ -1,0 +1,128 @@
+/* ═══════════════════════════════════════════════════════════════
+   PsiCorrection Landing — Responsividade  |  css/responsive.css
+   Carregado DEPOIS de landing.css para sobrescrever corretamente.
+
+   Breakpoints:
+     992px  → Tablets landscape & laptops menores
+     768px  → Tablets portrait & celulares grandes
+     480px  → Celulares médios
+     360px  → Celulares pequenos (iPhone SE, Moto E…)
+═══════════════════════════════════════════════════════════════ */
+
+
+/* ══════════════════════════════════════════════════════════════
+   992px — Tablets landscape & laptops menores
+══════════════════════════════════════════════════════════════ */
+@media (max-width: 992px) {
+  /* Hero */
+  .hero__inner          { grid-template-columns: 1fr; text-align: center; }
+  .hero__subtitle,
+  .hero__typing         { margin-left: auto; margin-right: auto; }
+  .hero__cta            { justify-content: center; }
+  .hero__trust          { justify-content: center; }
+  .hero__visual         { display: none; }
+  .hero__scroll-hint    { display: none; }
+
+  /* Como funciona */
+  .steps                { grid-template-columns: repeat(2, 1fr); }
+  .steps::before        { display: none; }
+
+  /* Benefícios */
+  .benefits__bento      { grid-template-columns: repeat(2, 1fr); }
+  .bento-card--hero     { grid-column: span 2; }
+
+  /* Calculadora */
+  .calculator__grid     { grid-template-columns: 1fr; }
+
+  /* Planos */
+  .pricing__grid        { grid-template-columns: repeat(2, 1fr); max-width: 860px; }
+
+  /* Footer */
+  .footer__inner        { grid-template-columns: 1fr 1fr; }
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   768px — Tablets portrait & celulares grandes
+══════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* Nav */
+  .nav__links,
+  .nav__actions         { display: none; }
+  .nav__hamburger       { display: flex; }
+
+  /* Hero */
+  .hero                 { padding: 120px 0 80px; min-height: auto; }
+  .hero__title          { font-size: 2rem; }
+
+  /* Como funciona */
+  .steps                { grid-template-columns: 1fr; max-width: 360px; margin-inline: auto; }
+
+  /* Comparação manual vs auto */
+  .comparison           { flex-direction: column; border-radius: var(--radius-lg); }
+  .comparison__vs       {
+    width: 100%; height: 48px;
+    writing-mode: horizontal-tb;
+    border: none;
+    border-top: 1px solid var(--card-border);
+    border-bottom: 1px solid var(--card-border);
+  }
+
+  /* Benefícios */
+  .benefits__bento      { grid-template-columns: 1fr; }
+  .bento-card--hero     { grid-column: span 1; }
+
+  /* Seção de testes */
+  .tests__grid          { grid-template-columns: repeat(2, 1fr); }
+
+  /* Planos */
+  .pricing__grid        { grid-template-columns: 1fr; max-width: 420px; }
+
+  /* Footer */
+  .footer__inner                { grid-template-columns: 1fr; }
+  .footer__bottom .container    { flex-direction: column; gap: 8px; text-align: center; }
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   480px — Celulares médios
+══════════════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  /* Container com menos padding */
+  .container            { padding: 0 16px; }
+
+  /* Títulos menores */
+  .section-title        { font-size: 1.7rem; }
+  .hero__title          { font-size: 1.75rem; }
+
+  /* Hero CTA em coluna */
+  .hero__cta            { flex-direction: column; }
+  .hero__cta .btn       { width: 100%; justify-content: center; }
+
+  /* Testes em coluna única */
+  .tests__grid          { grid-template-columns: 1fr; }
+
+  /* Calculadora */
+  .calc-results         { grid-template-columns: 1fr; }
+
+  /* Planos */
+  .pricing__grid        { grid-template-columns: 1fr; max-width: 100%; }
+
+  /* FAQ */
+  .faq__list            { gap: 8px; }
+  .faq-item__question   { padding: 18px 20px; font-size: .9rem; }
+  .faq-item__answer     { padding: 0 20px 18px; }
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   360px — Celulares muito pequenos
+══════════════════════════════════════════════════════════════ */
+@media (max-width: 360px) {
+  .container            { padding: 0 12px; }
+  .hero__title          { font-size: 1.55rem; }
+  .section-title        { font-size: 1.5rem; }
+  .btn--lg              { padding: 14px 22px; font-size: .92rem; }
+  .pricing-card         { padding: 28px 18px; }
+  .nav__logo span       { display: none; }  /* só ícone no logo */
+}
