@@ -280,56 +280,99 @@
 
       <!-- Botão voltar -->
       <div style="margin-bottom:16px">
-        <button class="btn btn-secondary" onclick="navegarPara('testes', null)">← Voltar aos Instrumentos</button>
+        <button class="btn btn-secondary" onclick="navegarPara('testes', null)" style="border-radius:10px;display:inline-flex;align-items:center;gap:6px">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Voltar aos Instrumentos
+        </button>
       </div>
 
-      <div class="card">
-        <h3>Dados do Paciente — NEUPSILIN Adulto <span style="font-size:12px;font-weight:400;color:var(--text-muted);margin-left:8px">12–90 anos</span></h3>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Nome Completo *</label>
-            <input type="text" id="pac-nome" placeholder="Nome do paciente">
-          </div>
-          <div class="form-group">
-            <label>Data de Nascimento *</label>
-            <input type="date" id="pac-nasc">
-          </div>
-          <div class="form-group">
-            <label>Escolaridade *</label>
-            <select id="pac-esc">
-              <option value="">Selecione…</option>
-              <option value="baixa">Baixa (0–4 anos)</option>
-              <option value="media">Média (5–11 anos)</option>
-              <option value="alta">Alta (12+ anos)</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Sexo</label>
-            <select id="pac-sexo">
-              <option value="M">Masculino</option>
-              <option value="F">Feminino</option>
-            </select>
+      <!-- Hero Banner -->
+      <div class="neup-hero">
+        <div class="neup-hero-content">
+          <div class="neup-hero-icon">🧠</div>
+          <div class="neup-hero-text">
+            <h2>NEUPSILIN Adulto</h2>
+            <p>Instrumento de Avaliação Neuropsicológica Breve — Versão Adulto.<br>Preencha os escores brutos obtidos em cada subteste para gerar a correção automática.</p>
+            <span class="neup-hero-badge">🎓 12 a 90 anos</span>
           </div>
         </div>
       </div>
 
-      <!-- Abas das áreas -->
-      <div class="card">
-        <div class="tab-bar" id="tab-bar">
-          <button class="tab active" data-tab="orientacao">Orientação</button>
-          <button class="tab" data-tab="atencao">Atenção</button>
-          <button class="tab" data-tab="percepcao">Percepção</button>
-          <button class="tab" data-tab="memoria">Memória</button>
-          <button class="tab" data-tab="habilidades">Cálculo</button>
-          <button class="tab" data-tab="linguagem">Linguagem</button>
-          <button class="tab" data-tab="funcoes">Funções Exec.</button>
-          <button class="tab" data-tab="praxias">Praxias</button>
+      <!-- Instruções -->
+      <div class="neup-instructions">
+        <div class="neup-instructions-title">💡 Instruções</div>
+        <ul>
+          <li>Aplicável para adultos de 12 a 90 anos</li>
+          <li>As normas são estratificadas por escolaridade (baixa, média, alta) e faixa etária</li>
+          <li>Preencha apenas os subtestes que foram aplicados</li>
+          <li>O resultado exibirá z-scores e classificação por área</li>
+        </ul>
+      </div>
+
+      <!-- STEP 1: Dados do paciente -->
+      <div class="neup-section-card">
+        <div class="neup-section-header">
+          <div class="neup-step-badge">1</div>
+          <h3>Dados do Paciente <span>Informações básicas do avaliando</span></h3>
+        </div>
+        <div class="neup-section-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nome Completo *</label>
+              <input type="text" id="pac-nome" placeholder="Nome do paciente">
+            </div>
+            <div class="form-group">
+              <label>Data de Nascimento *</label>
+              <input type="date" id="pac-nasc">
+            </div>
+            <div class="form-group">
+              <label>Escolaridade *</label>
+              <select id="pac-esc">
+                <option value="">Selecione…</option>
+                <option value="baixa">Baixa (0–4 anos)</option>
+                <option value="media">Média (5–11 anos)</option>
+                <option value="alta">Alta (12+ anos)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Sexo</label>
+              <select id="pac-sexo">
+                <option value="M">Masculino</option>
+                <option value="F">Feminino</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2: Domínios -->
+      <div class="neup-section-card">
+        <div class="neup-section-header">
+          <div class="neup-step-badge">2</div>
+          <h3>Escores por Domínio <span>Registre os pontos obtidos em cada área</span></h3>
+        </div>
+
+        <!-- Tab Bar com Pills -->
+        <div class="neup-tab-bar" id="tab-bar">
+          <button class="tab neup-pill active" data-tab="orientacao"><span class="tab-emoji">🧭</span> Orientação</button>
+          <button class="tab neup-pill" data-tab="atencao"><span class="tab-emoji">🎯</span> Atenção</button>
+          <button class="tab neup-pill" data-tab="percepcao"><span class="tab-emoji">👁️</span> Percepção</button>
+          <button class="tab neup-pill" data-tab="memoria"><span class="tab-emoji">🧠</span> Memória</button>
+          <button class="tab neup-pill" data-tab="habilidades"><span class="tab-emoji">🔢</span> Cálculo</button>
+          <button class="tab neup-pill" data-tab="linguagem"><span class="tab-emoji">💬</span> Linguagem</button>
+          <button class="tab neup-pill" data-tab="funcoes"><span class="tab-emoji">⚙️</span> Funções Exec.</button>
+          <button class="tab neup-pill" data-tab="praxias"><span class="tab-emoji">✋</span> Praxias</button>
         </div>
 
         <!-- ORIENTAÇÃO -->
         <div class="tab-content active" id="tab-orientacao">
-          <h4>Orientação (Têmporo-Espacial)</h4>
-          <p class="tab-desc">Pergunte as questões e marque quantas o paciente respondeu corretamente.</p>
+          <div class="neup-domain-header">
+            <div class="neup-domain-icon orientacao">🧭</div>
+            <div class="neup-domain-info">
+              <h4>Orientação (Têmporo-Espacial)</h4>
+              <p>Pergunte as questões e marque quantas o paciente respondeu corretamente.</p>
+            </div>
+          </div>
           <div class="subteste-grid">
             <div class="subteste-item">
               <label>Dia da semana <span class="max">/1</span></label>
@@ -356,13 +399,18 @@
               <input type="number" min="0" max="1" class="score-input" data-area="orientacao" data-sub="cidade" placeholder="0">
             </div>
           </div>
-          <div class="subtotal-bar">Subtotal Orientação: <strong id="sub-orientacao">0</strong> / 6</div>
+          <div class="subtotal-bar">🧭 Subtotal Orientação: <strong id="sub-orientacao">0</strong> / 6</div>
         </div>
 
         <!-- ATENÇÃO -->
         <div class="tab-content hidden" id="tab-atencao">
-          <h4>Atenção</h4>
-          <p class="tab-desc">Subtestes de atenção seletiva, sustentada e alternada.</p>
+          <div class="neup-domain-header">
+            <div class="neup-domain-icon atencao">🎯</div>
+            <div class="neup-domain-info">
+              <h4>Atenção</h4>
+              <p>Subtestes de atenção seletiva, sustentada e alternada.</p>
+            </div>
+          </div>
           <div class="subteste-grid">
             <div class="subteste-item">
               <label>Dígitos — Ordem Direta <span class="max">/12</span></label>
@@ -377,13 +425,18 @@
               <input type="number" min="0" max="10" class="score-input" data-area="atencao" data-sub="cancelamento" placeholder="0">
             </div>
           </div>
-          <div class="subtotal-bar">Subtotal Atenção: <strong id="sub-atencao">0</strong> / 32</div>
+          <div class="subtotal-bar">🎯 Subtotal Atenção: <strong id="sub-atencao">0</strong> / 32</div>
         </div>
 
         <!-- PERCEPÇÃO -->
         <div class="tab-content hidden" id="tab-percepcao">
-          <h4>Percepção Visual</h4>
-          <p class="tab-desc">Nomeação de figuras e discriminação visual.</p>
+          <div class="neup-domain-header">
+            <div class="neup-domain-icon percepcao">👁️</div>
+            <div class="neup-domain-info">
+              <h4>Percepção Visual</h4>
+              <p>Nomeação de figuras e discriminação visual.</p>
+            </div>
+          </div>
           <div class="subteste-grid">
             <div class="subteste-item">
               <label>Nomeação de Figuras <span class="max">/10</span></label>
@@ -394,13 +447,18 @@
               <input type="number" min="0" max="10" class="score-input" data-area="percepcao" data-sub="discriminacao" placeholder="0">
             </div>
           </div>
-          <div class="subtotal-bar">Subtotal Percepção: <strong id="sub-percepcao">0</strong> / 20</div>
+          <div class="subtotal-bar">👁️ Subtotal Percepção: <strong id="sub-percepcao">0</strong> / 20</div>
         </div>
 
         <!-- MEMÓRIA -->
         <div class="tab-content hidden" id="tab-memoria">
-          <h4>Memória</h4>
-          <p class="tab-desc">Memória de trabalho, episódica verbal e semântica.</p>
+          <div class="neup-domain-header">
+            <div class="neup-domain-icon memoria">🧠</div>
+            <div class="neup-domain-info">
+              <h4>Memória</h4>
+              <p>Memória de trabalho, episódica verbal e semântica.</p>
+            </div>
+          </div>
           <div class="subteste-grid">
             <div class="subteste-item">
               <label>Memória de Trabalho Verbal <span class="max">/6</span></label>
@@ -423,13 +481,18 @@
               <input type="number" min="0" max="10" class="score-input" data-area="memoria" data-sub="semantica" placeholder="0">
             </div>
           </div>
-          <div class="subtotal-bar">Subtotal Memória: <strong id="sub-memoria">0</strong> / 36</div>
+          <div class="subtotal-bar">🧠 Subtotal Memória: <strong id="sub-memoria">0</strong> / 36</div>
         </div>
 
         <!-- CÁLCULO -->
         <div class="tab-content hidden" id="tab-habilidades">
-          <h4>Cálculo</h4>
-          <p class="tab-desc">Cálculo mental e resolução de problemas escritos.</p>
+          <div class="neup-domain-header">
+            <div class="neup-domain-icon habilidades">🔢</div>
+            <div class="neup-domain-info">
+              <h4>Cálculo</h4>
+              <p>Cálculo mental e resolução de problemas escritos.</p>
+            </div>
+          </div>
           <div class="subteste-grid">
             <div class="subteste-item">
               <label>Cálculo Mental <span class="max">/6</span></label>
@@ -440,13 +503,18 @@
               <input type="number" min="0" max="4" class="score-input" data-area="habilidades" data-sub="problemas" placeholder="0">
             </div>
           </div>
-          <div class="subtotal-bar">Subtotal Cálculo: <strong id="sub-habilidades">0</strong> / 10</div>
+          <div class="subtotal-bar">🔢 Subtotal Cálculo: <strong id="sub-habilidades">0</strong> / 10</div>
         </div>
 
         <!-- LINGUAGEM -->
         <div class="tab-content hidden" id="tab-linguagem">
-          <h4>Linguagem</h4>
-          <p class="tab-desc">Fluência verbal, compreensão oral, repetição e escrita.</p>
+          <div class="neup-domain-header">
+            <div class="neup-domain-icon linguagem">💬</div>
+            <div class="neup-domain-info">
+              <h4>Linguagem</h4>
+              <p>Fluência verbal, compreensão oral, repetição e escrita.</p>
+            </div>
+          </div>
           <div class="subteste-grid">
             <div class="subteste-item">
               <label>Fluência Verbal (animais/min) <span class="max">/13</span></label>
@@ -469,13 +537,18 @@
               <input type="number" min="0" max="5" class="score-input" data-area="linguagem" data-sub="escrita" placeholder="0">
             </div>
           </div>
-          <div class="subtotal-bar">Subtotal Linguagem: <strong id="sub-linguagem">0</strong> / 33</div>
+          <div class="subtotal-bar">💬 Subtotal Linguagem: <strong id="sub-linguagem">0</strong> / 33</div>
         </div>
 
         <!-- FUNÇÕES EXECUTIVAS -->
         <div class="tab-content hidden" id="tab-funcoes">
-          <h4>Funções Executivas</h4>
-          <p class="tab-desc">Fluência fonêmica, solução de problemas e abstração verbal.</p>
+          <div class="neup-domain-header">
+            <div class="neup-domain-icon funcoes">⚙️</div>
+            <div class="neup-domain-info">
+              <h4>Funções Executivas</h4>
+              <p>Fluência fonêmica, solução de problemas e abstração verbal.</p>
+            </div>
+          </div>
           <div class="subteste-grid">
             <div class="subteste-item">
               <label>Fluência Fonêmica (letra F) <span class="max">/10</span></label>
@@ -494,13 +567,18 @@
               <input type="number" min="0" max="6" class="score-input" data-area="funcoes" data-sub="abstracao" placeholder="0">
             </div>
           </div>
-          <div class="subtotal-bar">Subtotal Funções Exec.: <strong id="sub-funcoes">0</strong> / 26</div>
+          <div class="subtotal-bar">⚙️ Subtotal Funções Exec.: <strong id="sub-funcoes">0</strong> / 26</div>
         </div>
 
         <!-- PRAXIAS -->
         <div class="tab-content hidden" id="tab-praxias">
-          <h4>Praxias</h4>
-          <p class="tab-desc">Praxia construtiva (cópia de figuras) e ideomotora.</p>
+          <div class="neup-domain-header">
+            <div class="neup-domain-icon praxias">✋</div>
+            <div class="neup-domain-info">
+              <h4>Praxias</h4>
+              <p>Praxia construtiva (cópia de figuras) e ideomotora.</p>
+            </div>
+          </div>
           <div class="subteste-grid">
             <div class="subteste-item">
               <label>Praxia Construtiva <span class="max">/10</span></label>
@@ -511,28 +589,33 @@
               <input type="number" min="0" max="10" class="score-input" data-area="praxias" data-sub="ideomotora" placeholder="0">
             </div>
           </div>
-          <div class="subtotal-bar">Subtotal Praxias: <strong id="sub-praxias">0</strong> / 20</div>
+          <div class="subtotal-bar">✋ Subtotal Praxias: <strong id="sub-praxias">0</strong> / 20</div>
         </div>
 
-      </div><!-- /card abas -->
+      </div><!-- /neup-section-card domínios -->
 
-      <!-- Observações -->
-      <div class="card">
-        <h3>Observações Clínicas</h3>
-        <textarea id="obs-clinicas" rows="4" placeholder="Comportamento durante a avaliação, intercorrências, observações relevantes…"></textarea>
+      <!-- STEP 3: Observações -->
+      <div class="neup-section-card neup-obs-card">
+        <div class="neup-section-header">
+          <div class="neup-step-badge">3</div>
+          <h3>Observações Clínicas <span>Comportamento e intercorrências</span></h3>
+        </div>
+        <div class="neup-section-body">
+          <textarea id="obs-clinicas" rows="4" placeholder="Comportamento durante a avaliação, intercorrências, observações relevantes…"></textarea>
+        </div>
       </div>
 
-      <div class="form-actions">
-        <button class="btn btn-secondary" onclick="limparFormulario()">Limpar</button>
-        <button class="btn btn-primary" onclick="calcularEsalvar()">&#128196; Calcular &amp; Gerar Laudo</button>
+      <div class="neup-actions">
+        <button class="neup-btn-clear" onclick="limparFormulario()">🗑️ Limpar</button>
+        <button class="neup-btn-calculate" onclick="calcularEsalvar()">📊 Calcular &amp; Gerar Laudo</button>
       </div>
 
       <!-- Resultado inline -->
       <div id="resultado-inline" class="card hidden resultado-card">
         <h3>Resultado da Avaliação</h3>
         <div id="resultado-conteudo"></div>
-        <div class="form-actions">
-          <button class="btn btn-accent" onclick="exportarPDF()">📄 Exportar Laudo PDF</button>
+        <div class="neup-actions" style="padding:0 24px 24px">
+          <button class="neup-btn-calculate" onclick="exportarPDF()">📄 Exportar Laudo PDF</button>
         </div>
       </div>
     </section>
@@ -909,44 +992,86 @@
 
       <!-- Botão voltar -->
       <div style="margin-bottom:16px">
-        <button class="btn btn-secondary" onclick="navegarPara('testes', null)">← Voltar aos Instrumentos</button>
+        <button class="btn btn-secondary" onclick="navegarPara('testes', null)" style="border-radius:10px;display:inline-flex;align-items:center;gap:6px">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Voltar aos Instrumentos
+        </button>
       </div>
 
-      <!-- Dados do paciente -->
-      <div class="card">
-        <h3>Dados do Paciente — WISC-IV</h3>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Nome Completo *</label>
-            <input type="text" id="wisc-nome" placeholder="Nome do paciente">
-          </div>
-          <div class="form-group">
-            <label>Data de Nascimento *</label>
-            <input type="date" id="wisc-nasc">
-          </div>
-          <div class="form-group">
-            <label>Sexo</label>
-            <select id="wisc-sexo">
-              <option value="M">Masculino</option>
-              <option value="F">Feminino</option>
-            </select>
+      <!-- Hero Banner -->
+      <div class="wisc-hero">
+        <div class="wisc-hero-content">
+          <div class="wisc-hero-icon">🧩</div>
+          <div class="wisc-hero-text">
+            <h2>WISC-IV</h2>
+            <p>Escala de Inteligência Wechsler para Crianças — 4ª Edição.<br>Insira os pontos ponderados de cada subteste para calcular os Índices e o QI Total.</p>
+            <span class="wisc-hero-badge">🧒 6 a 16 anos e 11 meses</span>
           </div>
         </div>
       </div>
 
-      <!-- Abas dos índices WISC -->
-      <div class="card">
-        <div class="tab-bar" id="wisc-tab-bar">
-          <button class="wisc-tab active" data-wisc-tab="cv">Compr. Verbal</button>
-          <button class="wisc-tab" data-wisc-tab="rp">Rac. Perceptual</button>
-          <button class="wisc-tab" data-wisc-tab="mt">Mem. Operacional</button>
-          <button class="wisc-tab" data-wisc-tab="vp">Vel. Processamento</button>
+      <!-- Instruções -->
+      <div class="wisc-instructions">
+        <div class="wisc-instructions-title">💡 Instruções</div>
+        <ul>
+          <li>Insira os <strong>pontos ponderados</strong> (escala 1–19) de cada subteste</li>
+          <li>Os Escores de Índice (EI) são calculados automaticamente com base nas tabelas normatizadas</li>
+          <li>O QI Total (FSIQ) é a síntese dos 4 índices fatoriais</li>
+          <li>Preencha todos os subtestes obrigatórios de cada índice</li>
+        </ul>
+      </div>
+
+      <!-- STEP 1: Dados do paciente -->
+      <div class="wisc-section-card">
+        <div class="wisc-section-header">
+          <div class="wisc-step-badge">1</div>
+          <h3>Dados do Paciente <span>Informações básicas do avaliando</span></h3>
+        </div>
+        <div class="wisc-section-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nome Completo *</label>
+              <input type="text" id="wisc-nome" placeholder="Nome do paciente">
+            </div>
+            <div class="form-group">
+              <label>Data de Nascimento *</label>
+              <input type="date" id="wisc-nasc">
+            </div>
+            <div class="form-group">
+              <label>Sexo</label>
+              <select id="wisc-sexo">
+                <option value="M">Masculino</option>
+                <option value="F">Feminino</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2: Índices -->
+      <div class="wisc-section-card">
+        <div class="wisc-section-header">
+          <div class="wisc-step-badge">2</div>
+          <h3>Pontos Ponderados por Índice <span>Subtestes pontuados (escala 1–19)</span></h3>
+        </div>
+
+        <!-- Tab Bar com Pills -->
+        <div class="wisc-tab-bar" id="wisc-tab-bar">
+          <button class="wisc-tab wisc-pill active" data-wisc-tab="cv"><span class="tab-emoji">💬</span> Compr. Verbal</button>
+          <button class="wisc-tab wisc-pill" data-wisc-tab="rp"><span class="tab-emoji">🧩</span> Rac. Perceptual</button>
+          <button class="wisc-tab wisc-pill" data-wisc-tab="mt"><span class="tab-emoji">🧠</span> Mem. Operacional</button>
+          <button class="wisc-tab wisc-pill" data-wisc-tab="vp"><span class="tab-emoji">⚡</span> Vel. Processamento</button>
         </div>
 
         <!-- CV — Compreensão Verbal -->
         <div class="wisc-tab-content active" id="wisc-tab-cv">
-          <h4>Compreensão Verbal (CV)</h4>
-          <p class="tab-desc">Subtestes que avaliam raciocínio verbal, formação de conceitos e conhecimento adquirido do ambiente.</p>
+          <div class="wisc-domain-header">
+            <div class="wisc-domain-icon cv">💬</div>
+            <div class="wisc-domain-info">
+              <h4>Compreensão Verbal (CV)</h4>
+              <p>Raciocínio verbal, formação de conceitos e conhecimento adquirido do ambiente.</p>
+            </div>
+          </div>
           <div class="subteste-grid">
             <div class="subteste-item">
               <label>Semelhanças <span class="max">/19</span></label>
@@ -961,13 +1086,18 @@
               <input type="number" min="1" max="19" class="wisc-score score-input" data-indice="cv" data-sub="compreensao" placeholder="1–19">
             </div>
           </div>
-          <div class="subtotal-bar">Soma CV: <strong id="wisc-soma-cv">0</strong> &nbsp;|&nbsp; EI estimado: <strong id="wisc-ei-cv">—</strong></div>
+          <div class="subtotal-bar">💬 Soma CV: <strong id="wisc-soma-cv">0</strong> &nbsp;|&nbsp; EI estimado: <strong id="wisc-ei-cv">—</strong></div>
         </div>
 
         <!-- RP — Raciocínio Perceptual -->
         <div class="wisc-tab-content hidden" id="wisc-tab-rp">
-          <h4>Raciocínio Perceptual (RP)</h4>
-          <p class="tab-desc">Subtestes de raciocínio fluido, processamento espacial e integração visuo-motora.</p>
+          <div class="wisc-domain-header">
+            <div class="wisc-domain-icon rp">🧩</div>
+            <div class="wisc-domain-info">
+              <h4>Raciocínio Perceptual (RP)</h4>
+              <p>Raciocínio fluido, processamento espacial e integração visuo-motora.</p>
+            </div>
+          </div>
           <div class="subteste-grid">
             <div class="subteste-item">
               <label>Cubos <span class="max">/19</span></label>
@@ -982,13 +1112,18 @@
               <input type="number" min="1" max="19" class="wisc-score score-input" data-indice="rp" data-sub="matrizes" placeholder="1–19">
             </div>
           </div>
-          <div class="subtotal-bar">Soma RP: <strong id="wisc-soma-rp">0</strong> &nbsp;|&nbsp; EI estimado: <strong id="wisc-ei-rp">—</strong></div>
+          <div class="subtotal-bar">🧩 Soma RP: <strong id="wisc-soma-rp">0</strong> &nbsp;|&nbsp; EI estimado: <strong id="wisc-ei-rp">—</strong></div>
         </div>
 
         <!-- MT — Memória Operacional -->
         <div class="wisc-tab-content hidden" id="wisc-tab-mt">
-          <h4>Memória Operacional (MT)</h4>
-          <p class="tab-desc">Subtestes de atenção, concentração e memória operacional (Dígitos e Seq. Letras-Números).</p>
+          <div class="wisc-domain-header">
+            <div class="wisc-domain-icon mt">🧠</div>
+            <div class="wisc-domain-info">
+              <h4>Memória Operacional (MT)</h4>
+              <p>Atenção, concentração e memória operacional (Dígitos e Seq. Letras-Números).</p>
+            </div>
+          </div>
           <div class="subteste-grid">
             <div class="subteste-item">
               <label>Dígitos <span class="max">/19</span></label>
@@ -999,13 +1134,18 @@
               <input type="number" min="1" max="19" class="wisc-score score-input" data-indice="mt" data-sub="sequencia_ln" placeholder="1–19">
             </div>
           </div>
-          <div class="subtotal-bar">Soma MT: <strong id="wisc-soma-mt">0</strong> &nbsp;|&nbsp; EI estimado: <strong id="wisc-ei-mt">—</strong></div>
+          <div class="subtotal-bar">🧠 Soma MT: <strong id="wisc-soma-mt">0</strong> &nbsp;|&nbsp; EI estimado: <strong id="wisc-ei-mt">—</strong></div>
         </div>
 
         <!-- VP — Velocidade de Processamento -->
         <div class="wisc-tab-content hidden" id="wisc-tab-vp">
-          <h4>Velocidade de Processamento (VP)</h4>
-          <p class="tab-desc">Subtestes de velocidade mental, atenção visual e coordenação visual-motora.</p>
+          <div class="wisc-domain-header">
+            <div class="wisc-domain-icon vp">⚡</div>
+            <div class="wisc-domain-info">
+              <h4>Velocidade de Processamento (VP)</h4>
+              <p>Velocidade mental, atenção visual e coordenação visual-motora.</p>
+            </div>
+          </div>
           <div class="subteste-grid">
             <div class="subteste-item">
               <label>Código <span class="max">/19</span></label>
@@ -1016,28 +1156,33 @@
               <input type="number" min="1" max="19" class="wisc-score score-input" data-indice="vp" data-sub="procurar_simbolos" placeholder="1–19">
             </div>
           </div>
-          <div class="subtotal-bar">Soma VP: <strong id="wisc-soma-vp">0</strong> &nbsp;|&nbsp; EI estimado: <strong id="wisc-ei-vp">—</strong></div>
+          <div class="subtotal-bar">⚡ Soma VP: <strong id="wisc-soma-vp">0</strong> &nbsp;|&nbsp; EI estimado: <strong id="wisc-ei-vp">—</strong></div>
         </div>
 
-      </div><!-- /card abas -->
+      </div><!-- /wisc-section-card índices -->
 
-      <!-- Observações -->
-      <div class="card">
-        <h3>Observações Clínicas</h3>
-        <textarea id="wisc-obs" rows="4" placeholder="Comportamento durante a avaliação, intercorrências, observações relevantes…"></textarea>
+      <!-- STEP 3: Observações -->
+      <div class="wisc-section-card wisc-obs-card">
+        <div class="wisc-section-header">
+          <div class="wisc-step-badge">3</div>
+          <h3>Observações Clínicas <span>Comportamento e intercorrências</span></h3>
+        </div>
+        <div class="wisc-section-body">
+          <textarea id="wisc-obs" rows="4" placeholder="Comportamento durante a avaliação, intercorrências, observações relevantes…"></textarea>
+        </div>
       </div>
 
-      <div class="form-actions">
-        <button class="btn btn-secondary" onclick="limparWISC()">Limpar</button>
-        <button class="btn btn-accent" onclick="calcularESalvarWISC()">Calcular &amp; Salvar WISC-IV</button>
+      <div class="wisc-actions">
+        <button class="wisc-btn-clear" onclick="limparWISC()">🗑️ Limpar</button>
+        <button class="wisc-btn-calculate" onclick="calcularESalvarWISC()">🧩 Calcular &amp; Salvar WISC-IV</button>
       </div>
 
       <!-- Resultado inline -->
       <div id="wisc-resultado-inline" class="card hidden resultado-card">
         <h3>Resultado WISC-IV</h3>
         <div id="wisc-resultado-conteudo"></div>
-        <div class="form-actions">
-          <button class="btn btn-accent" onclick="exportarPDFWISC()">📄 Exportar Laudo PDF</button>
+        <div class="wisc-actions" style="padding:0 24px 24px">
+          <button class="wisc-btn-calculate" onclick="exportarPDFWISC()">📄 Exportar Laudo PDF</button>
         </div>
       </div>
     </section>
