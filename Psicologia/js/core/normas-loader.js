@@ -233,7 +233,7 @@ async function seedNormasFirestore() {
 
   const meta = {
     _seedAt:  new Date().toISOString(),
-    _seedPor: window.usuarioLogado.email,
+    _seedPor: _u.email,
     _versao:  "2.0"
   };
 
