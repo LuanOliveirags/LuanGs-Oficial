@@ -1,81 +1,89 @@
-/* ═══════════════════════════════════════════════════════════════
-   Psicorrection — Paleta Global de Cores e Tokens de Design
-   css/layout/Pallettes/palette_global.css
+﻿/* ===============================================================
+   PsiCorrection -- Design Tokens v2
+   Paleta Global  |  Deve ser o PRIMEIRO CSS carregado
+=============================================================== */
 
-   Este ficheiro DEVE ser o PRIMEIRO CSS carregado na página.
-   Centraliza todas as variáveis CSS do sistema, garantindo
-   consistência visual em todos os componentes.
-═══════════════════════════════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 :root {
+  /* -- CORES PRINCIPAIS -- */
+  --primary:          #2563eb;
+  --primary-dk:       #1d4ed8;
+  --primary-dkr:      #1e40af;
+  --primary-lt:       #dbeafe;
+  --primary-alpha:    rgba(37,99,235,.14);
+  --primary-glow:     0 4px 20px rgba(37,99,235,.35);
 
-  /* ──────────────────────────────────────────────────────
-     CORES PRINCIPAIS
-  ────────────────────────────────────────────────────── */
-  --primary:        #2563eb;    /* Azul — NEUPSILIN / ações primárias */
-  --primary-dk:     #1d4ed8;    /* Azul escuro (hover) */
-  --primary-lt:     #dbeafe;    /* Azul claro (fundos, badges) */
-  --primary-alpha:  rgba(37,99,235,.15);  /* foco / ring */
+  --accent:           #7c3aed;
+  --accent-dk:        #6d28d9;
+  --accent-lt:        #ede9fe;
+  --accent-alpha:     rgba(124,58,237,.14);
 
-  --accent:         #7c3aed;    /* Roxo — WISC-IV / destaque */
-  --accent-dk:      #6d28d9;    /* Roxo escuro (hover) */
-  --accent-lt:      #ede9fe;    /* Roxo claro */
+  /* -- STATUS -- */
+  --success:          #16a34a;
+  --success-lt:       #dcfce7;
+  --success-border:   #86efac;
+  --success-dk:       #15803d;
 
-  /* ──────────────────────────────────────────────────────
-     FEEDBACK / STATUS
-  ────────────────────────────────────────────────────── */
-  --success:        #16a34a;
-  --success-lt:     #dcfce7;
-  --success-border: #86efac;
+  --warning:          #d97706;
+  --warning-lt:       #fef3c7;
+  --warning-border:   #fde68a;
 
-  --warning:        #d97706;
-  --warning-lt:     #fef9c3;
-  --warning-border: #fde68a;
+  --danger:           #dc2626;
+  --danger-lt:        #fee2e2;
+  --danger-border:    #fca5a5;
+  --danger-dk:        #b91c1c;
 
-  --danger:         #dc2626;
-  --danger-lt:      #fee2e2;
-  --danger-border:  #fca5a5;
-  --danger-dk:      #b91c1c;
+  --info:             #0284c7;
+  --info-lt:          #e0f2fe;
+  --info-border:      #7dd3fc;
 
-  --info:           #0284c7;
-  --info-lt:        #e0f2fe;
+  /* -- SUPERFICIES -- */
+  --sidebar-bg:       #0f172a;
+  --sidebar-txt:      #94a3b8;
+  --sidebar-txt-hover:#e2e8f0;
+  --sidebar-active-bg:rgba(37,99,235,.18);
 
-  /* ──────────────────────────────────────────────────────
-     SUPERFÍCIES E BORDAS
-  ────────────────────────────────────────────────────── */
-  --sidebar-bg:     #1e293b;    /* Fundo da sidebar */
-  --sidebar-txt:    #cbd5e1;    /* Texto na sidebar */
+  --bg:               #f0f4f8;
+  --bg-alt:           #f8fafc;
+  --card-bg:          #ffffff;
+  --surface:          #f8fafc;
+  --border:           #e2e8f0;
+  --border-strong:    #cbd5e1;
+  --border-focus:     #2563eb;
 
-  --bg:             #f1f5f9;    /* Fundo geral da página */
-  --bg-alt:         #f8fafc;    /* Fundo alternativo (linhas, áreas) */
-  --card-bg:        #ffffff;    /* Fundo de cards */
-  --border:         #e2e8f0;    /* Bordas gerais */
-  --border-focus:   #2563eb;    /* Borda ao focar inputs */
+  /* -- TIPOGRAFIA -- */
+  --text:             #1e293b;
+  --text-main:        #0f172a;
+  --text-muted:       #64748b;
+  --text-light:       #94a3b8;
 
-  /* ──────────────────────────────────────────────────────
-     TIPOGRAFIA
-  ────────────────────────────────────────────────────── */
-  --text:           #1e293b;    /* Texto principal */
-  --text-main:      #0f172a;    /* Títulos / headings */
-  --text-muted:     #64748b;    /* Texto secundário */
-  --text-light:     #94a3b8;    /* Texto muito discreto */
+  /* -- BORDER RADIUS -- */
+  --radius-xs:        4px;
+  --radius-sm:        6px;
+  --radius:           10px;
+  --radius-md:        12px;
+  --radius-lg:        16px;
+  --radius-xl:        20px;
+  --radius-2xl:       24px;
+  --radius-full:      9999px;
 
-  /* ──────────────────────────────────────────────────────
-     TOKENS DE LAYOUT
-  ────────────────────────────────────────────────────── */
-  --radius:         10px;       /* Arredondamento padrão */
-  --radius-sm:      6px;        /* Pequeno (inputs, badges) */
-  --radius-lg:      16px;       /* Grande (cards, modais) */
-  --radius-xl:      20px;       /* Muito grande (login card) */
+  /* -- SHADOWS -- */
+  --shadow-xs:        0 1px 2px rgba(0,0,0,.05);
+  --shadow:           0 1px 4px rgba(0,0,0,.05), 0 2px 10px rgba(0,0,0,.06);
+  --shadow-md:        0 4px 12px rgba(0,0,0,.07), 0 2px 6px rgba(0,0,0,.05);
+  --shadow-lg:        0 10px 30px rgba(0,0,0,.10), 0 4px 12px rgba(0,0,0,.07);
+  --shadow-xl:        0 20px 50px rgba(0,0,0,.14), 0 8px 20px rgba(0,0,0,.08);
+  --shadow-sidebar:   6px 0 40px rgba(0,0,0,.40);
+  --shadow-primary:   0 4px 16px rgba(37,99,235,.32);
+  --shadow-accent:    0 4px 16px rgba(124,58,237,.32);
 
-  --shadow:         0 2px 12px rgba(0,0,0,.08);
-  --shadow-md:      0 4px 24px rgba(0,0,0,.12);
-  --shadow-lg:      0 8px 40px rgba(0,0,0,.18);
-  --shadow-sidebar: 4px 0 24px rgba(0,0,0,.22);
+  /* -- LAYOUT -- */
+  --sidebar-w:        248px;
+  --topbar-h:         62px;
 
-  --sidebar-w:      240px;      /* Largura da sidebar desktop */
-  --topbar-h:       60px;       /* Altura da topbar */
-
-  --transition:     .18s ease;  /* Transição padrão */
-  --transition-slow:.3s ease;
+  /* -- TRANSITIONS -- */
+  --transition:       .16s ease;
+  --transition-slow:  .28s ease;
+  --ease-bounce:      cubic-bezier(.34,1.56,.64,1);
 }
