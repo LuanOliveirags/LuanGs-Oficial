@@ -338,6 +338,13 @@ function fazerLogout() {
   DB._cache        = [];
   DB_PAC._cache    = [];
   _cacheAvaliacoes = [];
+  // Reseta o cache da clínica para evitar vazamento de dados entre sessões (multi-tenant)
+  if (typeof DB_CLINICA !== "undefined") {
+    DB_CLINICA._perfilCache  = null;
+    DB_CLINICA._agendamentos = [];
+    DB_CLINICA._financeiro   = [];
+    DB_CLINICA._loaded       = false;
+  }
   limparNormasMemoria(); // descarta tabelas normativas da memória
   document.getElementById("page-login").classList.remove("hidden");
   document.getElementById("page-login").classList.add("active");

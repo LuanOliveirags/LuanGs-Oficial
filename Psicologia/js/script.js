@@ -575,10 +575,11 @@ function confirmarAtivacao() {
 /** Renderiza o DOM da lista de usuários a partir do cache. */
 function _pintarUsuarios() {
   DB.verificarExpiracoes();
-  const busca     = (document.getElementById("usr-busca")?.value || "").toLowerCase().trim();
-  const todos     = DB.getAll();
-  const roMap     = { admin: "Administrador", profissional: "Psicólogo", psicologo: "Psicólogo", colaborador: "Colaborador", cliente: "Cliente" };
-  const bMap      = { admin: "badge-admin", profissional: "badge-prof", psicologo: "badge-prof", colaborador: "badge-colab", cliente: "badge-client" };
+  const busca      = (document.getElementById("usr-busca")?.value || "").toLowerCase().trim();
+  const todos      = DB.getAll();
+  const isAdmin    = usuarioLogado?.role === "admin";
+  const roMap      = { admin: "Administrador", profissional: "Psicólogo", psicologo: "Psicólogo", colaborador: "Colaborador", cliente: "Cliente" };
+  const bMap       = { admin: "badge-admin", profissional: "badge-prof", psicologo: "badge-prof", colaborador: "badge-colab", cliente: "badge-client" };
   const planoLabel = { "1mes": "1 Mês", "3meses": "3 Meses", "vitalicio": "Vitalício", "1avaliacao": "1 Avaliação" };
 
   const filtrados  = busca ? todos.filter(u => u.nome.toLowerCase().includes(busca) || u.email.toLowerCase().includes(busca)) : todos;
@@ -590,34 +591,30 @@ function _pintarUsuarios() {
   if (cA) cA.textContent = ativos.length;
   if (cB) cB.textContent = bloqueados.length;
 
-  const tbAtivos = document.getElementById("tbody-usuarios-ativos");
-  if (tbAtivos) {
-    if (!ativos.length) {
-      tbAtivos.innerHTML = '<tr><td colspan="7" class="empty-row">Nenhum usuário ativo.</td></tr>';
-    } else {
-      tbAtivos.innerHTML = ativos.map(u => {
-        const expiraStr = u.expiracao
-          ? (() => {
-              const d    = new Date(u.expiracao);
-              const diff = Math.ceil((d - new Date()) / 86400000);
-              const cor  = diff <= 7 ? "color:var(--danger);font-weight:600" : diff <= 30 ? "color:var(--warning)" : "";
-              return `<span style="${cor}">${d.toLocaleDateString("pt-BR")} (${diff}d)</span>`;
-            })()
-          : '<span style="color:var(--success)">Vitalício</span>';
-        return `
-    <tr>
+  // ── Função auxiliar: linha de usuário ──────────────
+  const rowUser = u => {
+    const expiraStr = u.expiracao
+      ? (() => {
+          const d    = new Date(u.expiracao);
+          const diff = Math.ceil((d - new Date()) / 86400000);
+          const cor  = diff <= 7 ? "color:var(--danger);font-weight:600" : diff <= 30 ? "color:var(--warning)" : "";
+          return `<span style="${cor}">${d.toLocaleDateString("pt-BR")} (${diff}d)</span>`;
+        })()
+      : '<span style="color:var(--success)">Vitalício</span>';
+    const crpCol = ["colaborador", "cliente"].includes(u.role)
+      ? (() => {
+          if (!u.clinicaId) return '<small style="color:var(--danger);font-weight:600">⚠️ sem clínica</small>';
+          const _psi = DB.findByEmail(u.clinicaId);
+          const _cn  = _psi?.clinicaNome || "";
+          return _cn
+            ? `<div style="line-height:1.5"><strong style="font-size:13px">${_cn}</strong><br><small style="color:var(--text-muted)">🏥 ${u.clinicaId}</small></div>`
+            : `<small style="color:var(--text-muted)">🏥 ${u.clinicaId}</small>`;
+        })()
+      : (u.crp || "—");
+    return `<tr>
       <td><strong>${u.nome}</strong></td>
       <td>${u.email}</td>
-      <td>${["colaborador", "cliente"].includes(u.role)
-        ? (() => {
-            if (!u.clinicaId) return '<small style="color:var(--danger);font-weight:600">⚠️ sem clínica</small>';
-            const _psi = DB.findByEmail(u.clinicaId);
-            const _cn  = _psi?.clinicaNome || "";
-            return _cn
-              ? `<div style="line-height:1.5"><strong style="font-size:13px">${_cn}</strong><br><small style="color:var(--text-muted)">🏥 ${u.clinicaId}</small></div>`
-              : `<small style="color:var(--text-muted)">🏥 ${u.clinicaId}</small>`;
-          })()
-        : (u.crp || "—")}</td>
+      <td>${crpCol}</td>
       <td><span class="badge ${bMap[u.role] || ''}">${roMap[u.role] || u.role}</span></td>
       <td><span class="badge" style="background:var(--primary-light,#e8f0fe);color:var(--primary)">${planoLabel[u.plano] || u.plano || "—"}</span></td>
       <td>${expiraStr}</td>
@@ -629,7 +626,61 @@ function _pintarUsuarios() {
           : `<span style="font-size:11px;color:var(--text-muted);padding:5px 4px">Conta atual</span>`}
       </td>
     </tr>`;
-      }).join("");
+  };
+
+  const tbAtivos = document.getElementById("tbody-usuarios-ativos");
+  if (tbAtivos) {
+    if (!ativos.length) {
+      tbAtivos.innerHTML = '<tr><td colspan="7" class="empty-row">Nenhum usuário ativo.</td></tr>';
+    } else if (isAdmin) {
+      // ── Admin: agrupa usuários por clínica ──────────
+      const groupHeader = (icon, titulo, count) =>
+        `<tr style="background:var(--bg-input,#f1f5f9);border-top:2px solid var(--border)">
+          <td colspan="7" style="padding:8px 14px;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--text-muted);border-bottom:1px solid var(--border)">
+            ${icon} ${titulo}
+            <span style="font-weight:400;font-size:11px;margin-left:6px">${count} usuário${count !== 1 ? "s" : ""}</span>
+          </td>
+        </tr>`;
+
+      const admins     = ativos.filter(u => u.role === "admin");
+      const psis       = ativos.filter(u => ["profissional", "psicologo"].includes(u.role));
+      const members    = ativos.filter(u => ["colaborador", "cliente"].includes(u.role));
+      const outros     = ativos.filter(u => !["admin","profissional","psicologo","colaborador","cliente"].includes(u.role));
+
+      let html = "";
+
+      // 1. Uma seção por psicólogo/clínica
+      psis.forEach(psi => {
+        const mems     = members.filter(m => m.clinicaId === psi.email);
+        const nomeClin = psi.clinicaNome ? `${psi.clinicaNome} — ${psi.nome}` : psi.nome;
+        html += groupHeader("🏥", nomeClin, 1 + mems.length);
+        html += rowUser(psi);
+        mems.forEach(m => { html += rowUser(m); });
+      });
+
+      // 2. Membros cujo psicólogo não está no cache (clínica inativa)
+      const memsSoltos = members.filter(m => !psis.find(p => p.email === m.clinicaId));
+      if (memsSoltos.length) {
+        html += groupHeader("⚠️", "Sem Psicólogo Vinculado", memsSoltos.length);
+        memsSoltos.forEach(m => { html += rowUser(m); });
+      }
+
+      // 3. Administradores
+      if (admins.length) {
+        html += groupHeader("👑", "Administradores", admins.length);
+        admins.forEach(a => { html += rowUser(a); });
+      }
+
+      // 4. Perfis desconhecidos
+      if (outros.length) {
+        html += groupHeader("❓", "Outros", outros.length);
+        outros.forEach(u => { html += rowUser(u); });
+      }
+
+      tbAtivos.innerHTML = html || '<tr><td colspan="7" class="empty-row">Nenhum usuário ativo.</td></tr>';
+    } else {
+      // ── Psicólogo: lista plana (só sua clínica) ─────
+      tbAtivos.innerHTML = ativos.map(rowUser).join("");
     }
   }
 

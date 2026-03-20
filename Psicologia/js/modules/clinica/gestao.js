@@ -823,24 +823,24 @@ async function salvarPerfilClinica() {
 /** Variável temporária para logo pendente de salvar (base64 ou null para remover). */
 let _logoClinicaPendente = null;
 
-/** Atualiza o nav item de Clínica no sidebar e o cabeçalho da seção com nome e logo dinâmicos. */
+/** Atualiza a brand da sidebar e o cabeçalho da seção com nome e logo dinâmicos da clínica. */
 function _atualizarNavClinica(nome, logoUrl) {
-  // Nav sidebar
-  const nomeEl  = document.getElementById("nav-clinica-nome");
-  const imgEl   = document.getElementById("nav-clinica-logo-img");
-  const emojiEl = document.getElementById("nav-clinica-logo-emoji");
-  if (nomeEl)  nomeEl.textContent = nome || "Clínica";
-  if (imgEl && emojiEl) {
+  // ── Brand (topo do sidebar) ──
+  const brandNome    = document.getElementById("brand-clinica-nome");
+  const brandLogoC   = document.getElementById("brand-clinica-logo");
+  const brandLogoS   = document.getElementById("brand-sistema-logo");
+  if (brandNome) brandNome.textContent = nome || "PsiCorrection";
+  if (brandLogoC && brandLogoS) {
     if (logoUrl) {
-      imgEl.src = logoUrl;
-      imgEl.style.display = "inline-block";
-      emojiEl.style.display = "none";
+      brandLogoC.src = logoUrl;
+      brandLogoC.style.display = "block";
+      brandLogoS.style.display = "none";
     } else {
-      imgEl.style.display = "none";
-      emojiEl.style.display = "";
+      brandLogoC.style.display = "none";
+      brandLogoS.style.display = "";
     }
   }
-  // Cabeçalho da seção Gestão da Clínica
+  // ── Cabeçalho da seção Gestão da Clínica ──
   const hNomeEl  = document.getElementById("clin-header-nome");
   const hImgEl   = document.getElementById("clin-header-logo-img");
   const hEmojiEl = document.getElementById("clin-header-logo-emoji");

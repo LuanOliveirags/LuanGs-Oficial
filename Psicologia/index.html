@@ -170,18 +170,19 @@
   <!-- Sidebar -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-      <img src="img/Psi.png" alt="PsiCorrection" style="height:32px; width:auto; vertical-align:middle;">
-      <strong>PsiCorrection</strong>
+      <!-- Logo dinâmico: mostra o logo da clínica quando definido, senso usa o logo do sistema -->
+      <span id="brand-logo-wrap" style="display:inline-flex;align-items:center;justify-content:center;flex-shrink:0">
+        <img id="brand-clinica-logo" src="" alt="" style="max-height:36px;width:auto;display:none">
+        <img id="brand-sistema-logo" src="img/Psi.png" alt="PsiCorrection" style="height:32px;width:auto">
+      </span>
+      <strong id="brand-clinica-nome">PsiCorrection</strong>
     </div>
     <nav class="sidebar-nav">
-      <!-- Clínica: destaque no topo, com logo e nome dinâmicos -->
+      <!-- Item fixo: Gestão da Clínica -->
       <a href="#" class="nav-item nav-clinica-item" data-roles="admin profissional psicologo colaborador cliente" onclick="navegarPara('clinica', this)"
         style="border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:6px;padding-bottom:10px">
-        <span class="nav-icon" style="position:relative">
-          <img id="nav-clinica-logo-img" src="" alt="" style="width:24px;height:24px;border-radius:50%;object-fit:cover;display:none;vertical-align:middle">
-          <span id="nav-clinica-logo-emoji">🏥</span>
-        </span>
-        <span id="nav-clinica-nome" style="font-weight:600">Clínica</span>
+        <span class="nav-icon">⚙️</span>
+        <span>Gestão da Clínica</span>
       </a>
       <a href="#" class="nav-item active" data-roles="admin profissional psicologo" onclick="navegarPara('dashboard', this)">
         <span class="nav-icon">📊</span> Dashboard
@@ -1481,8 +1482,8 @@
 
       <!-- Cabeçalho da seção -->
       <div style="margin-bottom:16px;display:flex;align-items:center;gap:12px">
-        <span id="clin-header-logo" style="display:flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;border:2px solid var(--border);overflow:hidden;background:var(--bg-input,#f1f5f9);font-size:26px;flex-shrink:0">
-          <img id="clin-header-logo-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none">
+        <span id="clin-header-logo" style="display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0">
+          <img id="clin-header-logo-img" src="" alt="" style="max-height:48px;width:auto;display:none">
           <span id="clin-header-logo-emoji">🏥</span>
         </span>
         <div>
