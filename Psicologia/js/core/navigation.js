@@ -44,6 +44,7 @@ function navegarPara(secao, linkEl) {
     bfp:              "BFP — Bateria Fatorial de Personalidade",
     historico:        "Histórico de Avaliações",
     pacientes:        "Pacientes",
+    clinica:          "Gestão da Clínica",
     usuarios:         "Gerenciar Usuários"
   };
   document.getElementById("topbar-title").textContent = titulos[secao] || secao;
@@ -51,6 +52,7 @@ function navegarPara(secao, linkEl) {
   // Ações de inicialização por seção
   if (secao === "historico")      renderizarHistorico();
   if (secao === "pacientes")      renderizarPacientes();
+  if (secao === "clinica")        renderizarClinica();
   if (secao === "usuarios")       renderizarUsuarios();
   if (secao === "nova-avaliacao") limparFormulario();
   if (secao === "neupsilin-inf")  limparFormularioInf();

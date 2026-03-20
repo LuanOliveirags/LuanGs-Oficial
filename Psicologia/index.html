@@ -23,6 +23,7 @@
   <link rel="stylesheet" href="css/wisc/style.css">
   <link rel="stylesheet" href="css/pacientes/db_pacientes.css">
   <link rel="stylesheet" href="css/bfp/style.css">
+  <link rel="stylesheet" href="css/clinica/style.css">
   <!-- jsPDF via CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
@@ -152,6 +153,9 @@
       </a>
       <a href="#" class="nav-item" onclick="navegarPara('pacientes', this)">
         <span class="nav-icon">👤</span> Pacientes
+      </a>
+      <a href="#" class="nav-item" onclick="navegarPara('clinica', this)">
+        <span class="nav-icon">🏥</span> Clínica
       </a>
       <a href="#" class="nav-item nav-admin" style="display:none" onclick="navegarPara('usuarios', this)">
         <span class="nav-icon">🔑</span> Usuários
@@ -1427,7 +1431,413 @@
       </div>
     </section>
 
+    <!-- ─── Seção: Gestão da Clínica ─── -->
+    <section id="sec-clinica" class="sec hidden">
+
+      <!-- Cabeçalho da seção -->
+      <div style="margin-bottom:16px">
+        <h2 style="margin:0">🏥 Gestão da Clínica</h2>
+        <p style="font-size:13px;color:var(--text-muted);margin:4px 0 0">Agenda, financeiro e dados do consultório</p>
+      </div>
+
+      <!-- ── Barra de métricas ── -->
+      <div class="clin-overview-bar" id="clin-overview-bar">
+        <div class="clin-metric-card">
+          <div class="clin-metric-icon">📅</div>
+          <div>
+            <div class="clin-metric-label">Hoje</div>
+            <div class="clin-metric-value" id="clin-m-hoje">—</div>
+            <div class="clin-metric-sub">sessões</div>
+          </div>
+        </div>
+        <div class="clin-metric-card">
+          <div class="clin-metric-icon">📊</div>
+          <div>
+            <div class="clin-metric-label">Esta semana</div>
+            <div class="clin-metric-value" id="clin-m-semana">—</div>
+            <div class="clin-metric-sub">agendamentos</div>
+          </div>
+        </div>
+        <div class="clin-metric-card destaque">
+          <div class="clin-metric-icon">💰</div>
+          <div>
+            <div class="clin-metric-label">Receita do mês</div>
+            <div class="clin-metric-value" id="clin-m-receita">—</div>
+            <div class="clin-metric-sub" id="clin-m-receita-trend"></div>
+          </div>
+        </div>
+        <div class="clin-metric-card danger">
+          <div class="clin-metric-icon">⏳</div>
+          <div>
+            <div class="clin-metric-label">Pendentes</div>
+            <div class="clin-metric-value" id="clin-m-pendentes">—</div>
+            <div class="clin-metric-sub">pagamentos</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Abas -->
+      <div class="clin-tabs">
+        <button class="clin-tab-btn active" data-aba="agenda"     onclick="_trocarAbaClin('agenda')">📅 Agenda</button>
+        <button class="clin-tab-btn"        data-aba="financeiro"  onclick="_trocarAbaClin('financeiro')">💰 Financeiro <span class="clin-tab-notif" style="display:none"></span></button>
+        <button class="clin-tab-btn"        data-aba="perfil"      onclick="_trocarAbaClin('perfil')">🏢 Perfil</button>
+      </div>
+
+      <!-- ══ PAINEL: AGENDA ══ -->
+      <div class="clin-tab-pane" id="clin-pane-agenda">
+
+        <!-- Próxima sessão -->
+        <div id="clin-proxima" class="proxima-sessao" style="display:none">
+          <div class="proxima-sessao-icon">⏰</div>
+          <div>
+            <div style="font-size:10px;opacity:.75;font-weight:700;letter-spacing:.6px;text-transform:uppercase">Próxima Sessão</div>
+            <div id="clin-proxima-info" style="font-size:15px;font-weight:700;margin-top:3px"></div>
+          </div>
+        </div>
+
+        <!-- Strip de hoje -->
+        <div class="hoje-strip" id="hoje-strip" style="display:none">
+          <div class="hoje-title">🌅 Hoje</div>
+          <div class="hoje-cards" id="hoje-cards"></div>
+        </div>
+
+        <div class="card">
+          <div class="clin-pane-header">
+            <div class="clin-pane-title">
+              <h3 style="margin:0">Agendamentos</h3>
+              <p>Clique no badge de status para alterá-lo rapidamente</p>
+            </div>
+            <div class="clin-filters">
+              <input type="text"  id="agen-busca"           placeholder="🔍 Buscar…"            oninput="_renderAgenda()" style="width:150px">
+              <input type="date"  id="agen-filtro-data"     onchange="_renderAgenda()">
+              <select            id="agen-filtro-status"   onchange="_renderAgenda()">
+                <option value="">Todos os status</option>
+                <option value="agendado">Agendado</option>
+                <option value="realizado">Realizado</option>
+                <option value="cancelado">Cancelado</option>
+                <option value="falta">Falta</option>
+              </select>
+              <select            id="agen-filtro-periodo"  onchange="_renderAgenda()">
+                <option value="">Todos os períodos</option>
+                <option value="hoje">Hoje</option>
+                <option value="semana">Esta semana</option>
+                <option value="mes">Este mês</option>
+                <option value="futuros">Próximos</option>
+              </select>
+              <button class="btn btn-primary" onclick="abrirModalAgendamento()">+ Novo</button>
+            </div>
+          </div>
+
+          <div id="agen-empty" class="clin-empty">
+            <div class="empty-icon">📅</div>
+            <p>Nenhum agendamento encontrado</p>
+            <small>Clique em "+ Novo" para adicionar o primeiro agendamento</small>
+          </div>
+
+          <table class="table" id="agen-table" style="display:none">
+            <thead>
+              <tr>
+                <th>Data</th><th>Horário</th><th>Paciente</th>
+                <th>Tipo</th><th>#</th><th>Status</th><th>Obs.</th><th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-agendamentos"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ══ PAINEL: FINANCEIRO ══ -->
+      <div class="clin-tab-pane" id="clin-pane-financeiro" style="display:none">
+
+        <!-- Cards de resumo (4 colunas) -->
+        <div class="fin-resumo-grid">
+          <div class="fin-resumo-card total">
+            <div class="fr-icon">📊</div>
+            <div class="fr-label">Total no período</div>
+            <div class="fr-valor" id="fin-total-valor">R$ 0,00</div>
+            <div class="fr-trend" id="fin-trend-total"></div>
+          </div>
+          <div class="fin-resumo-card pago">
+            <div class="fr-icon">✅</div>
+            <div class="fr-label">Recebido</div>
+            <div class="fr-valor" id="fin-total-pago">R$ 0,00</div>
+            <div class="fr-trend" id="fin-trend-pago"></div>
+          </div>
+          <div class="fin-resumo-card pend">
+            <div class="fr-icon">⏳</div>
+            <div class="fr-label">A receber</div>
+            <div class="fr-valor" id="fin-total-pend">R$ 0,00</div>
+            <div class="fr-trend"></div>
+          </div>
+          <div class="fin-resumo-card media">
+            <div class="fr-icon">📈</div>
+            <div class="fr-label">Ticket médio</div>
+            <div class="fr-valor" id="fin-ticket-medio">R$ 0,00</div>
+            <div class="fr-trend" id="fin-n-sessoes"></div>
+          </div>
+        </div>
+
+        <!-- Barra de meta mensal -->
+        <div class="meta-bar-wrap" id="meta-bar-wrap" style="display:none">
+          <div class="meta-bar-label">
+            <span>🎯 Meta mensal</span>
+            <span id="meta-bar-pct">0%</span>
+          </div>
+          <div class="meta-bar-bg">
+            <div class="meta-bar-fill" id="meta-bar-fill" style="width:0%"></div>
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:4px" id="meta-bar-sub"></div>
+        </div>
+
+        <!-- Gráfico de receita -->
+        <div class="fin-chart-card">
+          <h4>📈 Receita dos últimos 6 meses <span style="font-weight:400;font-size:12px;color:var(--text-muted)">(registros "Pago")</span></h4>
+          <div class="fin-chart-wrap">
+            <canvas id="chart-receita"></canvas>
+          </div>
+        </div>
+
+        <!-- Ações -->
+        <div class="fin-action-bar">
+          <button class="btn btn-secondary" onclick="exportarCSVFinanceiro()" style="font-size:13px">⬇️ Exportar CSV</button>
+        </div>
+
+        <div class="card">
+          <div class="clin-pane-header">
+            <div class="clin-pane-title">
+              <h3 style="margin:0">Registros Financeiros</h3>
+              <p>Clique em 💬 para gerar mensagem de cobrança no WhatsApp</p>
+            </div>
+            <div class="clin-filters">
+              <input type="text"  id="fin-busca"         placeholder="🔍 Buscar…"  oninput="_renderFinanceiro()" style="width:150px">
+              <input type="month" id="fin-filtro-mes"    onchange="_renderFinanceiro()">
+              <select            id="fin-filtro-status" onchange="_renderFinanceiro()">
+                <option value="">Todos</option>
+                <option value="pago">Pago</option>
+                <option value="pendente">Pendente</option>
+                <option value="parcial">Parcial</option>
+                <option value="isento">Isento</option>
+              </select>
+              <button class="btn btn-primary" onclick="abrirModalFinanceiro()">+ Registrar</button>
+            </div>
+          </div>
+
+          <div id="fin-empty" class="clin-empty">
+            <div class="empty-icon">💰</div>
+            <p>Nenhum registro financeiro</p>
+            <small>Clique em "+ Registrar" para adicionar o primeiro lançamento</small>
+          </div>
+
+          <table class="table" id="fin-table" style="display:none">
+            <thead>
+              <tr>
+                <th>Data</th><th>Paciente</th><th>Valor</th>
+                <th>Forma Pg.</th><th>Status</th><th>Obs.</th><th>Ações</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-financeiro"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ══ PAINEL: PERFIL DA CLÍNICA ══ -->
+      <div class="clin-tab-pane" id="clin-pane-perfil" style="display:none">
+
+        <!-- Configurações padrão -->
+        <div class="card" style="margin-bottom:16px">
+          <h3 style="margin:0 0 16px">⚙️ Configurações Padrão</h3>
+          <div class="clin-config-row">
+            <div class="form-group" style="margin:0">
+              <label>Valor padrão da sessão (R$)</label>
+              <input type="number" id="clin-val-padrao" placeholder="150.00" min="0" step="0.01"
+                     title="Preenchido automaticamente ao criar registros financeiros">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label>Duração padrão (minutos)</label>
+              <input type="number" id="clin-duracao-padrao" placeholder="50" min="10" max="240"
+                     title="Calcula automaticamente o horário de término nos agendamentos">
+            </div>
+            <div class="form-group" style="margin:0">
+              <label>Meta de receita mensal (R$)</label>
+              <input type="number" id="clin-meta-mensal" placeholder="3000.00" min="0" step="100"
+                     title="Exibe barra de progresso na aba Financeiro">
+            </div>
+          </div>
+        </div>
+
+        <!-- Dados da clínica -->
+        <div class="card">
+          <h3 style="margin:0 0 18px">🏢 Dados do Consultório / Clínica</h3>
+          <div id="clin-perfil-err" class="alert alert-error hidden" style="margin-bottom:14px"></div>
+          <div class="clin-perfil-form">
+            <div class="form-group">
+              <label>Nome da Clínica / Consultório</label>
+              <input type="text" id="clin-nome" placeholder="Ex: Consultório Psicológico Silva">
+            </div>
+            <div class="form-group">
+              <label>CNPJ (opcional)</label>
+              <input type="text" id="clin-cnpj" placeholder="00.000.000/0001-00" maxlength="18">
+            </div>
+            <div class="form-group full">
+              <label>Endereço Completo</label>
+              <input type="text" id="clin-end" placeholder="Rua, número, bairro, cidade – UF, CEP">
+            </div>
+            <div class="form-group">
+              <label>Telefone / WhatsApp</label>
+              <input type="text" id="clin-tel" placeholder="(00) 00000-0000" maxlength="15">
+            </div>
+            <div class="form-group">
+              <label>E-mail da Clínica</label>
+              <input type="email" id="clin-email" placeholder="contato@clinica.com">
+            </div>
+            <div class="form-group">
+              <label>Site / Redes Sociais</label>
+              <input type="text" id="clin-site" placeholder="clinica.com.br ou @instagram">
+            </div>
+            <div class="form-group">
+              <label>Horário de Funcionamento</label>
+              <input type="text" id="clin-hora" placeholder="Seg–Sex: 08h–18h · Sáb: 08h–12h">
+            </div>
+            <div class="form-group full">
+              <label>Observações Gerais</label>
+              <textarea id="clin-obs" rows="3" placeholder="Informações adicionais sobre o consultório…"></textarea>
+            </div>
+          </div>
+          <div style="margin-top:18px;display:flex;justify-content:flex-end">
+            <button id="clin-btn-salvar" class="btn btn-primary" onclick="salvarPerfilClinica()">💾 Salvar Configurações</button>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
   </main>
+</div>
+
+<!-- Modal: Agendamento -->
+<div id="modal-agen-overlay" class="modal-overlay hidden" onclick="fecharModalAgendamento()">
+  <div class="modal-card" onclick="event.stopPropagation()" style="max-width:520px">
+    <div class="modal-header">
+      <h3 id="modal-agen-titulo">📅 Novo Agendamento</h3>
+      <button class="modal-close" onclick="fecharModalAgendamento()">&#10005;</button>
+    </div>
+    <div style="padding:0 24px 8px">
+      <div id="agen-err" class="alert alert-error hidden" style="margin-bottom:10px"></div>
+      <div class="form-group">
+        <label>Paciente</label>
+        <select id="agen-f-paciente"><option value="">— Selecione —</option></select>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+        <div class="form-group" style="margin:0">
+          <label>Data *</label>
+          <input type="date" id="agen-f-data" onchange="_verificarConflitoCampos()">
+        </div>
+        <div class="form-group" style="margin:0">
+          <label>Início</label>
+          <input type="time" id="agen-f-hora-ini" oninput="autoPreencherHoraFim()">
+        </div>
+        <div class="form-group" style="margin:0">
+          <label>Fim</label>
+          <input type="time" id="agen-f-hora-fim" onchange="_verificarConflitoCampos()">
+        </div>
+      </div>
+      <!-- Alerta de conflito de horário -->
+      <div id="agen-conflito" class="clin-conflict-alert" style="display:none"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+        <div class="form-group" style="margin:0">
+          <label>Tipo</label>
+          <select id="agen-f-tipo">
+            <option value="sessao">Sessão</option>
+            <option value="avaliacao">Avaliação</option>
+            <option value="devolutiva">Devolutiva</option>
+            <option value="triagem">Triagem</option>
+            <option value="reuniao">Reunião / Supervisão</option>
+            <option value="outro">Outro</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label>Status</label>
+          <select id="agen-f-status">
+            <option value="agendado">Agendado</option>
+            <option value="realizado">Realizado</option>
+            <option value="cancelado">Cancelado</option>
+            <option value="falta">Falta</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:12px">
+        <label>Observações</label>
+        <textarea id="agen-f-obs" rows="2" placeholder="Info adicional…" style="resize:vertical"></textarea>
+      </div>
+      <!-- Checkbox de recorrência semanal -->
+      <label class="clin-check-row">
+        <input type="checkbox" id="agen-f-repetir">
+        📅 Repetir semanalmente por 4 semanas (total 5 sessões)
+      </label>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="fecharModalAgendamento()">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarAgendamento()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Financeiro -->
+<div id="modal-fin-overlay" class="modal-overlay hidden" onclick="fecharModalFinanceiro()">
+  <div class="modal-card" onclick="event.stopPropagation()" style="max-width:480px">
+    <div class="modal-header">
+      <h3 id="modal-fin-titulo">💰 Novo Registro Financeiro</h3>
+      <button class="modal-close" onclick="fecharModalFinanceiro()">&#10005;</button>
+    </div>
+    <div style="padding:0 24px 8px">
+      <div id="fin-err" class="alert alert-error hidden" style="margin-bottom:10px"></div>
+      <div class="form-group">
+        <label>Paciente</label>
+        <select id="fin-f-paciente"><option value="">— Selecione —</option></select>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group" style="margin:0">
+          <label>Data *</label>
+          <input type="date" id="fin-f-data">
+        </div>
+        <div class="form-group" style="margin:0">
+          <label>Valor (R$) *</label>
+          <input type="number" id="fin-f-valor" placeholder="150.00" min="0" step="0.01">
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px">
+        <div class="form-group" style="margin:0">
+          <label>Forma de Pagamento</label>
+          <select id="fin-f-forma">
+            <option value="pix">Pix</option>
+            <option value="dinheiro">Dinheiro</option>
+            <option value="cartao_debito">Cartão Débito</option>
+            <option value="cartao_credito">Cartão Crédito</option>
+            <option value="transferencia">Transferência</option>
+            <option value="plano_saude">Plano de Saúde</option>
+            <option value="outro">Outro</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label>Status do Pagamento</label>
+          <select id="fin-f-status">
+            <option value="pago">Pago</option>
+            <option value="pendente">Pendente</option>
+            <option value="parcial">Parcial</option>
+            <option value="isento">Isento</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group" style="margin-top:12px">
+        <label>Observações</label>
+        <textarea id="fin-f-obs" rows="2" placeholder="Sessão avulsa, plano mensal…" style="resize:vertical"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="fecharModalFinanceiro()">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarFinanceiro()">💾 Salvar</button>
+    </div>
+  </div>
 </div>
 
 <!-- Modal Aviso Obrigatório CFP -->
@@ -1785,6 +2195,9 @@
 <script src="js/modules/neupsilin/avaliacao-inf.js"></script>
 <script src="js/modules/wisc/avaliacao.js"></script>
 <script src="js/modules/bfp/avaliacao.js"></script>
+
+<!-- ── Módulo: Gestão da Clínica ── -->
+<script src="js/modules/clinica/gestao.js"></script>
 
 <!-- ── Registro do Service Worker (PWA) ── -->
 <script>
