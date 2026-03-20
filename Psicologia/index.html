@@ -133,6 +133,37 @@
   </div>
 </div>
 
+<!-- ══════════════════════════════════════ PRIMEIRO ACESSO ══════════════════════════ -->
+<div id="page-primeiro-acesso" class="page hidden" style="display:none;align-items:center;justify-content:center;min-height:100vh;background:var(--bg-body,#f0f4f8)">
+  <div style="width:100%;max-width:440px;background:var(--bg-card,#fff);border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.12);padding:40px 36px;margin:auto">
+    <div style="text-align:center;margin-bottom:28px">
+      <div style="font-size:48px;margin-bottom:12px">🔐</div>
+      <h2 style="margin:0 0 8px;font-size:22px">Primeiro Acesso</h2>
+      <p style="font-size:13px;color:var(--text-muted);margin:0">Para garantir a segurança da sua conta, defina uma senha pessoal antes de continuar.</p>
+    </div>
+
+    <div id="pa-error" class="alert alert-error hidden" style="margin-bottom:14px"></div>
+
+    <div class="form-group">
+      <label>Nova Senha <span style="color:var(--danger)">*</span></label>
+      <input type="password" id="pa-senha-nova" placeholder="Mín. 6 caracteres" autocomplete="new-password"
+             onkeydown="if(event.key==='Enter') document.getElementById('pa-senha-confirmar').focus()">
+    </div>
+    <div class="form-group">
+      <label>Confirmar Senha <span style="color:var(--danger)">*</span></label>
+      <input type="password" id="pa-senha-confirmar" placeholder="Repita a nova senha" autocomplete="new-password"
+             onkeydown="if(event.key==='Enter') concluirPrimeiroAcesso()">
+    </div>
+
+    <button id="pa-btn-confirmar" class="btn btn-primary" style="width:100%;padding:12px;font-size:15px;margin-top:8px" onclick="concluirPrimeiroAcesso()">
+      🔒 Definir Senha e Entrar
+    </button>
+    <p style="text-align:center;margin-top:16px;font-size:12px;color:var(--text-muted)">
+      Em caso de dúvidas, entre em contato com o administrador do sistema.
+    </p>
+  </div>
+</div>
+
 <!-- ══════════════════════════════════════ DASHBOARD ════════════════════════════════ -->
 <div id="page-dashboard" class="page hidden">
 
@@ -143,25 +174,25 @@
       <strong>PsiCorrection</strong>
     </div>
     <nav class="sidebar-nav">
-      <a href="#" class="nav-item active" onclick="navegarPara('dashboard', this)">
+      <a href="#" class="nav-item active" data-roles="admin profissional psicologo" onclick="navegarPara('dashboard', this)">
         <span class="nav-icon">📊</span> Dashboard
       </a>
-      <a href="#" class="nav-item" onclick="navegarPara('testes', this)">
+      <a href="#" class="nav-item" data-roles="admin profissional psicologo" onclick="navegarPara('testes', this)">
         <span class="nav-icon">📋</span> Correção de Testes
       </a>
-      <a href="#" class="nav-item nav-aplicacao" onclick="navegarPara('aplicacao', this)">
+      <a href="#" class="nav-item nav-aplicacao" data-roles="admin profissional psicologo" onclick="navegarPara('aplicacao', this)">
         <span class="nav-icon">📝</span> Aplicação de Testes
       </a>
-      <a href="#" class="nav-item" onclick="navegarPara('historico', this)">
+      <a href="#" class="nav-item" data-roles="admin profissional psicologo" onclick="navegarPara('historico', this)">
         <span class="nav-icon">📁</span> Histórico
       </a>
-      <a href="#" class="nav-item" onclick="navegarPara('pacientes', this)">
+      <a href="#" class="nav-item" data-roles="admin profissional psicologo colaborador" onclick="navegarPara('pacientes', this)">
         <span class="nav-icon">👤</span> Pacientes
       </a>
-      <a href="#" class="nav-item" onclick="navegarPara('clinica', this)">
+      <a href="#" class="nav-item" data-roles="admin profissional psicologo colaborador cliente" onclick="navegarPara('clinica', this)">
         <span class="nav-icon">🏥</span> Clínica
       </a>
-      <a href="#" class="nav-item nav-admin" style="display:none" onclick="navegarPara('usuarios', this)">
+      <a href="#" class="nav-item nav-admin" data-roles="admin profissional psicologo" style="display:none" onclick="navegarPara('usuarios', this)">
         <span class="nav-icon">🔑</span> Usuários
       </a>
     </nav>
@@ -1491,8 +1522,8 @@
       <!-- Abas -->
       <div class="clin-tabs">
         <button class="clin-tab-btn active" data-aba="agenda"     onclick="_trocarAbaClin('agenda')">📅 Agenda</button>
-        <button class="clin-tab-btn"        data-aba="financeiro"  onclick="_trocarAbaClin('financeiro')">💰 Financeiro <span class="clin-tab-notif" style="display:none"></span></button>
-        <button class="clin-tab-btn"        data-aba="perfil"      onclick="_trocarAbaClin('perfil')">🏢 Perfil</button>
+        <button class="clin-tab-btn" data-aba="financeiro" data-roles="admin profissional psicologo colaborador" onclick="_trocarAbaClin('financeiro')">💰 Financeiro <span class="clin-tab-notif" style="display:none"></span></button>
+        <button class="clin-tab-btn" data-aba="perfil"     data-roles="admin profissional psicologo" onclick="_trocarAbaClin('perfil')">🏢 Perfil</button>
       </div>
 
       <!-- ══ PAINEL: AGENDA ══ -->
@@ -1940,6 +1971,7 @@
     </div>
     <div style="padding:0 24px 8px">
       <div id="pac-err" class="alert alert-error hidden"></div>
+      <div id="pac-success" class="alert alert-success hidden" style="line-height:1.8"></div>
 
       <p class="form-section-label">&#128203; Identificação</p>
       <div class="form-group">
@@ -2067,7 +2099,7 @@
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label>CPF do Profissional</label>
+          <label>CPF *</label>
           <input type="text" id="usr-cpf" placeholder="000.000.000-00" maxlength="14">
         </div>
         <div class="form-group">
@@ -2077,10 +2109,22 @@
       </div>
       <div class="form-group">
         <label>Perfil</label>
-        <select id="usr-role">
-          <option value="profissional">Profissional</option>
+        <select id="usr-role" onchange="toggleClinicaField()">
+          <option value="profissional">Psicólogo</option>
+          <option value="colaborador">Colaborador</option>
+          <option value="cliente">Cliente</option>
           <option value="admin">Administrador</option>
         </select>
+      </div>
+      <div class="form-group" id="usr-clinica-group" style="display:none">
+        <label>Clínica Vinculada <span style="color:var(--danger)">*</span></label>
+        <select id="usr-clinica-id" onchange="_atualizarNomeClinicaDisplay()" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;width:100%;background:var(--bg-card);color:var(--text)">
+          <option value="">— Selecione o Psicólogo responsável —</option>
+        </select>
+        <div id="usr-clinica-nome-display" style="display:none;margin-top:6px;padding:8px 12px;background:var(--bg-body,#f0f4f8);border-radius:6px;font-size:13px;color:var(--text-muted)">
+          🏢 <strong id="usr-clinica-nome-text"></strong>
+        </div>
+        <small style="color:var(--text-muted);font-size:12px;margin-top:4px;display:block">🏥 Psicólogo responsável pela clínica. Os dados deste usuário ficarão isolados dentro dessa clínica.</small>
       </div>
       <div class="form-group" id="usr-plano-group">
         <label>Tipo de Acesso</label>
@@ -2130,6 +2174,9 @@
       <div class="form-group">
         <label>E-mail</label>
         <input type="email" id="perfil-email" disabled style="opacity:.6;cursor:not-allowed">
+      </div>
+      <div id="perfil-clinica-info" style="display:none;padding:10px 14px;background:var(--bg-body,#f0f4f8);border-radius:8px;font-size:13px;color:var(--text-muted);margin-top:4px">
+        🏥 Clínica: <strong id="perfil-clinica-nome-text"></strong>
       </div>
 
       <hr style="border:none;border-top:1px solid var(--border);margin:18px 0 14px">

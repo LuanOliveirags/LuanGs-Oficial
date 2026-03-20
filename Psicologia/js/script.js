@@ -33,10 +33,15 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (sessao) {
     try {
       usuarioLogado = JSON.parse(sessao);
-      await DB.carregarTodos(usuarioLogado.role === "admin", usuarioLogado.email);
-      await DB_PAC.carregarCache(usuarioLogado.email, usuarioLogado.role === "admin");
-      await carregarAvaliacoes(usuarioLogado.email, usuarioLogado.role === "admin");
-      await carregarNormas(usuarioLogado.email, usuarioLogado.role);  // registra sessão + busca tabelas
+      const _srole = usuarioLogado.role;
+      await DB.carregarTodos(_srole === "admin", usuarioLogado.email);
+      if (["admin", "profissional", "psicologo"].includes(_srole)) {
+        await DB_PAC.carregarCache(usuarioLogado.email, _srole === "admin");
+        await carregarAvaliacoes(usuarioLogado.email, _srole === "admin");
+      } else if (_srole === "colaborador") {
+        await DB_PAC.carregarCache(usuarioLogado.email, false, usuarioLogado.clinicaId);
+      }
+      await carregarNormas(usuarioLogado.email, _srole);  // registra sessão + busca tabelas
       DB.verificarExpiracoes();
       abrirDashboard();
       exibirAvisoObrigatorio();
@@ -245,6 +250,55 @@ function confirmarExcluir(id) {
 let _editandoEmail = null; // null = criando | string = editando
 let _ativandoEmail = null; // email sendo ativado
 
+/**
+ * Mostra/oculta o campo de clínica vinculada conforme o role selecionado.
+ * Também popula o select com todos os psicólogos cadastrados.
+ */
+function toggleClinicaField() {
+  const role  = document.getElementById("usr-role").value;
+  const group = document.getElementById("usr-clinica-group");
+  if (!group) return;
+  const mostrar = ["colaborador", "cliente"].includes(role);
+  group.style.display = mostrar ? "" : "none";
+  if (mostrar) { _popularSelectClinica(); _atualizarNomeClinicaDisplay(); }
+  else {
+    const nd = document.getElementById("usr-clinica-nome-display");
+    if (nd) nd.style.display = "none";
+  }
+}
+
+function _popularSelectClinica() {
+  const sel = document.getElementById("usr-clinica-id");
+  if (!sel) return;
+  const valorAtual = sel.value;
+  const psis = DB.getAll().filter(u =>
+    ["profissional", "psicologo"].includes(u.role) && !u.bloqueado
+  );
+  sel.innerHTML =
+    '<option value="">— Selecione o Psicólogo responsável —</option>' +
+    psis.map(u => {
+      const cn = u.clinicaNome ? ` · ${u.clinicaNome}` : "";
+      return `<option value="${u.email}">${u.nome}${cn} &lt;${u.email}&gt;</option>`;
+    }).join("");
+  if (valorAtual) sel.value = valorAtual;
+}
+
+/** Atualiza o badge de nome da clínica no modal de usuário (admin). */
+function _atualizarNomeClinicaDisplay() {
+  const sel      = document.getElementById("usr-clinica-id");
+  const nomeDpy  = document.getElementById("usr-clinica-nome-display");
+  const nomeText = document.getElementById("usr-clinica-nome-text");
+  if (!sel || !nomeDpy || !nomeText) return;
+  const psiEmail = sel.value;
+  if (!psiEmail) { nomeDpy.style.display = "none"; return; }
+  const psi  = DB.findByEmail(psiEmail);
+  const nome = psi?.clinicaNome || "";
+  nomeText.textContent  = nome || "(nome da clínica ainda não definido)";
+  nomeText.style.color  = nome ? "var(--text)" : "var(--text-muted)";
+  nomeText.style.fontStyle = nome ? "normal" : "italic";
+  nomeDpy.style.display = "";
+}
+
 function abrirModalUsuario(emailEditar = null) {
   _editandoEmail = emailEditar;
   const errEl  = document.getElementById("usr-error");
@@ -258,8 +312,34 @@ function abrirModalUsuario(emailEditar = null) {
   const senhaLabel = document.getElementById("usr-senha-label");
   const planoGroup = document.getElementById("usr-plano-group");
 
+  // Psicólogo: restringe roles disponíveis no select
+  const _isPsi = ["profissional", "psicologo"].includes(usuarioLogado?.role);
+  const roleSelEl = document.getElementById("usr-role");
+  if (roleSelEl) {
+    if (_isPsi) {
+      roleSelEl.innerHTML =
+        '<option value="colaborador">Colaborador</option>' +
+        '<option value="cliente">Cliente</option>';
+    } else {
+      roleSelEl.innerHTML =
+        '<option value="profissional">Psicólogo</option>' +
+        '<option value="colaborador">Colaborador</option>' +
+        '<option value="cliente">Cliente</option>';
+    }
+  }
+  // Psicólogo: oculta campos que não fazem sentido para Colab/Cliente
+  const crpGroup    = document.getElementById("usr-crp")?.closest(".form-group");
+  if (crpGroup) crpGroup.style.display = _isPsi ? "none" : "";
+  const ocultarGroup = document.getElementById("usr-ocultar-aplicacao")?.closest("div[style*='border-top']");
+  if (ocultarGroup) ocultarGroup.style.display = _isPsi ? "none" : "";
+
   if (emailEditar) {
+    // Psicólogo não pode editar usuários de outras clínicas
     const u = DB.findByEmail(emailEditar);
+    if (_isPsi && u?.clinicaId !== usuarioLogado.email) {
+      alert("Acesso negado: este usuário não pertence à sua clínica.");
+      return;
+    }
     titulo.textContent          = "Editar Usuário";
     btnSalvar.textContent       = "Salvar Alterações";
     document.getElementById("usr-nome").value   = u.nome;
@@ -269,6 +349,9 @@ function abrirModalUsuario(emailEditar = null) {
     document.getElementById("usr-crp").value    = u.crp || "";
     document.getElementById("usr-cpf").value    = u.cpf || "";
     document.getElementById("usr-role").value   = u.role || "profissional";
+    const clinicaSel = document.getElementById("usr-clinica-id");
+    if (clinicaSel) clinicaSel.value = u.clinicaId || "";
+    toggleClinicaField();
     const ocultarChk = document.getElementById("usr-ocultar-aplicacao");
     if (ocultarChk) ocultarChk.checked = !!(u.ocultarAplicacao);
     senhaLabel.textContent = "Nova Senha";
@@ -283,13 +366,21 @@ function abrirModalUsuario(emailEditar = null) {
     document.getElementById("usr-senha").value  = "";
     document.getElementById("usr-crp").value    = "";
     document.getElementById("usr-cpf").value    = "";
-    document.getElementById("usr-role").value   = "profissional";
-    document.getElementById("usr-plano").value  = "1mes";
+    document.getElementById("usr-role").value   = _isPsi ? "colaborador" : "profissional";
+    if (document.getElementById("usr-plano")) document.getElementById("usr-plano").value  = "1mes";
+    const clinicaSel = document.getElementById("usr-clinica-id");
+    if (clinicaSel) {
+      // Psicólogo: pré-seleciona a própria clínica
+      clinicaSel.value = _isPsi ? usuarioLogado.email : "";
+    }
+    toggleClinicaField();
+    // Para psicólogo, forc_a o clinicaId para si mesmo no display
+    if (_isPsi) _atualizarNomeClinicaDisplay();
     const ocultarChk = document.getElementById("usr-ocultar-aplicacao");
     if (ocultarChk) ocultarChk.checked = false;
     senhaLabel.textContent = "Senha *";
     senhaHint.classList.add("hidden");
-    if (planoGroup) planoGroup.style.display = "";
+    if (planoGroup) planoGroup.style.display = _isPsi ? "none" : "";
   }
   document.getElementById("modal-usuario-overlay").classList.remove("hidden");
 }
@@ -349,13 +440,18 @@ async function executarImportNormas() {
 }
 
 async function salvarUsuario() {
-  const nome  = document.getElementById("usr-nome").value.trim();
-  const email = document.getElementById("usr-email").value.trim();
-  const senha = document.getElementById("usr-senha").value;
-  const crp   = document.getElementById("usr-crp").value.trim();
-  const cpf   = document.getElementById("usr-cpf").value.trim();
-  const role  = document.getElementById("usr-role").value;
-  const plano = document.getElementById("usr-plano")?.value || "1mes";
+  const nome       = document.getElementById("usr-nome").value.trim();
+  const email      = document.getElementById("usr-email").value.trim();
+  const senha      = document.getElementById("usr-senha").value;
+  const crp        = document.getElementById("usr-crp").value.trim();
+  const cpf        = document.getElementById("usr-cpf").value.trim();
+  const role       = document.getElementById("usr-role").value;
+  const plano      = document.getElementById("usr-plano")?.value || "vitalicio";
+  const _isPsi     = ["profissional", "psicologo"].includes(usuarioLogado?.role);
+  // Psicólogo: clinicaId é sempre o próprio email; admin usa o campo do modal
+  const clinicaId  = _isPsi
+    ? usuarioLogado.email
+    : (document.getElementById("usr-clinica-id")?.value.trim() || "");
   const ocultarAplicacao = document.getElementById("usr-ocultar-aplicacao")?.checked || false;
 
   const errEl = document.getElementById("usr-error");
@@ -363,12 +459,47 @@ async function salvarUsuario() {
   errEl.classList.add("hidden");
   okEl.classList.add("hidden");
 
+  // Psicólogo só pode criar/editar Colaborador ou Cliente
+  if (_isPsi && !["colaborador", "cliente"].includes(role)) {
+    errEl.textContent = "Você só pode criar usuários do tipo Colaborador ou Cliente.";
+    errEl.classList.remove("hidden");
+    return;
+  }
+
+  // CPF obrigatório para todos os perfis (usado no login)
+  if (!cpf) {
+    errEl.textContent = "O CPF é obrigatório — o usuário precisará dele para fazer login.";
+    errEl.classList.remove("hidden");
+    return;
+  }
+  const _cpfCheck = validarFormatoCPF(cpf);
+  if (!_cpfCheck.ok) {
+    errEl.textContent = _cpfCheck.mensagem;
+    errEl.classList.remove("hidden");
+    return;
+  }
+
+  if (["colaborador", "cliente"].includes(role) && !clinicaId) {
+    errEl.textContent = "Selecione a clínica (psicólogo responsável) para este perfil.";
+    errEl.classList.remove("hidden");
+    return;
+  }
+
   try {
     if (_editandoEmail) {
-      await DB.updateAdmin(_editandoEmail, { nome: nome || undefined, crp, cpf, role, ocultarAplicacao, novaSenha: senha || undefined });
+      // Psicólogo: garantia extra de que o usuário editado é da sua clínica
+      if (_isPsi) {
+        const _uTgt = DB.findByEmail(_editandoEmail);
+        if (!_uTgt || _uTgt.clinicaId !== usuarioLogado.email) {
+          errEl.textContent = "Acesso negado: usuário não pertence à sua clínica.";
+          errEl.classList.remove("hidden"); return;
+        }
+      }
+      await DB.updateAdmin(_editandoEmail, { nome: nome || undefined, crp, cpf, role, ocultarAplicacao, novaSenha: senha || undefined, clinicaId });
       okEl.textContent = "Usuário atualizado com sucesso!";
     } else {
-      await DB.create({ email, senha, nome, crp, cpf, role, plano, ocultarAplicacao });
+      const _clinicaNomeAuto = _isPsi ? (usuarioLogado.clinicaNome || "") : "";
+      await DB.create({ email, senha, nome, crp, cpf, role, plano, ocultarAplicacao, clinicaId, clinicaNome: _clinicaNomeAuto });
       okEl.textContent = `Usuário "${nome}" criado com sucesso!`;
     }
     okEl.classList.remove("hidden");
@@ -382,6 +513,11 @@ async function salvarUsuario() {
 
 function excluirUsuarioAdmin(email) {
   if (email === usuarioLogado.email) { alert("Você não pode excluir sua própria conta."); return; }
+  // Psicólogo só pode excluir usuários da sua clínica
+  if (["profissional", "psicologo"].includes(usuarioLogado?.role)) {
+    const _u = DB.findByEmail(email);
+    if (!_u || _u.clinicaId !== usuarioLogado.email) { alert("Acesso negado."); return; }
+  }
   if (!confirm(`Deseja excluir o usuário "${email}"? Esta ação não pode ser desfeita.`)) return;
   DB.delete(email);
   _pintarUsuarios();
@@ -389,6 +525,11 @@ function excluirUsuarioAdmin(email) {
 
 function bloquearUsuario(email) {
   if (email === usuarioLogado.email) { alert("Você não pode bloquear sua própria conta."); return; }
+  // Psicólogo só pode bloquear usuários da sua clínica
+  if (["profissional", "psicologo"].includes(usuarioLogado?.role)) {
+    const _u = DB.findByEmail(email);
+    if (!_u || _u.clinicaId !== usuarioLogado.email) { alert("Acesso negado."); return; }
+  }
   if (!confirm(`Bloquear o acesso de "${email}"?`)) return;
   DB.bloquear(email);
   _pintarUsuarios();
@@ -419,8 +560,8 @@ function _pintarUsuarios() {
   DB.verificarExpiracoes();
   const busca     = (document.getElementById("usr-busca")?.value || "").toLowerCase().trim();
   const todos     = DB.getAll();
-  const roMap     = { admin: "Administrador", profissional: "Profissional" };
-  const bMap      = { admin: "badge-admin", profissional: "badge-prof" };
+  const roMap     = { admin: "Administrador", profissional: "Psicólogo", psicologo: "Psicólogo", colaborador: "Colaborador", cliente: "Cliente" };
+  const bMap      = { admin: "badge-admin", profissional: "badge-prof", psicologo: "badge-prof", colaborador: "badge-colab", cliente: "badge-client" };
   const planoLabel = { "1mes": "1 Mês", "3meses": "3 Meses", "vitalicio": "Vitalício", "1avaliacao": "1 Avaliação" };
 
   const filtrados  = busca ? todos.filter(u => u.nome.toLowerCase().includes(busca) || u.email.toLowerCase().includes(busca)) : todos;
@@ -450,7 +591,16 @@ function _pintarUsuarios() {
     <tr>
       <td><strong>${u.nome}</strong></td>
       <td>${u.email}</td>
-      <td>${u.crp || "—"}</td>
+      <td>${["colaborador", "cliente"].includes(u.role)
+        ? (() => {
+            if (!u.clinicaId) return '<small style="color:var(--danger);font-weight:600">⚠️ sem clínica</small>';
+            const _psi = DB.findByEmail(u.clinicaId);
+            const _cn  = _psi?.clinicaNome || "";
+            return _cn
+              ? `<div style="line-height:1.5"><strong style="font-size:13px">${_cn}</strong><br><small style="color:var(--text-muted)">🏥 ${u.clinicaId}</small></div>`
+              : `<small style="color:var(--text-muted)">🏥 ${u.clinicaId}</small>`;
+          })()
+        : (u.crp || "—")}</td>
       <td><span class="badge ${bMap[u.role] || ''}">${roMap[u.role] || u.role}</span></td>
       <td><span class="badge" style="background:var(--primary-light,#e8f0fe);color:var(--primary)">${planoLabel[u.plano] || u.plano || "—"}</span></td>
       <td>${expiraStr}</td>
@@ -494,10 +644,22 @@ function _pintarUsuarios() {
  * já atualizam o cache e chamam _pintarUsuarios() diretamente.
  */
 async function renderizarUsuarios() {
+  const role = usuarioLogado?.role;
+  const isPsi = ["profissional", "psicologo"].includes(role);
+
+  // Psicólogo: exibe apenas usuários da sua clínica; oculta seções que não fazem sentido para ele
+  const secImport  = document.querySelector("#sec-usuarios > .card:first-child"); // importar normas
+  if (secImport) secImport.style.display = isPsi ? "none" : "";
+
   const tbA = document.getElementById("tbody-usuarios-ativos");
   if (tbA) tbA.innerHTML = '<tr><td colspan="7" class="empty-row">Carregando…</td></tr>';
   try {
-    await DB.carregarTodos(true, usuarioLogado.email);
+    // Admin: carrega tudo; Psicólogo: carrega apenas os da sua clínica
+    if (isPsi) {
+      await DB.carregarPorClinica(usuarioLogado.email);
+    } else {
+      await DB.carregarTodos(true, usuarioLogado.email);
+    }
   } catch (e) {
     console.error("[usuarios] erro ao carregar:", e);
     if (tbA) tbA.innerHTML = '<tr><td colspan="7" class="empty-row" style="color:var(--danger)">Erro ao carregar usuários. Verifique a conexão.</td></tr>';

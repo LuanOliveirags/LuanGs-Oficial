@@ -34,28 +34,43 @@
 // ──────────────────────────────────────────────────────
 // BANCO DE DADOS — DB_CLINICA
 // ──────────────────────────────────────────────────────
+
+/**
+ * Retorna o email do psicólogo responsável pela clínica do usuário atual.
+ * Para Colaborador/Cliente usa clinicaId; para Psicólogo usa o próprio email;
+ * para Admin retorna null (vê tudo).
+ */
+function _emailClinica() {
+  const role = usuarioLogado?.role;
+  if (["colaborador", "cliente"].includes(role)) return usuarioLogado?.clinicaId || null;
+  if (role === "admin") return null;
+  return usuarioLogado?.email || null;
+}
+
 const DB_CLINICA = {
   _perfilCache:  null,
   _agendamentos: [],
   _financeiro:   [],
   _loaded:       false,
 
-  async carregar(email, isAdmin) {
-    const emailNorm = email.toLowerCase().trim();
+  async carregar(email, isAdmin, clinicaId = null) {
+    const emailNorm   = email.toLowerCase().trim();
+    // Para colaborador/cliente usa o email do psicólogo; para os demais usa o próprio
+    const emailFiltro = clinicaId || emailNorm;
     try {
-      const doc = await _firestoreDB.collection("clinicas").doc(emailNorm).get();
+      const doc = await _firestoreDB.collection("clinicas").doc(emailFiltro).get();
       this._perfilCache = doc.exists ? doc.data() : null;
 
       const colAgen = _firestoreDB.collection("agendamentos");
       const snapAgen = isAdmin
         ? await colAgen.orderBy("data", "desc").limit(500).get()
-        : await colAgen.where("emailProfissional", "==", emailNorm).orderBy("data", "desc").get();
+        : await colAgen.where("emailProfissional", "==", emailFiltro).orderBy("data", "desc").get();
       this._agendamentos = snapAgen.docs.map(d => d.data());
 
       const colFin = _firestoreDB.collection("financeiro_clinica");
       const snapFin = isAdmin
         ? await colFin.orderBy("data", "desc").limit(500).get()
-        : await colFin.where("emailProfissional", "==", emailNorm).orderBy("data", "desc").get();
+        : await colFin.where("emailProfissional", "==", emailFiltro).orderBy("data", "desc").get();
       this._financeiro = snapFin.docs.map(d => d.data());
     } catch (err) {
       console.error("[DB_CLINICA] Erro ao carregar:", err);
@@ -75,12 +90,13 @@ const DB_CLINICA = {
 
   getMeusAgendamentos() {
     if (usuarioLogado?.role === "admin") return this._agendamentos;
-    return this._agendamentos.filter(a => a.emailProfissional === usuarioLogado?.email);
+    const ef = _emailClinica();
+    return ef ? this._agendamentos.filter(a => a.emailProfissional === ef) : [];
   },
 
   criarAgendamento(dados) {
     const id = "agen_" + Date.now() + "_" + Math.floor(Math.random() * 9999);
-    const agen = { id, ...dados, emailProfissional: usuarioLogado?.email || "", criadoEm: new Date().toISOString() };
+    const agen = { id, ...dados, emailProfissional: _emailClinica() || "", criadoEm: new Date().toISOString() };
     this._agendamentos.unshift(agen);
     _firestoreDB.collection("agendamentos").doc(id).set(agen).catch(console.error);
     return agen;
@@ -105,12 +121,13 @@ const DB_CLINICA = {
 
   getMeuFinanceiro() {
     if (usuarioLogado?.role === "admin") return this._financeiro;
-    return this._financeiro.filter(f => f.emailProfissional === usuarioLogado?.email);
+    const ef = _emailClinica();
+    return ef ? this._financeiro.filter(f => f.emailProfissional === ef) : [];
   },
 
   criarFinanceiro(dados) {
     const id = "fin_" + Date.now();
-    const reg = { id, ...dados, emailProfissional: usuarioLogado?.email || "", criadoEm: new Date().toISOString() };
+    const reg = { id, ...dados, emailProfissional: _emailClinica() || "", criadoEm: new Date().toISOString() };
     this._financeiro.unshift(reg);
     _firestoreDB.collection("financeiro_clinica").doc(id).set(reg).catch(console.error);
     return reg;
@@ -230,13 +247,39 @@ function _detectarConflito(data, hIni, hFim, excluirId = null) {
 // ──────────────────────────────────────────────────────
 async function renderizarClinica() {
   if (!DB_CLINICA._loaded) {
-    await DB_CLINICA.carregar(usuarioLogado?.email || "", usuarioLogado?.role === "admin");
+    const clinicaId = ["colaborador", "cliente"].includes(usuarioLogado?.role)
+      ? (usuarioLogado?.clinicaId || null)
+      : null;
+    await DB_CLINICA.carregar(usuarioLogado?.email || "", usuarioLogado?.role === "admin", clinicaId);
   }
+
+  // Controla visibilidade das abas da clínica conforme perfil
+  const role = usuarioLogado?.role || "profissional";
+  document.querySelectorAll(".clin-tab-btn[data-roles]").forEach(btn => {
+    const roles = btn.dataset.roles.split(" ");
+    btn.style.display = roles.includes(role) ? "" : "none";
+  });
+
+  // Ocultar cards financeiros para perfil cliente
+  const cardReceita   = document.getElementById("clin-m-receita")?.closest(".clin-metric-card");
+  const cardPendentes = document.getElementById("clin-m-pendentes")?.closest(".clin-metric-card");
+  if (cardReceita)   cardReceita.style.display   = role === "cliente" ? "none" : "";
+  if (cardPendentes) cardPendentes.style.display = role === "cliente" ? "none" : "";
+
+  // Redefinir aba ativa se não permitida para o perfil
+  if (_abaClinAtiva === "financeiro" && role === "cliente") _abaClinAtiva = "agenda";
+  if (_abaClinAtiva === "perfil" && ["colaborador", "cliente"].includes(role)) _abaClinAtiva = "agenda";
+
   _renderOverview();
   _trocarAbaClin(_abaClinAtiva);
 }
 
 function _trocarAbaClin(aba) {
+  // Guarda de acesso por perfil
+  const role = usuarioLogado?.role || "profissional";
+  if (aba === "financeiro" && role === "cliente") return;
+  if (aba === "perfil" && ["colaborador", "cliente"].includes(role)) return;
+
   _abaClinAtiva = aba;
   document.querySelectorAll(".clin-tab-btn").forEach(b =>
     b.classList.toggle("active", b.dataset.aba === aba));
@@ -730,6 +773,16 @@ async function salvarPerfilClinica() {
   btn.disabled    = true;
   try {
     await DB_CLINICA.salvarPerfil(usuarioLogado.email, dados);
+    // Propaga clinicaNome para o doc do Psicólogo (fonte oficial do nome da clínica)
+    if (["profissional", "psicologo"].includes(usuarioLogado?.role)) {
+      const cNome = dados.nome || "";
+      await _firestoreDB.collection("usuarios").doc(usuarioLogado.email)
+        .update({ clinicaNome: cNome }).catch(console.error);
+      const _uIdx = DB._cache.findIndex(u => u.email === usuarioLogado.email);
+      if (_uIdx !== -1) DB._cache[_uIdx].clinicaNome = cNome;
+      usuarioLogado.clinicaNome = cNome;
+      sessionStorage.setItem("neupsilin_user", JSON.stringify(usuarioLogado));
+    }
     btn.textContent = "✅ Configurações salvas!";
     setTimeout(() => { btn.textContent = "💾 Salvar Configurações"; btn.disabled = false; }, 2400);
     _renderOverview();

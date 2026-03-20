@@ -24,6 +24,10 @@ function toggleSenha(btn) {
 }
 
 /** Autentica o profissional via Firestore e inicia a sessão. */
+// Dados temporários do usuário em primeiro acesso (aguardando troca de senha)
+let _primeiroAcessoData = null;
+
+/** Autentica o profissional via Firestore e inicia a sessão. */
 async function fazerLogin() {
   const email    = document.getElementById("login-email").value.trim().toLowerCase();
   const senha    = document.getElementById("login-senha").value;
@@ -36,15 +40,19 @@ async function fazerLogin() {
     return;
   }
 
-  // Pré-validação do CPF — antes de consultar o Firestore
-  const _identField = document.getElementById("login-crp");
-  const _identValue = _identField?.value.trim() ?? "";
+  // Pré-validação do CPF — só executa se o campo identificador estiver visível
+  const _identField  = document.getElementById("login-crp");
+  const _identValue  = _identField?.value.trim() ?? "";
+  const _crpGroupEl  = document.getElementById("login-crp-group");
+  const _crpHidden   = _crpGroupEl && _crpGroupEl.style.display === "none";
 
-  const _cpfPreCheck = validarFormatoCPF(_identValue);
-  if (!_cpfPreCheck.ok) {
-    errDiv.textContent = _cpfPreCheck.mensagem;
-    errDiv.classList.remove("hidden");
-    return;
+  if (!_crpHidden) {
+    const _cpfPreCheck = validarFormatoCPF(_identValue);
+    if (!_cpfPreCheck.ok) {
+      errDiv.textContent = _cpfPreCheck.mensagem;
+      errDiv.classList.remove("hidden");
+      return;
+    }
   }
 
   if (btnLogin) { btnLogin.disabled = true; btnLogin.textContent = "Entrando…"; }
@@ -89,6 +97,40 @@ async function fazerLogin() {
       return;
     }
 
+    // ── Primeiro Acesso: redirecionar para troca de senha obrigatória ──
+    if (usuarioData.primeiroAcesso) {
+      const _paClinicaId = ["colaborador", "cliente"].includes(usuarioData.role)
+        ? (usuarioData.clinicaId || "")
+        : (usuarioData.role === "admin" ? null : email);
+      if (["colaborador", "cliente"].includes(usuarioData.role) && !_paClinicaId) {
+        errDiv.textContent = "Sua conta não está vinculada a nenhuma clínica. Entre em contato com o administrador.";
+        errDiv.classList.remove("hidden");
+        return;
+      }
+      await DB.carregarTodos(usuarioData.role === "admin", email);
+      let _paCn = "";
+      if (["colaborador", "cliente"].includes(usuarioData.role) && _paClinicaId) {
+        try { const _d = await _firestoreDB.collection("usuarios").doc(_paClinicaId).get(); _paCn = _d.exists ? (_d.data().clinicaNome || "") : ""; } catch { /* silencioso */ }
+      } else if (usuarioData.role !== "admin") { _paCn = usuarioData.clinicaNome || ""; }
+      _primeiroAcessoData = {
+        email:      usuarioData.email,
+        nome:       usuarioData.nome,
+        crp:        usuarioData.crp || "",
+        role:       usuarioData.role,
+        clinicaId:  _paClinicaId,
+        clinicaNome: _paCn
+      };
+      document.getElementById("page-login").classList.add("hidden");
+      const _paPage = document.getElementById("page-primeiro-acesso");
+      _paPage.classList.remove("hidden");
+      _paPage.style.display = "flex";
+      document.getElementById("pa-error").classList.add("hidden");
+      document.getElementById("pa-senha-nova").value      = "";
+      document.getElementById("pa-senha-confirmar").value = "";
+      if (btnLogin) { btnLogin.disabled = false; btnLogin.textContent = "Entrar"; }
+      return;
+    }
+
     // Validação do CPF: formato + conferência obrigatória com cadastro
     const cpfFinal = validarFormatoCPF(_identValue);
     if (!cpfFinal.ok) {
@@ -108,26 +150,53 @@ async function fazerLogin() {
       return;
     }
     // Para psicólogos: dispara verificação assíncrona no cadastro do CFP (não bloqueia o login)
-    if (usuarioData.role !== "admin") {
+    if (!["admin", "colaborador", "cliente"].includes(usuarioData.role)) {
       validarCRPExternoAsync(usuarioData.crp || "", email, _identValue);
     }
 
+    // Determina clinicaId e valida vínculo obrigatório
+    const clinicaId = ["colaborador", "cliente"].includes(usuarioData.role)
+      ? (usuarioData.clinicaId || "")
+      : (usuarioData.role === "admin" ? null : email);
+    if (["colaborador", "cliente"].includes(usuarioData.role) && !clinicaId) {
+      errDiv.textContent = "Sua conta não está vinculada a nenhuma clínica. Entre em contato com o administrador.";
+      errDiv.classList.remove("hidden");
+      return;
+    }
+
     await DB.carregarTodos(usuarioData.role === "admin", email);
-    await DB_PAC.carregarCache(email, usuarioData.role === "admin");
-    await carregarAvaliacoes(email, usuarioData.role === "admin");
+    if (["admin", "profissional", "psicologo"].includes(usuarioData.role)) {
+      await DB_PAC.carregarCache(email, usuarioData.role === "admin");
+      await carregarAvaliacoes(email, usuarioData.role === "admin");
+    } else if (usuarioData.role === "colaborador") {
+      await DB_PAC.carregarCache(email, false, clinicaId);
+    }
     await carregarNormas(email, usuarioData.role);  // registra sessão + busca tabelas
     if (estadoNormas().state === "error") {
       console.warn("[login] Normas não carregadas:", estadoNormas().error);
     }
     DB.verificarExpiracoes();
 
+    // Resolve clinicaNome: para Colaborador/Cliente, busca no doc do Psicólogo responsável
+    let clinicaNome = "";
+    if (["colaborador", "cliente"].includes(usuarioData.role) && clinicaId) {
+      try {
+        const _psiDoc = await _firestoreDB.collection("usuarios").doc(clinicaId).get();
+        clinicaNome = _psiDoc.exists ? (_psiDoc.data().clinicaNome || "") : "";
+      } catch { /* silencioso */ }
+    } else if (usuarioData.role !== "admin") {
+      clinicaNome = usuarioData.clinicaNome || "";
+    }
+
     errDiv.classList.add("hidden");
     usuarioLogado = {
-      email: usuarioData.email,
-      nome:  usuarioData.nome,
-      crp:   usuarioData.crp,
-      cpf:   normalizarCPF(_identValue),
-      role:  usuarioData.role
+      email:      usuarioData.email,
+      nome:       usuarioData.nome,
+      crp:        usuarioData.crp,
+      cpf:        normalizarCPF(_identValue),
+      role:       usuarioData.role,
+      clinicaId,  // null para admin; email próprio para psicólogo; email do psicólogo para colaborador/cliente
+      clinicaNome // "" para admin; nome da clínica definido pelo psicólogo
     };
     sessionStorage.setItem("neupsilin_user", JSON.stringify(usuarioLogado));
     limparFormulario();
@@ -165,6 +234,20 @@ async function detectarCampoIdentificador() {
     crpHint.className       = "crp-hint";
 
     const cfpLink = document.getElementById("crp-cfp-link");
+
+    // Primeiro acesso: ocultar campo identificador (não é necessário CPF)
+    if (doc.data().primeiroAcesso) {
+      crpGroup.style.display = "none";
+      crpInput.value         = "";
+      crpGroup.querySelector("label").innerHTML =
+        'Acesso <span class="crp-label-badge" style="background:var(--warning,#f59e0b);color:#fff">Primeiro Acesso</span>';
+      crpHint.textContent = "🔑 Use a senha temporária enviada pelo sistema.";
+      crpHint.className   = "crp-hint";
+      if (cfpLink) cfpLink.classList.add("hidden");
+      return;
+    }
+    crpGroup.style.display = ""; // garante visibilidade para demais usuários
+
     if (doc.data().role === "admin") {
       crpInput.dataset.mode = "cpf";
       crpGroup.querySelector("label").innerHTML =
@@ -174,21 +257,80 @@ async function detectarCampoIdentificador() {
       crpHint.textContent  = "Formato: 000.000.000-00  \u00b7  CPF do administrador";
       if (cfpLink) cfpLink.classList.add("hidden");
     } else {
+      const _roleLabel = { colaborador: 'Colaborador', cliente: 'Cliente' }[doc.data().role] || 'Psicólogo';
       crpInput.dataset.mode = "cpf";
       crpGroup.querySelector("label").innerHTML =
-        'CPF <span class="crp-label-badge">Psic\u00f3logo</span>';
+        `CPF <span class="crp-label-badge">${_roleLabel}</span>`;
       crpInput.placeholder = "000.000.000-00";
       crpInput.maxLength   = 14;
-      crpHint.textContent  = "Formato: 000.000.000-00  \u00b7  Confirma seu registro no CFP";
-      if (cfpLink) cfpLink.classList.add("hidden"); // exibido só após validar formato
+      crpHint.textContent  = "Formato: 000.000.000-00  \u00b7  CPF de acesso";
+      if (cfpLink) cfpLink.classList.add("hidden");
     }
   } catch { /* silencioso — não bloqueia login */ }
+}
+
+/**
+ * Conclui o fluxo de primeiro acesso: valida e salva a nova senha,
+ * define primeiroAcesso = false e abre o dashboard.
+ */
+async function concluirPrimeiroAcesso() {
+  const errEl = document.getElementById("pa-error");
+  errEl.classList.add("hidden");
+  const nova = document.getElementById("pa-senha-nova").value;
+  const cfm  = document.getElementById("pa-senha-confirmar").value;
+
+  if (!nova || nova.length < 6) {
+    errEl.textContent = "A senha deve ter pelo menos 6 caracteres.";
+    errEl.classList.remove("hidden"); return;
+  }
+  if (nova !== cfm) {
+    errEl.textContent = "As senhas não coincidem.";
+    errEl.classList.remove("hidden"); return;
+  }
+
+  const btn = document.getElementById("pa-btn-confirmar");
+  if (btn) { btn.disabled = true; btn.textContent = "Salvando…"; }
+
+  try {
+    const { email, nome, crp, role, clinicaId, clinicaNome } = _primeiroAcessoData;
+
+    // Atualiza senha e zera a flag primeiroAcesso
+    await DB.updateAdmin(email, { novaSenha: nova });
+    await _firestoreDB.collection("usuarios").doc(email).update({ primeiroAcesso: false });
+    const _uIdx = DB._cache.findIndex(u => u.email === email);
+    if (_uIdx !== -1) DB._cache[_uIdx].primeiroAcesso = false;
+
+    // Carrega caches necessários conforme perfil
+    if (["admin", "profissional", "psicologo"].includes(role)) {
+      await DB_PAC.carregarCache(email, role === "admin");
+      await carregarAvaliacoes(email, role === "admin");
+    } else if (role === "colaborador") {
+      await DB_PAC.carregarCache(email, false, clinicaId);
+    }
+    await carregarNormas(email, role);
+    DB.verificarExpiracoes();
+
+    usuarioLogado = { email, nome, crp, cpf: "", role, clinicaId, clinicaNome };
+    sessionStorage.setItem("neupsilin_user", JSON.stringify(usuarioLogado));
+
+    document.getElementById("page-primeiro-acesso").classList.add("hidden");
+    document.getElementById("page-primeiro-acesso").style.display = "";
+    _primeiroAcessoData = null;
+    limparFormulario();
+    abrirDashboard();
+    exibirAvisoObrigatorio();
+  } catch (e) {
+    errEl.textContent = "Erro ao salvar senha: " + (e?.message || String(e));
+    errEl.classList.remove("hidden");
+    if (btn) { btn.disabled = false; btn.textContent = "🔒 Definir Senha e Entrar"; }
+  }
 }
 
 /** Encerra a sessão e limpa os caches em memória. */
 function fazerLogout() {
   sessionStorage.removeItem("neupsilin_user");
   usuarioLogado    = null;
+  _primeiroAcessoData = null;
   DB._cache        = [];
   DB_PAC._cache    = [];
   _cacheAvaliacoes = [];
@@ -196,6 +338,7 @@ function fazerLogout() {
   document.getElementById("page-login").classList.remove("hidden");
   document.getElementById("page-login").classList.add("active");
   document.getElementById("page-dashboard").classList.add("hidden");
+  document.getElementById("page-primeiro-acesso").classList.add("hidden");
   document.getElementById("login-email").value = "";
   document.getElementById("login-senha").value = "";
   // Resetar campo identificador para modo CPF (padrão)
@@ -242,35 +385,52 @@ function aceitarAviso() {
 
 /** Transita da tela de login para o dashboard após autenticação. */
 function abrirDashboard() {
+  const role = usuarioLogado.role;
   document.getElementById("page-login").classList.add("hidden");
   document.getElementById("page-dashboard").classList.remove("hidden");
   document.getElementById("sidebar-user-nome").textContent = usuarioLogado.nome;
   document.getElementById("sidebar-user-crp").textContent =
-    usuarioLogado.crp ? `CRP ${usuarioLogado.crp}` :
-    usuarioLogado.role === "admin" ? "Administrador" : "";
+    usuarioLogado.crp      ? `CRP ${usuarioLogado.crp}` :
+    role === "admin"       ? "Administrador" :
+    role === "colaborador" ? (usuarioLogado.clinicaNome || "Colaborador") :
+    role === "cliente"     ? (usuarioLogado.clinicaNome || "Cliente") : "";
   document.getElementById("topbar-user-name").textContent  = usuarioLogado.nome;
 
-  // ── Exibir/ocultar abas ANTES de qualquer renderização ──
-  document.querySelectorAll(".nav-admin").forEach(el => {
-    el.style.display = usuarioLogado.role === "admin" ? "flex" : "none";
+  // ── Exibir/ocultar itens de menu conforme perfil ──
+  document.querySelectorAll(".nav-item[data-roles]").forEach(el => {
+    const roles = el.dataset.roles.split(" ");
+    el.style.display = roles.includes(role) ? "flex" : "none";
   });
   const _uApl = DB.findByEmail(usuarioLogado.email);
-  document.querySelectorAll(".nav-aplicacao").forEach(el => {
-    el.style.display = (_uApl?.ocultarAplicacao && usuarioLogado.role !== "admin") ? "none" : "flex";
-  });
+  if (_uApl?.ocultarAplicacao && role !== "admin") {
+    document.querySelectorAll(".nav-aplicacao").forEach(el => el.style.display = "none");
+  }
   const btnSenha = document.getElementById("btn-alterar-senha");
-  if (btnSenha) btnSenha.style.display = usuarioLogado.role !== "admin" ? "block" : "none";
+  if (btnSenha) btnSenha.style.display = role !== "admin" ? "block" : "none";
 
+  // ── Seção inicial conforme perfil ──
+  const secaoInicial = ["colaborador", "cliente"].includes(role) ? "clinica" : "dashboard";
   document.querySelectorAll(".sec").forEach(s => {
     s.style.display = "none";
     s.classList.remove("active");
   });
-  const dashSec = document.getElementById("sec-dashboard");
-  dashSec.style.display = "block";
-  dashSec.classList.add("active");
+  const secEl = document.getElementById("sec-" + secaoInicial);
+  secEl.style.display = "block";
+  secEl.classList.add("active");
 
-  try { atualizarStats(); } catch(e) { console.warn("[dashboard] atualizarStats:", e); }
-  try { renderizarTabelaRecentes(); } catch(e) { console.warn("[dashboard] renderizarTabelaRecentes:", e); }
+  document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+  const navAtivo = document.querySelector(`.nav-item[onclick*="'${secaoInicial}'"]`);
+  if (navAtivo) navAtivo.classList.add("active");
+
+  document.getElementById("topbar-title").textContent =
+    secaoInicial === "clinica" ? "Gestão da Clínica" : "Dashboard";
+
+  if (secaoInicial === "dashboard") {
+    try { atualizarStats(); } catch(e) { console.warn("[dashboard] atualizarStats:", e); }
+    try { renderizarTabelaRecentes(); } catch(e) { console.warn("[dashboard] renderizarTabelaRecentes:", e); }
+  } else if (secaoInicial === "clinica") {
+    try { renderizarClinica(); } catch(e) { console.warn("[clinica] renderizarClinica:", e); }
+  }
 }
 
 // ── Modal de Perfil ────────────────────────────────────
@@ -285,6 +445,14 @@ function abrirModalPerfil() {
   ["perfil-senha-atual", "perfil-senha-nova", "perfil-senha-confirmar"].forEach(id => {
     document.getElementById(id).value = "";
   });
+  // Exibe o nome da clínica quando disponível
+  const _clinicaInfoEl   = document.getElementById("perfil-clinica-info");
+  const _clinicaNomeText = document.getElementById("perfil-clinica-nome-text");
+  if (_clinicaInfoEl && _clinicaNomeText) {
+    const _cn = usuarioLogado.clinicaNome || "";
+    _clinicaNomeText.textContent = _cn;
+    _clinicaInfoEl.style.display = _cn ? "" : "none";
+  }
   document.getElementById("perfil-error").classList.add("hidden");
   document.getElementById("perfil-success").classList.add("hidden");
   document.getElementById("modal-perfil-overlay").classList.remove("hidden");
@@ -355,8 +523,10 @@ async function salvarPerfil() {
     sessionStorage.setItem("neupsilin_user", JSON.stringify(usuarioLogado));
     document.getElementById("sidebar-user-nome").textContent = usuarioLogado.nome;
     document.getElementById("sidebar-user-crp").textContent =
-      usuarioLogado.crp ? `CRP ${usuarioLogado.crp}` :
-      usuarioLogado.role === "admin" ? "Administrador" : "";
+      usuarioLogado.crp                        ? `CRP ${usuarioLogado.crp}` :
+      usuarioLogado.role === "admin"           ? "Administrador" :
+      usuarioLogado.role === "colaborador"     ? (usuarioLogado.clinicaNome || "Colaborador") :
+      usuarioLogado.role === "cliente"         ? (usuarioLogado.clinicaNome || "Cliente") : "";
     document.getElementById("topbar-user-name").textContent  = usuarioLogado.nome;
     okEl.textContent = "Perfil atualizado com sucesso!";
     okEl.classList.remove("hidden");

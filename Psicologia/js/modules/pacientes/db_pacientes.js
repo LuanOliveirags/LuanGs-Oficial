@@ -4,15 +4,28 @@
    Cache em memória populado após o login.
 ═══════════════════════════════════════════════════════ */
 
+/** Gera uma senha temporária aleatória de 10 caracteres. */
+function _gerarSenhaTemp() {
+  const chars = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789@#!";
+  return Array.from(crypto.getRandomValues(new Uint8Array(10)))
+    .map(b => chars[b % chars.length]).join("");
+}
+
 const DB_PAC = {
   _cache: [], // populado por carregarCache() após o login
 
   // ── Carga do Firestore ─────────────────────────────
-  async carregarCache(email, isAdmin) {
+  async carregarCache(email, isAdmin, clinicaId = null) {
     const col = _firestoreDB.collection("pacientes");
-    const snap = isAdmin
-      ? await col.get()
-      : await col.where("emailProfissional", "==", email.toLowerCase().trim()).get();
+    let snap;
+    if (isAdmin) {
+      snap = await col.get();
+    } else if (clinicaId) {
+      // Colaborador: vê todos os pacientes da clínica pelo email do psicólogo
+      snap = await col.where("emailProfissional", "==", clinicaId.toLowerCase().trim()).get();
+    } else {
+      snap = await col.where("emailProfissional", "==", email.toLowerCase().trim()).get();
+    }
     this._cache = snap.docs.map(d => d.data());
   },
 
@@ -20,19 +33,27 @@ const DB_PAC = {
   getAll()    { return this._cache; },
   getById(id) { return this._cache.find(p => p.id === id) || null; },
 
-  // Retorna apenas os pacientes do usuário logado (admin vê todos)
+  // Retorna apenas os pacientes visíveis para o usuário logado
   getMeus() {
     if (usuarioLogado?.role === "admin") return this._cache;
+    // Colaborador/Cliente: vê pacientes da clínica vinculada
+    const cid = usuarioLogado?.clinicaId;
+    if (["colaborador", "cliente"].includes(usuarioLogado?.role))
+      return cid ? this._cache.filter(p => p.emailProfissional === cid) : [];
     return this._cache.filter(p => p.emailProfissional === usuarioLogado?.email);
   },
 
   // ── Criar paciente e disparar escrita no Firestore ─
   create(dados) {
     const id  = "pac_" + Date.now();
+    // Colaborador/Cliente: paciente pertence à clínica vinculada (email do psicólogo)
+    const emailProf = (["colaborador", "cliente"].includes(usuarioLogado?.role) && usuarioLogado?.clinicaId)
+      ? usuarioLogado.clinicaId
+      : (usuarioLogado?.email || "");
     const pac = {
       id,
       ...dados,
-      emailProfissional: usuarioLogado?.email || "",
+      emailProfissional: emailProf,
       criadoEm: new Date().toISOString()
     };
     this._cache.push(pac);
@@ -146,6 +167,10 @@ function abrirModalPaciente(id = null) {
   document.getElementById("pac-f-sexo").value = "";
   document.getElementById("pac-f-esc").value  = "";
   document.getElementById("pac-err").classList.add("hidden");
+  const _sucEl = document.getElementById("pac-success");
+  if (_sucEl) _sucEl.classList.add("hidden");
+  const _btn = document.querySelector("#modal-pac-overlay .btn-primary");
+  if (_btn) { _btn.disabled = false; _btn.textContent = "💾 Salvar Ficha"; }
   document.getElementById("modal-pac-titulo").textContent =
     id ? "\u270F\uFE0F Editar Ficha" : "\u{1F464} Nova Ficha Cadastral";
 
@@ -174,13 +199,13 @@ function fecharModalPaciente() {
   _editandoPacId = null;
 }
 
-function salvarPaciente() {
+async function salvarPaciente() {
   const errEl = document.getElementById("pac-err");
   errEl.classList.add("hidden");
 
   const nome = document.getElementById("pac-f-nome").value.trim();
   const nasc = document.getElementById("pac-f-nasc").value;
-  if (!nome) { errEl.textContent = "O nome é obrigatório.";             errEl.classList.remove("hidden"); return; }
+  if (!nome) { errEl.textContent = "O nome é obrigatório.";              errEl.classList.remove("hidden"); return; }
   if (!nasc) { errEl.textContent = "A data de nascimento é obrigatória."; errEl.classList.remove("hidden"); return; }
 
   const dados = {
@@ -189,7 +214,7 @@ function salvarPaciente() {
     cpf:     document.getElementById("pac-f-cpf").value.trim(),
     esc:     document.getElementById("pac-f-esc").value,
     tel:     document.getElementById("pac-f-tel").value.trim(),
-    email:   document.getElementById("pac-f-email").value.trim(),
+    email:   document.getElementById("pac-f-email").value.trim().toLowerCase(),
     resp:    document.getElementById("pac-f-resp").value.trim(),
     telResp: document.getElementById("pac-f-tel-resp").value.trim(),
     enc:     document.getElementById("pac-f-enc").value.trim(),
@@ -197,12 +222,62 @@ function salvarPaciente() {
     obs:     document.getElementById("pac-f-obs").value.trim()
   };
 
-  if (_editandoPacId) DB_PAC.update(_editandoPacId, dados);
-  else                DB_PAC.create(dados);
+  if (_editandoPacId) {
+    DB_PAC.update(_editandoPacId, dados);
+    fecharModalPaciente();
+    renderizarPacientes();
+    atualizarStats();
+    return;
+  }
 
-  fecharModalPaciente();
+  DB_PAC.create(dados);
   renderizarPacientes();
   atualizarStats();
+
+  // ── Auto-criar usuário Cliente se o paciente tiver e-mail ──
+  if (dados.email) {
+    const _btn = document.querySelector("#modal-pac-overlay .btn-primary");
+    const _sucEl = document.getElementById("pac-success");
+    if (_btn) { _btn.disabled = true; _btn.textContent = "Criando acesso…"; }
+    try {
+      const _existeDoc = await _firestoreDB.collection("usuarios").doc(dados.email).get();
+      if (!_existeDoc.exists) {
+        const _senhaTemp    = _gerarSenhaTemp();
+        const _clinicaIdAuto = ["colaborador"].includes(usuarioLogado?.role)
+          ? (usuarioLogado.clinicaId || "")
+          : (["profissional", "psicologo"].includes(usuarioLogado?.role) ? (usuarioLogado.email || "") : "");
+        await DB.create({
+          email:          dados.email,
+          senha:          _senhaTemp,
+          nome:           dados.nome,
+          role:           "cliente",
+          plano:          "vitalicio",
+          clinicaId:      _clinicaIdAuto,
+          clinicaNome:    usuarioLogado?.clinicaNome || "",
+          primeiroAcesso: true,
+          cpf:            (dados.cpf || "").replace(/\D/g, "")
+        });
+        // Exibe senha temporária no modal antes de fechar
+        if (_sucEl) {
+          _sucEl.innerHTML = `
+            ✅ Ficha salva! Login de cliente criado automaticamente.<br>
+            <span style="font-size:12px;line-height:2">
+              📧 <strong>${dados.email}</strong> &nbsp;|&nbsp;
+              🔑 Senha temporária: <code style="background:var(--bg-body,#f0f4f8);padding:2px 8px;border-radius:4px;font-size:13px;font-weight:700;letter-spacing:1.5px">${_senhaTemp}</code>
+            </span><br>
+            <small style="color:var(--text-muted)">Anote a senha. O cliente deverá redefini-la no primeiro acesso.</small>`;
+          _sucEl.classList.remove("hidden");
+          if (_btn) { _btn.disabled = false; _btn.textContent = "✅ Concluído — Fechar"; _btn.onclick = fecharModalPaciente; }
+          return; // mantém modal aberto para exibir a senha
+        }
+      }
+    } catch (e) {
+      console.warn("[auto-cliente]", e);
+    }
+    if (_btn) { _btn.disabled = false; _btn.textContent = "💾 Salvar Ficha"; }
+  }
+
+  fecharModalPaciente();
 }
 
 function excluirPaciente(id) {

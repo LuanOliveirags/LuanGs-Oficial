@@ -12,11 +12,35 @@
 ═══════════════════════════════════════════════════════ */
 
 /**
+ * Matriz de permissões por perfil.
+ * Sub-seções (nova-avaliacao, wisc, bfp, etc.) herdam as permissões
+ * da seção pai (testes / aplicacao).
+ */
+const _PERMISSOES = {
+  admin:        ["dashboard","testes","nova-avaliacao","neupsilin-inf","wisc","aplicacao","bfp","historico","pacientes","clinica","usuarios"],
+  profissional: ["dashboard","testes","nova-avaliacao","neupsilin-inf","wisc","aplicacao","bfp","historico","pacientes","clinica","usuarios"],
+  psicologo:    ["dashboard","testes","nova-avaliacao","neupsilin-inf","wisc","aplicacao","bfp","historico","pacientes","clinica","usuarios"],
+  colaborador:  ["pacientes","clinica"],
+  cliente:      ["clinica"],
+};
+
+/** Verifica se o usuário logado pode acessar a seção. */
+function _podeAcessar(secao) {
+  const role = window.__getUsuarioLogado?.()?.role || "profissional";
+  const permitidas = _PERMISSOES[role] ?? _PERMISSOES["profissional"];
+  return permitidas.includes(secao);
+}
+
+/**
  * Navega para uma seção do SPA, ocultando as demais.
  * @param {string}       secao  - chave da seção (ex.: "wisc", "dashboard")
  * @param {HTMLElement|null} linkEl - item de nav que deve ficar "active"
  */
 function navegarPara(secao, linkEl) {
+  if (!_podeAcessar(secao)) {
+    console.warn("[nav] Acesso negado:", secao, "para role:", window.__getUsuarioLogado?.()?.role);
+    return;
+  }
   document.querySelectorAll(".sec").forEach(s => {
     s.classList.remove("active");
     s.style.display = "none";

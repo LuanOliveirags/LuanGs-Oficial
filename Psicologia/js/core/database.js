@@ -44,6 +44,17 @@ const DB = {
     }
   },
 
+  /**
+   * Carrega do Firestore apenas os usuários vinculados a uma clínica
+   * (colaboradores e clientes cujo clinicaId == email do psicólogo).
+   */
+  async carregarPorClinica(clinicaIdEmail) {
+    const snap = await _firestoreDB.collection("usuarios")
+      .where("clinicaId", "==", clinicaIdEmail.toLowerCase().trim())
+      .get();
+    this._cache = snap.docs.map(d => d.data());
+  },
+
   // ── Leituras síncronas (via cache) ────────────────
   getAll() {
     return this._cache;
@@ -54,9 +65,11 @@ const DB = {
   },
 
   // ── Criar usuário ──────────────────────────────────
-  async create({ email, senha, nome, crp = "", cpf = "", role = "profissional", plano = "1mes", ocultarAplicacao = false }) {
+  async create({ email, senha, nome, crp = "", cpf = "", role = "profissional", plano = "1mes", ocultarAplicacao = false, clinicaId = "", primeiroAcesso = false, clinicaNome = "" }) {
     if (!email || !senha || !nome) throw new Error("Preencha todos os campos obrigatórios.");
     if (senha.length < 6) throw new Error("A senha deve ter ao menos 6 caracteres.");
+    if (["colaborador", "cliente"].includes(role) && !clinicaId)
+      throw new Error("Selecione a clínica (psicólogo responsável) para este perfil.");
 
     const emailNorm = email.toLowerCase().trim();
     if (this.findByEmail(emailNorm)) throw new Error("E-mail já cadastrado.");
@@ -72,6 +85,9 @@ const DB = {
       expiracao: calcularExpiracao(plano),
       bloqueado: false,
       ocultarAplicacao,
+      clinicaId:      ["colaborador", "cliente"].includes(role) ? clinicaId.toLowerCase().trim() : "",
+      clinicaNome:    clinicaNome.trim() || "",
+      primeiroAcesso: !!primeiroAcesso,
       criadoEm: new Date().toISOString()
     };
     await _firestoreDB.collection("usuarios").doc(emailNorm).set(usuario);
@@ -80,10 +96,14 @@ const DB = {
   },
 
   // ── Atualizar usuário pelo admin ───────────────────
-  async updateAdmin(email, { nome, crp, cpf, role, ocultarAplicacao, novaSenha } = {}) {
+  async updateAdmin(email, { nome, crp, cpf, role, ocultarAplicacao, novaSenha, clinicaId } = {}) {
     const emailNorm = email.toLowerCase().trim();
     const idx = this._cache.findIndex(u => u.email === emailNorm);
     if (idx === -1) throw new Error("Usuário não encontrado.");
+
+    const novoRole = role !== undefined ? role : this._cache[idx].role;
+    if (["colaborador", "cliente"].includes(novoRole) && clinicaId === "")
+      throw new Error("Selecione a clínica (psicólogo responsável) para este perfil.");
 
     const updates = {};
     if (nome !== undefined)             updates.nome = nome.trim();
@@ -91,6 +111,8 @@ const DB = {
     if (cpf !== undefined)              updates.cpf  = cpf.replace(/\D/g, "");
     if (role !== undefined)             updates.role = role;
     if (ocultarAplicacao !== undefined) updates.ocultarAplicacao = ocultarAplicacao;
+    if (clinicaId !== undefined)
+      updates.clinicaId = ["colaborador", "cliente"].includes(novoRole) ? clinicaId.toLowerCase().trim() : "";
     if (novaSenha) {
       if (novaSenha.length < 6) throw new Error("A nova senha deve ter ao menos 6 caracteres.");
       updates.senhaHash = await hashSenha(novaSenha);
