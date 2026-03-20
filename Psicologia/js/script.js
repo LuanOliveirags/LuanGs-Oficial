@@ -22,6 +22,12 @@ const _charts        = {};   // instâncias Chart.js activas por ctx
 // INICIALIZAÇÃO
 // ──────────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", async () => {
+  // Aplica tema salvo antes de qualquer render
+  const _temaS = localStorage.getItem("psi_tema") || "light";
+  document.documentElement.setAttribute("data-theme", _temaS);
+  const _btnTema = document.getElementById("btn-tema");
+  if (_btnTema) _btnTema.textContent = _temaS === "dark" ? "☀️" : "🌙";
+
   // Auth anônima garante que as regras do Firestore sejam cumpridas
   await firebase.auth().signInAnonymously().catch(console.error);
 
@@ -389,6 +395,17 @@ function fecharModalUsuario() {
   document.getElementById("modal-usuario-overlay").classList.add("hidden");
   document.getElementById("usr-email").disabled = false;
   _editandoEmail = null;
+}
+
+/** Alterna entre tema claro e escuro, persistindo a preferência. */
+function toggleTema() {
+  const html     = document.documentElement;
+  const temAtual = html.getAttribute("data-theme") || "light";
+  const novoTema = temAtual === "dark" ? "light" : "dark";
+  html.setAttribute("data-theme", novoTema);
+  localStorage.setItem("psi_tema", novoTema);
+  const btn = document.getElementById("btn-tema");
+  if (btn) btn.textContent = novoTema === "dark" ? "☀️" : "🌙";
 }
 
 async function executarImportNormas() {

@@ -196,10 +196,10 @@
    TOPBAR
 ---------------------------------------------------------------- */
 .topbar {
-  background: rgba(255,255,255,.88);
+  background: var(--topbar-bg, rgba(255,255,255,.88));
   backdrop-filter: blur(16px) saturate(180%);
   -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border-bottom: 1px solid rgba(226,232,240,.7);
+  border-bottom: 1px solid var(--border);
   padding: 0 28px;
   height: var(--topbar-h);
   display: flex;
@@ -209,6 +209,12 @@
   top: 0;
   z-index: 50;
   box-shadow: 0 1px 0 rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.04);
+  flex-shrink: 0;
+}
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   flex-shrink: 0;
 }
 .topbar h2 {
