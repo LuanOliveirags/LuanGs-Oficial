@@ -1,39 +1,39 @@
-﻿/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   CLÃNICA â€” js/modules/clinica/gestao.js  (v2)
-   GestÃ£o de Agenda, Financeiro e Perfil da ClÃ­nica.
+﻿/* ═══════════════════════════════════════════════════════
+   CLÍNICA — js/modules/clinica/gestao.js  (v2)
+   Gestão de Agenda, Financeiro e Perfil da Clínica.
 
    Novidades v2:
-     Â· Barra de mÃ©tricas em tempo real (hoje/semana/receita/pendentes)
-     Â· Strip "Hoje" com cards clicÃ¡veis no topo da agenda
-     Â· "PrÃ³xima sessÃ£o" destacada em gradiente
-     Â· Toggle rÃ¡pido de status com um clique no badge
-     Â· DetecÃ§Ã£o de conflito de horÃ¡rios no modal
-     Â· Auto-preenchimento de hora fim e valor padrÃ£o
-     Â· Agendamento recorrente semanal (4 semanas)
-     Â· Contador de sessÃ£o por paciente (#1, #2â€¦)
-     Â· Filtro por perÃ­odo (hoje/semana/mÃªs/prÃ³ximos)
-     Â· GrÃ¡fico de receita dos Ãºltimos 6 meses (Chart.js)
-     Â· Barra de progresso de meta mensal
-     Â· Ticket mÃ©dio e tendÃªncia % vs. mÃªs anterior
-     Â· ExportaÃ§Ã£o CSV do financeiro
-     Â· Mensagem de cobranÃ§a para WhatsApp (clipboard)
-     Â· Toast de feedback nÃ£o intrusivo
+     · Barra de métricas em tempo real (hoje/semana/receita/pendentes)
+     · Strip "Hoje" com cards clicáveis no topo da agenda
+     · "Próxima sessão" destacada em gradiente
+     · Toggle rápido de status com um clique no badge
+     · Detecção de conflito de horários no modal
+     · Auto-preenchimento de hora fim e valor padrão
+     · Agendamento recorrente semanal (4 semanas)
+     · Contador de sessão por paciente (#1, #2…)
+     · Filtro por período (hoje/semana/mês/próximos)
+     · Gráfico de receita dos últimos 6 meses (Chart.js)
+     · Barra de progresso de meta mensal
+     · Ticket médio e tendência % vs. mês anterior
+     · Exportação CSV do financeiro
+     · Mensagem de cobrança para WhatsApp (clipboard)
+     · Toast de feedback não intrusivo
 
-   ColeÃ§Ãµes no Firestore:
-     "clinicas"           â†’ perfil por email do profissional
-     "agendamentos"       â†’ agenda de sessÃµes/consultas
-     "financeiro_clinica" â†’ registros de pagamento
+   Coleções no Firestore:
+     "clinicas"           → perfil por email do profissional
+     "agendamentos"       → agenda de sessões/consultas
+     "financeiro_clinica" → registros de pagamento
 
    Depende de (carregados antes):
-     core/firebase.js               â†’ _firestoreDB
-     modules/pacientes/db_pacientes.js â†’ DB_PAC
+     core/firebase.js               → _firestoreDB
+     modules/pacientes/db_pacientes.js → DB_PAC
    Globals usados em runtime:
      usuarioLogado
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+═══════════════════════════════════════════════════════ */
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// BANCO DE DADOS â€” DB_CLINICA
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ──────────────────────────────────────────────────────
+// BANCO DE DADOS — DB_CLINICA
+// ──────────────────────────────────────────────────────
 const DB_CLINICA = {
   _perfilCache:  null,
   _agendamentos: [],
@@ -134,17 +134,18 @@ const DB_CLINICA = {
   }
 };
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ──────────────────────────────────────────────────────
 // ESTADO LOCAL
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ──────────────────────────────────────────────────────
 let _editandoAgenId = null;
 let _editandoFinId  = null;
 let _abaClinAtiva   = "agenda";
 let _chartReceita   = null;
+let _chartFormas    = null;
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ──────────────────────────────────────────────────────
 // CONSTANTES DE UI
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ──────────────────────────────────────────────────────
 const AGEN_STATUS_INFO = {
   agendado:  { cor: "#3b82f6", bg: "#eff6ff", label: "Agendado"  },
   realizado: { cor: "#16a34a", bg: "#f0fdf4", label: "Realizado" },
@@ -153,12 +154,12 @@ const AGEN_STATUS_INFO = {
 };
 const AGEN_STATUS_CICLO = ["agendado", "realizado", "falta", "cancelado"];
 const AGEN_TIPO_EMOJI = {
-  sessao: "ðŸ›‹ï¸", avaliacao: "ðŸ“‹", devolutiva: "ðŸ“¢",
-  triagem: "ðŸ”", reuniao: "ðŸ¤", outro: "ðŸ“Œ"
+  sessao: "🛋️", avaliacao: "📋", devolutiva: "📢",
+  triagem: "🔍", reuniao: "🤝", outro: "📌"
 };
 const AGEN_TIPO_LABEL = {
-  sessao: "SessÃ£o", avaliacao: "AvaliaÃ§Ã£o", devolutiva: "Devolutiva",
-  triagem: "Triagem", reuniao: "ReuniÃ£o/SupervisÃ£o", outro: "Outro"
+  sessao: "Sessão", avaliacao: "Avaliação", devolutiva: "Devolutiva",
+  triagem: "Triagem", reuniao: "Reunião/Supervisão", outro: "Outro"
 };
 const FIN_STATUS_PAG = {
   pago:     { cor: "#16a34a", bg: "#f0fdf4", label: "Pago"     },
@@ -167,14 +168,14 @@ const FIN_STATUS_PAG = {
   isento:   { cor: "#6b7280", bg: "#f9fafb", label: "Isento"   }
 };
 const FIN_FORMA_LABEL = {
-  pix: "Pix", dinheiro: "Dinheiro", cartao_debito: "CartÃ£o DÃ©bito",
-  cartao_credito: "CartÃ£o CrÃ©dito", transferencia: "TransferÃªncia",
-  plano_saude: "Plano de SaÃºde", outro: "Outro"
+  pix: "Pix", dinheiro: "Dinheiro", cartao_debito: "Cartão Débito",
+  cartao_credito: "Cartão Crédito", transferencia: "Transferência",
+  plano_saude: "Plano de Saúde", outro: "Outro"
 };
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// UTILITÃRIOS
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ──────────────────────────────────────────────────────
+// UTILITÁRIOS
+// ──────────────────────────────────────────────────────
 const fmtBRL = v => (parseFloat(v) || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
 function _hoje() { return new Date().toISOString().slice(0, 10); }
@@ -193,14 +194,14 @@ function _mesAnterior()  {
   const d = new Date(); d.setMonth(d.getMonth() - 1); return d.toISOString().slice(0, 7);
 }
 
-/** Quantas sessÃµes "realizado" um paciente jÃ¡ tem. */
+/** Quantas sessões "realizado" um paciente já tem. */
 function _numeroSessao(pacienteId) {
   if (!pacienteId) return 0;
   return DB_CLINICA.getMeusAgendamentos()
     .filter(a => a.pacienteId === pacienteId && a.status === "realizado").length;
 }
 
-/** PrÃ³ximo agendamento futuro nÃ£o cancelado. */
+/** Próximo agendamento futuro não cancelado. */
 function _proximoAgendamento() {
   const hoje = _hoje();
   return DB_CLINICA.getMeusAgendamentos()
@@ -211,7 +212,7 @@ function _proximoAgendamento() {
     })[0] || null;
 }
 
-/** Detecta conflito de horÃ¡rios */
+/** Detecta conflito de horários */
 function _detectarConflito(data, hIni, hFim, excluirId = null) {
   if (!data || !hIni) return null;
   return DB_CLINICA.getMeusAgendamentos().find(a => {
@@ -224,9 +225,9 @@ function _detectarConflito(data, hIni, hFim, excluirId = null) {
   }) ?? null;
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ──────────────────────────────────────────────────────
 // INICIALIZAÃ‡ÃƒO / ROTEAMENTO
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ──────────────────────────────────────────────────────
 async function renderizarClinica() {
   if (!DB_CLINICA._loaded) {
     await DB_CLINICA.carregar(usuarioLogado?.email || "", usuarioLogado?.role === "admin");
@@ -240,16 +241,16 @@ function _trocarAbaClin(aba) {
   document.querySelectorAll(".clin-tab-btn").forEach(b =>
     b.classList.toggle("active", b.dataset.aba === aba));
   document.querySelectorAll(".clin-tab-pane").forEach(p => {
-    p.style.display = (p.id === "clin-pane-" + aba) ? "" : "none";
+    p.style.display = (p.id === "clin-pane-" + aba) ? "block" : "none";
   });
   if (aba === "agenda")     _renderAgenda();
   if (aba === "financeiro") _renderFinanceiro();
   if (aba === "perfil")     _renderPerfil();
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// OVERVIEW â€” mÃ©tricas globais no topo
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ──────────────────────────────────────────────────────
+// OVERVIEW — métricas globais no topo
+// ──────────────────────────────────────────────────────
 function _renderOverview() {
   const hoje   = _hoje();
   const semana = _semanaIso();
@@ -265,20 +266,24 @@ function _renderOverview() {
   const receitaAnt  = fin.filter(f => f.statusPag === "pago" && f.data?.startsWith(mesAnt))
                          .reduce((s, f) => s + (parseFloat(f.valor) || 0), 0);
   const pendentesN  = fin.filter(f => f.statusPag === "pendente").length;
+  const realizados  = all.filter(a => a.status === "realizado").length;
+  const agendTotal  = all.filter(a => a.status !== "cancelado").length;
+  const taxaComp    = agendTotal > 0 ? Math.round(realizados / agendTotal * 100) : 0;
 
   const el = id => document.getElementById(id);
   if (el("clin-m-hoje"))     el("clin-m-hoje").textContent     = hojeCount;
   if (el("clin-m-semana"))   el("clin-m-semana").textContent   = semanaCount;
   if (el("clin-m-receita"))  el("clin-m-receita").textContent  = fmtBRL(receitaMes);
   if (el("clin-m-pendentes")) el("clin-m-pendentes").textContent = pendentesN;
+  if (el("clin-m-taxa"))      el("clin-m-taxa").textContent      = taxaComp + "%";
 
-  // TendÃªncia de receita
+  // Tendência de receita
   if (el("clin-m-receita-trend") && receitaAnt > 0) {
     const pct  = ((receitaMes - receitaAnt) / receitaAnt * 100).toFixed(0);
     const cor  = pct >= 0 ? "#16a34a" : "#dc2626";
-    const seta = pct >= 0 ? "â†‘" : "â†“";
+    const seta = pct >= 0 ? "↑" : "↓";
     el("clin-m-receita-trend").innerHTML =
-      `<span style="color:${cor};font-weight:700">${seta} ${Math.abs(pct)}%</span> vs. mÃªs anterior`;
+      `<span style="color:${cor};font-weight:700">${seta} ${Math.abs(pct)}%</span> vs. mês anterior`;
   }
 
   // Badge de pendentes na aba
@@ -286,9 +291,9 @@ function _renderOverview() {
   if (tabFin) { tabFin.textContent = pendentesN || ""; tabFin.style.display = pendentesN ? "" : "none"; }
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ──────────────────────────────────────────────────────
 // ABA: AGENDA
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ──────────────────────────────────────────────────────
 function _renderAgenda() {
   _renderHojeStrip();
   _renderProximaSessao();
@@ -296,6 +301,7 @@ function _renderAgenda() {
   const filtroData    = document.getElementById("agen-filtro-data")?.value   || "";
   const filtroStatus  = document.getElementById("agen-filtro-status")?.value || "";
   const filtroPeriodo = document.getElementById("agen-filtro-periodo")?.value || "";
+  const filtroTipo    = document.getElementById("agen-filtro-tipo")?.value   || "";
   const filtroBusca   = (document.getElementById("agen-busca")?.value        || "").toLowerCase();
 
   const hoje   = _hoje();
@@ -305,6 +311,7 @@ function _renderAgenda() {
   let lista = DB_CLINICA.getMeusAgendamentos();
   if (filtroData)                    lista = lista.filter(a => a.data === filtroData);
   if (filtroStatus)                  lista = lista.filter(a => a.status === filtroStatus);
+  if (filtroTipo)                    lista = lista.filter(a => a.tipo === filtroTipo);
   if (filtroBusca)                   lista = lista.filter(a => (a.pacienteNome || "").toLowerCase().includes(filtroBusca));
   if (filtroPeriodo === "hoje")      lista = lista.filter(a => a.data === hoje);
   if (filtroPeriodo === "semana")    lista = lista.filter(a => a.data >= semana.inicio && a.data <= semana.fim);
@@ -331,35 +338,37 @@ function _renderAgenda() {
   tabela.style.display = "";
 
   tbody.innerHTML = lista.map(a => {
-    const si       = AGEN_STATUS_INFO[a.status] || { cor: "#6b7280", bg: "#f9fafb", label: a.status || "â€”" };
+    const si       = AGEN_STATUS_INFO[a.status] || { cor: "#6b7280", bg: "#f9fafb", label: a.status || "—" };
     const eHoje    = a.data === hoje;
-    const dataFmt  = eHoje ? "ðŸŒ… Hoje" : (a.data ? new Date(a.data + "T00:00:00").toLocaleDateString("pt-BR") : "â€”");
-    const horario  = [a.horaInicio, a.horaFim].filter(Boolean).join(" â€“ ") || "â€”";
+    const dataFmt  = eHoje ? "🌅 Hoje" : (a.data ? new Date(a.data + "T00:00:00").toLocaleDateString("pt-BR") : "—");
+    const horario  = [a.horaInicio, a.horaFim].filter(Boolean).join(" – ") || "—";
     const rowClass = a.status === "cancelado" ? "row-cancelado"
                    : a.status === "falta"     ? "row-falta"
                    : a.status === "realizado" ? "row-realizado"
                    : eHoje                    ? "row-hoje" : "";
     const badge    = `<span class="status-badge clickable"
                         style="background:${si.bg};color:${si.cor};border:1px solid ${si.cor}33"
-                        title="Clique para avanÃ§ar o status"
+                        title="Clique para avançar o status"
                         onclick="toggleStatusAgendamento('${a.id}')">${si.label}</span>`;
     const numSessao = a.pacienteId
       ? (_numeroSessao(a.pacienteId) + (a.status === "agendado" ? 1 : 0))
-      : "â€”";
-    const emoji = AGEN_TIPO_EMOJI[a.tipo] || "ðŸ“Œ";
+      : "—";
+    const emoji = AGEN_TIPO_EMOJI[a.tipo] || "📌";
     return `<tr class="${rowClass}">
       <td style="white-space:nowrap;font-weight:${eHoje ? 700 : 400}">${dataFmt}</td>
       <td style="white-space:nowrap;font-weight:600">${horario}</td>
-      <td style="font-weight:600">${a.pacienteNome || "â€”"}</td>
+      <td style="font-weight:600">${a.pacienteNome || "—"}</td>
       <td><span title="${AGEN_TIPO_LABEL[a.tipo]||''}">${emoji} ${AGEN_TIPO_LABEL[a.tipo] || "Outro"}</span></td>
       <td style="text-align:center;font-weight:700;color:var(--text-muted);font-size:13px">#${numSessao}</td>
       <td>${badge}</td>
       <td style="font-size:12px;color:var(--text-muted);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"
-          title="${(a.obs||"").replace(/"/g,'&quot;')}">${a.obs || "â€”"}</td>
+          title="${(a.obs||"").replace(/"/g,'&quot;')}">${a.obs || "—"}</td>
       <td>
-        <div style="display:flex;gap:4px">
-          <button class="btn btn-secondary" style="padding:4px 9px;font-size:12px" title="Editar"  onclick="abrirModalAgendamento('${a.id}')">âœï¸</button>
-          <button class="btn" style="padding:4px 9px;font-size:12px;background:#fee2e2;color:#dc2626;border:1px solid #fca5a5" title="Excluir" onclick="deletarAgendamentoUI('${a.id}')">ðŸ—‘ï¸</button>
+        <div style="display:flex;gap:4px;flex-wrap:wrap">
+          <button class="btn btn-secondary" style="padding:4px 9px;font-size:12px" title="Editar" onclick="abrirModalAgendamento('${a.id}')">✏️</button>
+          <button class="btn" style="padding:4px 9px;font-size:12px;background:#dcfce7;color:#16a34a;border:1px solid #bbf7d0" title="Registrar pagamento" onclick="cobrarAgendamento('${a.id}')">💳</button>
+          <button class="btn" style="padding:4px 9px;font-size:12px;background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe" title="Agendar retorno (+7 dias)" onclick="agendarRetorno('${a.id}')">🔁</button>
+          <button class="btn" style="padding:4px 9px;font-size:12px;background:#fee2e2;color:#dc2626;border:1px solid #fca5a5" title="Excluir" onclick="deletarAgendamentoUI('${a.id}')">🗑️</button>
         </div>
       </td>
     </tr>`;
@@ -378,11 +387,11 @@ function _renderHojeStrip() {
   strip.style.display = "";
   cards.innerHTML = lista.map(a => {
     const si      = AGEN_STATUS_INFO[a.status] || { cor: "#6b7280", bg: "#f9fafb" };
-    const horario = [a.horaInicio, a.horaFim].filter(Boolean).join("â€“") || "?";
-    const emoji   = AGEN_TIPO_EMOJI[a.tipo] || "ðŸ“Œ";
+    const horario = [a.horaInicio, a.horaFim].filter(Boolean).join("–") || "?";
+    const emoji   = AGEN_TIPO_EMOJI[a.tipo] || "📌";
     return `<div class="hoje-card ${a.status}" onclick="abrirModalAgendamento('${a.id}')" title="Clique para editar">
       <div class="hoje-card-hora">${horario}</div>
-      <div class="hoje-card-nome">${a.pacienteNome || "â€”"}</div>
+      <div class="hoje-card-nome">${a.pacienteNome || "—"}</div>
       <div class="hoje-card-tipo">${emoji} ${AGEN_TIPO_LABEL[a.tipo]||"Outro"}</div>
       <div style="margin-top:6px">
         <span class="status-badge" style="background:${si.bg};color:${si.cor};border:1px solid ${si.cor}33;font-size:10px">
@@ -403,12 +412,12 @@ function _renderProximaSessao() {
   const dataFmt = prox.data === _hoje()
     ? "hoje"
     : new Date(prox.data + "T00:00:00").toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "2-digit" });
-  const horario = [prox.horaInicio, prox.horaFim].filter(Boolean).join(" â€“ ") || "";
+  const horario = [prox.horaInicio, prox.horaFim].filter(Boolean).join(" – ") || "";
   const numSessao = _numeroSessao(prox.pacienteId) + 1;
-  info.textContent = `${prox.pacienteNome || "Paciente"} Â· ${dataFmt}${horario ? " Ã s " + horario : ""} Â· SessÃ£o #${numSessao}`;
+  info.textContent = `${prox.pacienteNome || "Paciente"} · ${dataFmt}${horario ? " às " + horario : ""} · Sessão #${numSessao}`;
 }
 
-/** AvanÃ§a o status no ciclo: agendado â†’ realizado â†’ falta â†’ cancelado â†’ agendado */
+/** Avança o status no ciclo: agendado → realizado → falta → cancelado → agendado */
 function toggleStatusAgendamento(id) {
   const a = DB_CLINICA.getMeusAgendamentos().find(x => x.id === id);
   if (!a) return;
@@ -420,9 +429,9 @@ function toggleStatusAgendamento(id) {
   _toast(`Status alterado para "${AGEN_STATUS_INFO[novoSt]?.label || novoSt}"`);
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ──────────────────────────────────────────────────────
 // ABA: FINANCEIRO
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ──────────────────────────────────────────────────────
 function _renderFinanceiro() {
   const filtroMes    = document.getElementById("fin-filtro-mes")?.value    || "";
   const filtroStatus = document.getElementById("fin-filtro-status")?.value || "";
@@ -436,7 +445,7 @@ function _renderFinanceiro() {
     (f.pacienteNome || "").toLowerCase().includes(filtroBusca) ||
     (f.obs || "").toLowerCase().includes(filtroBusca));
 
-  // CÃ¡lculos
+  // Cálculos
   const totalValor = lista.reduce((s, f) => s + (parseFloat(f.valor) || 0), 0);
   const totalPago  = lista.filter(f => f.statusPag === "pago").reduce((s, f) => s + (parseFloat(f.valor) || 0), 0);
   const totalPend  = lista.filter(f => f.statusPag === "pendente").reduce((s, f) => s + (parseFloat(f.valor) || 0), 0);
@@ -448,9 +457,9 @@ function _renderFinanceiro() {
   if (el("fin-total-pago"))   el("fin-total-pago").textContent   = fmtBRL(totalPago);
   if (el("fin-total-pend"))   el("fin-total-pend").textContent   = fmtBRL(totalPend);
   if (el("fin-ticket-medio")) el("fin-ticket-medio").textContent = fmtBRL(ticket);
-  if (el("fin-n-sessoes"))    el("fin-n-sessoes").textContent    = `${nPago} sessÃ£o(Ãµes) paga(s)`;
+  if (el("fin-n-sessoes"))    el("fin-n-sessoes").textContent    = `${nPago} sessão(ões) paga(s)`;
 
-  // TendÃªncia: receita mÃªs atual vs. anterior (sobre todos os registros, nÃ£o apenas filtrados)
+  // Tendência: receita mês atual vs. anterior (sobre todos os registros, não apenas filtrados)
   const todaFin = DB_CLINICA.getMeuFinanceiro();
   const mes    = _mesAtual();
   const mesAnt = _mesAnterior();
@@ -461,7 +470,7 @@ function _renderFinanceiro() {
   if (el("fin-trend-pago") && pagoAnt > 0) {
     const pct = ((pagoMes - pagoAnt) / pagoAnt * 100).toFixed(0);
     const cor = pct >= 0 ? "#16a34a" : "#dc2626";
-    el("fin-trend-pago").innerHTML = `<span style="color:${cor};font-weight:700">${pct >= 0 ? "â†‘" : "â†“"} ${Math.abs(pct)}%</span> vs. mÃªs anterior`;
+    el("fin-trend-pago").innerHTML = `<span style="color:${cor};font-weight:700">${pct >= 0 ? "↑" : "↓"} ${Math.abs(pct)}%</span> vs. mês anterior`;
   }
 
   // Meta mensal
@@ -475,14 +484,26 @@ function _renderFinanceiro() {
       if (el("meta-bar-pct"))  el("meta-bar-pct").textContent  = pct + "%";
       if (el("meta-bar-fill")) el("meta-bar-fill").style.width = pct + "%";
       if (el("meta-bar-sub"))  el("meta-bar-sub").textContent  =
-        `${fmtBRL(pagoMes)} de ${fmtBRL(meta)} Â· faltam ${fmtBRL(Math.max(0, meta - pagoMes))}`;
+        `${fmtBRL(pagoMes)} de ${fmtBRL(meta)} · faltam ${fmtBRL(Math.max(0, meta - pagoMes))}`;
     } else {
       metaWrap.style.display = "none";
     }
   }
 
-  // GrÃ¡fico
+  // Gráfico
   _buildChartReceita();
+  _buildChartFormas();
+  _renderInadimplentes();
+
+  // Projeção do mês
+  if (el("fin-projecao-val")) {
+    const valorPad2  = parseFloat(perf?.valorPadrao) || 0;
+    const sessoesMes = DB_CLINICA.getMeusAgendamentos()
+      .filter(a => a.status === "agendado" && a.data?.startsWith(mes)).length;
+    el("fin-projecao-val").textContent = fmtBRL(sessoesMes * valorPad2);
+    if (el("fin-projecao-sub"))
+      el("fin-projecao-sub").textContent = `${sessoesMes} sessão(ões) agend. × ${fmtBRL(valorPad2)}`;
+  }
 
   // Tabela
   const empty  = el("fin-empty");
@@ -494,30 +515,30 @@ function _renderFinanceiro() {
   tabela.style.display = "";
 
   tbody.innerHTML = lista.map(f => {
-    const si    = FIN_STATUS_PAG[f.statusPag] || { cor: "#6b7280", bg: "#f9fafb", label: f.statusPag || "â€”" };
-    const dataFmt = f.data ? new Date(f.data + "T00:00:00").toLocaleDateString("pt-BR") : "â€”";
+    const si    = FIN_STATUS_PAG[f.statusPag] || { cor: "#6b7280", bg: "#f9fafb", label: f.statusPag || "—" };
+    const dataFmt = f.data ? new Date(f.data + "T00:00:00").toLocaleDateString("pt-BR") : "—";
     const badge = `<span class="status-badge" style="background:${si.bg};color:${si.cor};border:1px solid ${si.cor}33">${si.label}</span>`;
     return `<tr>
       <td style="white-space:nowrap">${dataFmt}</td>
-      <td style="font-weight:600">${f.pacienteNome || "â€”"}</td>
+      <td style="font-weight:600">${f.pacienteNome || "—"}</td>
       <td style="font-weight:700;color:#16a34a">${fmtBRL(parseFloat(f.valor)||0)}</td>
-      <td>${FIN_FORMA_LABEL[f.formaPagamento] || f.formaPagamento || "â€”"}</td>
+      <td>${FIN_FORMA_LABEL[f.formaPagamento] || f.formaPagamento || "—"}</td>
       <td>${badge}</td>
       <td style="font-size:12px;color:var(--text-muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"
-          title="${(f.obs||"").replace(/"/g,'&quot;')}">${f.obs || "â€”"}</td>
+          title="${(f.obs||"").replace(/"/g,'&quot;')}">${f.obs || "—"}</td>
       <td>
         <div style="display:flex;gap:4px">
           <button class="btn" style="padding:4px 9px;font-size:12px;background:#dcfce7;color:#16a34a;border:1px solid #bbf7d0"
-                  title="Copiar mensagem de cobranÃ§a para WhatsApp" onclick="copiarMsgCobranca('${f.id}')">ðŸ’¬</button>
-          <button class="btn btn-secondary" style="padding:4px 9px;font-size:12px" title="Editar" onclick="abrirModalFinanceiro('${f.id}')">âœï¸</button>
-          <button class="btn" style="padding:4px 9px;font-size:12px;background:#fee2e2;color:#dc2626;border:1px solid #fca5a5" title="Excluir" onclick="deletarFinanceiroUI('${f.id}')">ðŸ—‘ï¸</button>
+                  title="Copiar mensagem de cobrança para WhatsApp" onclick="copiarMsgCobranca('${f.id}')">💬</button>
+          <button class="btn btn-secondary" style="padding:4px 9px;font-size:12px" title="Editar" onclick="abrirModalFinanceiro('${f.id}')">✏️</button>
+          <button class="btn" style="padding:4px 9px;font-size:12px;background:#fee2e2;color:#dc2626;border:1px solid #fca5a5" title="Excluir" onclick="deletarFinanceiroUI('${f.id}')">🗑️</button>
         </div>
       </td>
     </tr>`;
   }).join("");
 }
 
-/** GrÃ¡fico de receita (Ãºltimos 6 meses) com Chart.js */
+/** Gráfico de receita (últimos 6 meses) com Chart.js */
 function _buildChartReceita() {
   const canvas = document.getElementById("chart-receita");
   if (!canvas || typeof Chart === "undefined") return;
@@ -564,11 +585,69 @@ function _buildChartReceita() {
   });
 }
 
+/** Gráfico donut de formas de pagamento (registros "Pago"). */
+function _buildChartFormas() {
+  const canvas = document.getElementById("chart-formas");
+  if (!canvas || typeof Chart === "undefined") return;
+  const lista = DB_CLINICA.getMeuFinanceiro().filter(f => f.statusPag === "pago");
+  const totais = {};
+  lista.forEach(f => {
+    const forma = f.formaPagamento || "outro";
+    totais[forma] = (totais[forma] || 0) + (parseFloat(f.valor) || 0);
+  });
+  const entries = Object.entries(totais).sort((a, b) => b[1] - a[1]);
+  const fc = document.getElementById("fin-formas-card");
+  if (!entries.length) { if (fc) fc.style.display = "none"; return; }
+  if (fc) fc.style.display = "";
+  const labels = entries.map(([k]) => FIN_FORMA_LABEL[k] || k);
+  const values = entries.map(([, v]) => v);
+  const CORES  = ["#1d4ed8","#7c3aed","#0891b2","#16a34a","#d97706","#dc2626","#6b7280"];
+  if (_chartFormas) { _chartFormas.destroy(); _chartFormas = null; }
+  _chartFormas = new Chart(canvas, {
+    type: "doughnut",
+    data: {
+      labels,
+      datasets: [{ data: values, backgroundColor: CORES.slice(0, values.length), borderWidth: 2, borderColor: "#fff" }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: "right", labels: { font: { size: 11 }, boxWidth: 12, padding: 8 } },
+        tooltip: { callbacks: { label: ctx => `${ctx.label}: ${fmtBRL(ctx.raw)}` } }
+      }
+    }
+  });
+}
+
+/** Lista os pacientes com mais pagamentos pendentes. */
+function _renderInadimplentes() {
+  const container = document.getElementById("fin-inadimplentes");
+  if (!container) return;
+  const lista = DB_CLINICA.getMeuFinanceiro().filter(f => f.statusPag === "pendente");
+  if (!lista.length) { container.style.display = "none"; return; }
+  const porPac = {};
+  lista.forEach(f => {
+    const key = f.pacienteId || ("__" + f.pacienteNome);
+    if (!porPac[key]) porPac[key] = { nome: f.pacienteNome || "Sem nome", total: 0, count: 0 };
+    porPac[key].total += parseFloat(f.valor) || 0;
+    porPac[key].count++;
+  });
+  const ranking = Object.values(porPac).sort((a, b) => b.total - a.total).slice(0, 5);
+  container.style.display = "";
+  container.innerHTML = `<div class="fin-inadim-header">⚠️ Pacientes com pagamentos pendentes</div>
+    ${ranking.map(p =>
+      `<div class="fin-inadim-row">
+        <span class="fin-inadim-nome">${p.nome}</span>
+        <span class="fin-inadim-info">${p.count} reg. · <strong>${fmtBRL(p.total)}</strong></span>
+      </div>`
+    ).join("")}`;
+}
+
 /** Exporta todos os registros para CSV com BOM (funciona no Excel). */
 function exportarCSVFinanceiro() {
   const lista = DB_CLINICA.getMeuFinanceiro();
   if (!lista.length) { alert("Nenhum registro para exportar."); return; }
-  const cabecalho = ["Data", "Paciente", "Valor (R$)", "Forma Pagamento", "Status", "ObservaÃ§Ãµes"];
+  const cabecalho = ["Data", "Paciente", "Valor (R$)", "Forma Pagamento", "Status", "Observações"];
   const linhas = lista.map(f => [
     f.data || "",
     `"${(f.pacienteNome || "").replace(/"/g, '""')}"`,
@@ -585,33 +664,33 @@ function exportarCSVFinanceiro() {
   a.download = `financeiro_${_mesAtual()}.csv`;
   a.click();
   URL.revokeObjectURL(url);
-  _toast("ðŸ“¥ CSV exportado com sucesso!");
+  _toast("📥 CSV exportado com sucesso!");
 }
 
-/** Gera e copia mensagem de cobranÃ§a para o WhatsApp (clipboard). */
+/** Gera e copia mensagem de cobrança para o WhatsApp (clipboard). */
 async function copiarMsgCobranca(finId) {
   const f        = DB_CLINICA.getMeuFinanceiro().find(x => x.id === finId);
   if (!f) return;
   const perf     = DB_CLINICA.getPerfil();
-  const clinNome = perf?.nome || usuarioLogado?.nome || "PsicÃ³loga(o)";
+  const clinNome = perf?.nome || usuarioLogado?.nome || "Psicóloga(o)";
   const dataFmt  = f.data ? new Date(f.data + "T00:00:00").toLocaleDateString("pt-BR") : "";
-  const status   = f.statusPag === "pago" ? "âœ… *Pagamento confirmado!*" : "â³ *Pagamento pendente*";
-  const msg = `OlÃ¡, ${f.pacienteNome || ""}! ðŸ˜Š\n\n${status}\n\n` +
-    `ðŸ“… *Data da sessÃ£o:* ${dataFmt}\n` +
-    `ðŸ’° *Valor:* ${fmtBRL(parseFloat(f.valor)||0)}\n` +
-    `ðŸ’³ *Forma de pagamento:* ${FIN_FORMA_LABEL[f.formaPagamento] || f.formaPagamento || "â€”"}\n` +
-    `\nQualquer dÃºvida, estou Ã  disposiÃ§Ã£o! ðŸ™\nâ€” *${clinNome}*`;
+  const status   = f.statusPag === "pago" ? "✅ *Pagamento confirmado!*" : "⏳ *Pagamento pendente*";
+  const msg = `Olá, ${f.pacienteNome || ""}! 😊\n\n${status}\n\n` +
+    `📅 *Data da sessão:* ${dataFmt}\n` +
+    `💰 *Valor:* ${fmtBRL(parseFloat(f.valor)||0)}\n` +
+    `💳 *Forma de pagamento:* ${FIN_FORMA_LABEL[f.formaPagamento] || f.formaPagamento || "—"}\n` +
+    `\nQualquer dúvida, estou à disposição! 🙏\n— *${clinNome}*`;
   try {
     await navigator.clipboard.writeText(msg);
-    _toast("ðŸ’¬ Mensagem copiada! Cole no WhatsApp.");
+    _toast("💬 Mensagem copiada! Cole no WhatsApp.");
   } catch {
     prompt("Copie a mensagem abaixo:", msg);
   }
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ──────────────────────────────────────────────────────
 // ABA: PERFIL
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ──────────────────────────────────────────────────────
 function _renderPerfil() {
   const p = DB_CLINICA.getPerfil();
   if (!p) return;
@@ -647,30 +726,30 @@ async function salvarPerfilClinica() {
   const btn = document.getElementById("clin-btn-salvar");
   const err = document.getElementById("clin-perfil-err");
   if (err) err.classList.add("hidden");
-  btn.textContent = "Salvandoâ€¦";
+  btn.textContent = "Salvando…";
   btn.disabled    = true;
   try {
     await DB_CLINICA.salvarPerfil(usuarioLogado.email, dados);
-    btn.textContent = "âœ… ConfiguraÃ§Ãµes salvas!";
-    setTimeout(() => { btn.textContent = "ðŸ’¾ Salvar ConfiguraÃ§Ãµes"; btn.disabled = false; }, 2400);
+    btn.textContent = "✅ Configurações salvas!";
+    setTimeout(() => { btn.textContent = "💾 Salvar Configurações"; btn.disabled = false; }, 2400);
     _renderOverview();
-    _toast("âœ… ConfiguraÃ§Ãµes da clÃ­nica salvas!");
+    _toast("✅ Configurações da clínica salvas!");
   } catch (e) {
-    btn.textContent = "Erro â€” tente novamente";
+    btn.textContent = "Erro — tente novamente";
     btn.disabled    = false;
     if (err) { err.textContent = String(e); err.classList.remove("hidden"); }
   }
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// MODAL â€” AGENDAMENTO
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ──────────────────────────────────────────────────────
+// MODAL — AGENDAMENTO
+// ──────────────────────────────────────────────────────
 function abrirModalAgendamento(id = null, pacienteIdPresel = null) {
   _editandoAgenId = id;
-  document.getElementById("modal-agen-titulo").textContent = id ? "âœï¸ Editar Agendamento" : "ðŸ“… Novo Agendamento";
+  document.getElementById("modal-agen-titulo").textContent = id ? "✏️ Editar Agendamento" : "📅 Novo Agendamento";
 
   const sel = document.getElementById("agen-f-paciente");
-  sel.innerHTML = '<option value="">â€” Selecione o paciente â€”</option>';
+  sel.innerHTML = '<option value="">— Selecione o paciente —</option>';
   DB_PAC.getMeus().forEach(p => {
     const opt = document.createElement("option");
     opt.value = p.id; opt.dataset.nome = p.nome; opt.textContent = p.nome;
@@ -710,7 +789,7 @@ function fecharModalAgendamento() {
   _editandoAgenId = null;
 }
 
-/** Auto-preenche hora fim com base na duraÃ§Ã£o padrÃ£o configurada. */
+/** Auto-preenche hora fim com base na duração padrão configurada. */
 function autoPreencherHoraFim() {
   const hIni = document.getElementById("agen-f-hora-ini").value;
   const dur  = parseInt(DB_CLINICA.getPerfil()?.duracaoPadrao) || 0;
@@ -731,7 +810,7 @@ function _verificarConflitoCampos() {
   if (!alrt) return;
   const c = _detectarConflito(data, hIni, hFim, _editandoAgenId);
   if (c) {
-    alrt.textContent = `âš ï¸ Conflito com ${c.pacienteNome || "outro paciente"} (${c.horaInicio || "?"}â€“${c.horaFim || "?"}).`;
+    alrt.textContent = `⚠️ Conflito com ${c.pacienteNome || "outro paciente"} (${c.horaInicio || "?"}–${c.horaFim || "?"}).`;
     alrt.style.display = "";
   } else {
     alrt.style.display = "none";
@@ -763,7 +842,7 @@ function salvarAgendamento() {
 
   if (_editandoAgenId) {
     DB_CLINICA.atualizarAgendamento(_editandoAgenId, dados);
-    _toast("âœ… Agendamento atualizado!");
+    _toast("✅ Agendamento atualizado!");
   } else {
     DB_CLINICA.criarAgendamento(dados);
     if (repetir) {
@@ -772,9 +851,9 @@ function salvarAgendamento() {
         d.setDate(d.getDate() + s * 7);
         DB_CLINICA.criarAgendamento({ ...dados, data: d.toISOString().slice(0, 10) });
       }
-      _toast("ðŸ“… 5 agendamentos criados (semanal â€” 4 semanas).");
+      _toast("📅 5 agendamentos criados (semanal — 4 semanas).");
     } else {
-      _toast("ðŸ“… Agendamento criado!");
+      _toast("📅 Agendamento criado!");
     }
   }
 
@@ -784,21 +863,21 @@ function salvarAgendamento() {
 }
 
 function deletarAgendamentoUI(id) {
-  if (!confirm("Excluir este agendamento? Esta aÃ§Ã£o nÃ£o pode ser desfeita.")) return;
+  if (!confirm("Excluir este agendamento? Esta ação não pode ser desfeita.")) return;
   DB_CLINICA.deletarAgendamento(id);
   _renderAgenda();
   _renderOverview();
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// MODAL â€” FINANCEIRO
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-function abrirModalFinanceiro(id = null, pacienteIdPresel = null) {
+// ──────────────────────────────────────────────────────
+// MODAL — FINANCEIRO
+// ──────────────────────────────────────────────────────
+function abrirModalFinanceiro(id = null, pacienteIdPresel = null, dataPresel = null) {
   _editandoFinId = id;
-  document.getElementById("modal-fin-titulo").textContent = id ? "âœï¸ Editar Registro" : "ðŸ’° Novo Registro Financeiro";
+  document.getElementById("modal-fin-titulo").textContent = id ? "✏️ Editar Registro" : "💰 Novo Registro Financeiro";
 
   const sel = document.getElementById("fin-f-paciente");
-  sel.innerHTML = '<option value="">â€” Selecione o paciente â€”</option>';
+  sel.innerHTML = '<option value="">— Selecione o paciente —</option>';
   DB_PAC.getMeus().forEach(p => {
     const opt = document.createElement("option");
     opt.value = p.id; opt.dataset.nome = p.nome; opt.textContent = p.nome;
@@ -820,7 +899,7 @@ function abrirModalFinanceiro(id = null, pacienteIdPresel = null) {
     }
   } else {
     sel.value = pacienteIdPresel || "";
-    document.getElementById("fin-f-data").value   = _hoje();
+    document.getElementById("fin-f-data").value   = dataPresel || _hoje();
     document.getElementById("fin-f-valor").value  = valorPad;
     document.getElementById("fin-f-forma").value  = "pix";
     document.getElementById("fin-f-status").value = "pago";
@@ -852,7 +931,7 @@ function salvarFinanceiro() {
     errDiv.classList.remove("hidden"); return;
   }
   if (isNaN(valor) || valor < 0) {
-    errDiv.textContent = "Informe um valor vÃ¡lido (ex: 150.00).";
+    errDiv.textContent = "Informe um valor válido (ex: 150.00).";
     errDiv.classList.remove("hidden"); return;
   }
 
@@ -860,10 +939,10 @@ function salvarFinanceiro() {
 
   if (_editandoFinId) {
     DB_CLINICA.atualizarFinanceiro(_editandoFinId, dados);
-    _toast("âœ… Registro atualizado!");
+    _toast("✅ Registro atualizado!");
   } else {
     DB_CLINICA.criarFinanceiro(dados);
-    _toast("ðŸ’° Registro financeiro criado!");
+    _toast("💰 Registro financeiro criado!");
   }
 
   fecharModalFinanceiro();
@@ -871,16 +950,37 @@ function salvarFinanceiro() {
   _renderOverview();
 }
 
+/** Abre modal financeiro pré-preenchido a partir de um agendamento. */
+function cobrarAgendamento(agenId) {
+  const a = DB_CLINICA.getMeusAgendamentos().find(x => x.id === agenId);
+  if (!a) return;
+  abrirModalFinanceiro(null, a.pacienteId, a.data);
+}
+
+/** Cria um novo agendamento 7 dias após o informado, mesmo paciente/horário. */
+function agendarRetorno(agenId) {
+  const a = DB_CLINICA.getMeusAgendamentos().find(x => x.id === agenId);
+  if (!a || a.status === "cancelado") return;
+  const d = new Date((a.data || _hoje()) + "T00:00:00");
+  d.setDate(d.getDate() + 7);
+  const novaData = d.toISOString().slice(0, 10);
+  const { id: _id, criadoEm: _c, atualizadoEm: _u, emailProfissional: _ep, ...resto } = a;
+  DB_CLINICA.criarAgendamento({ ...resto, data: novaData, status: "agendado" });
+  _renderAgenda();
+  _renderOverview();
+  _toast(`🔁 Retorno agendado: ${new Date(novaData + "T00:00:00").toLocaleDateString("pt-BR")}`);
+}
+
 function deletarFinanceiroUI(id) {
-  if (!confirm("Excluir este registro financeiro? Esta aÃ§Ã£o nÃ£o pode ser desfeita.")) return;
+  if (!confirm("Excluir este registro financeiro? Esta ação não pode ser desfeita.")) return;
   DB_CLINICA.deletarFinanceiro(id);
   _renderFinanceiro();
   _renderOverview();
 }
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// TOAST â€” feedback visual leve
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ──────────────────────────────────────────────────────
+// TOAST — feedback visual leve
+// ──────────────────────────────────────────────────────
 function _toast(msg, dur = 3000) {
   let el = document.getElementById("clin-toast");
   if (!el) {

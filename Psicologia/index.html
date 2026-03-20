@@ -1478,6 +1478,14 @@
             <div class="clin-metric-sub">pagamentos</div>
           </div>
         </div>
+        <div class="clin-metric-card">
+          <div class="clin-metric-icon">✅</div>
+          <div>
+            <div class="clin-metric-label">Comparecimento</div>
+            <div class="clin-metric-value" id="clin-m-taxa">—</div>
+            <div class="clin-metric-sub">sessões realizadas</div>
+          </div>
+        </div>
       </div>
 
       <!-- Abas -->
@@ -1527,6 +1535,15 @@
                 <option value="semana">Esta semana</option>
                 <option value="mes">Este mês</option>
                 <option value="futuros">Próximos</option>
+              </select>
+              <select id="agen-filtro-tipo" onchange="_renderAgenda()">
+                <option value="">Todos os tipos</option>
+                <option value="sessao">Sessão</option>
+                <option value="avaliacao">Avaliação</option>
+                <option value="devolutiva">Devolutiva</option>
+                <option value="triagem">Triagem</option>
+                <option value="reuniao">Reunião</option>
+                <option value="outro">Outro</option>
               </select>
               <button class="btn btn-primary" onclick="abrirModalAgendamento()">+ Novo</button>
             </div>
@@ -1598,6 +1615,24 @@
           <h4>📈 Receita dos últimos 6 meses <span style="font-weight:400;font-size:12px;color:var(--text-muted)">(registros "Pago")</span></h4>
           <div class="fin-chart-wrap">
             <canvas id="chart-receita"></canvas>
+          </div>
+        </div>
+
+        <!-- Extras: formas de pagamento + projeção + inadimplentes -->
+        <div class="fin-extras-grid">
+          <div class="fin-chart-card" id="fin-formas-card" style="display:none">
+            <h4>💳 Recebimentos por forma de pagamento</h4>
+            <div class="fin-chart-wrap">
+              <canvas id="chart-formas"></canvas>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div class="fin-projecao-card">
+              <div style="font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px">🔮 Projeção do mês</div>
+              <div id="fin-projecao-val" style="font-size:22px;font-weight:800;color:var(--primary,#1d4ed8)">R$ 0,00</div>
+              <div id="fin-projecao-sub" style="font-size:12px;color:var(--text-muted);margin-top:4px"></div>
+            </div>
+            <div id="fin-inadimplentes" class="fin-inadimplentes" style="display:none"></div>
           </div>
         </div>
 
