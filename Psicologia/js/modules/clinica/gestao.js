@@ -750,6 +750,24 @@ function _renderPerfil() {
     const el = document.getElementById(id);
     if (el) el.value = p[key] || "";
   });
+  // Exibe logo salvo no preview
+  const logoUrl = p.logoUrl || "";
+  const previewImg  = document.getElementById("clin-logo-preview-img");
+  const previewEmoji = document.getElementById("clin-logo-preview-emoji");
+  const removerBtn  = document.getElementById("clin-logo-remover");
+  if (previewImg && previewEmoji) {
+    if (logoUrl) {
+      previewImg.src = logoUrl;
+      previewImg.style.display = "block";
+      previewEmoji.style.display = "none";
+      if (removerBtn) removerBtn.style.display = "";
+    } else {
+      previewImg.style.display = "none";
+      previewEmoji.style.display = "";
+      if (removerBtn) removerBtn.style.display = "none";
+    }
+  }
+  _atualizarNavClinica(p.nome || "", logoUrl);
 }
 
 async function salvarPerfilClinica() {
@@ -766,6 +784,10 @@ async function salvarPerfilClinica() {
   Object.entries(mapa).forEach(([id, key]) => {
     dados[key] = (document.getElementById(id)?.value || "").trim();
   });
+  // Inclui logo: usa a pendente (se o usuário selecionou nova) ou a já salva
+  const perfAtual = DB_CLINICA.getPerfil();
+  dados.logoUrl = _logoClinicaPendente !== null ? _logoClinicaPendente : (perfAtual?.logoUrl || "");
+
   const btn = document.getElementById("clin-btn-salvar");
   const err = document.getElementById("clin-perfil-err");
   if (err) err.classList.add("hidden");
@@ -773,16 +795,20 @@ async function salvarPerfilClinica() {
   btn.disabled    = true;
   try {
     await DB_CLINICA.salvarPerfil(usuarioLogado.email, dados);
-    // Propaga clinicaNome para o doc do Psicólogo (fonte oficial do nome da clínica)
+    // Propaga clinicaNome (e logoUrl) para o doc do Psicólogo
     if (["profissional", "psicologo"].includes(usuarioLogado?.role)) {
       const cNome = dados.nome || "";
+      const cLogo = dados.logoUrl || "";
       await _firestoreDB.collection("usuarios").doc(usuarioLogado.email)
-        .update({ clinicaNome: cNome }).catch(console.error);
+        .update({ clinicaNome: cNome, clinicaLogoUrl: cLogo }).catch(console.error);
       const _uIdx = DB._cache.findIndex(u => u.email === usuarioLogado.email);
-      if (_uIdx !== -1) DB._cache[_uIdx].clinicaNome = cNome;
-      usuarioLogado.clinicaNome = cNome;
+      if (_uIdx !== -1) { DB._cache[_uIdx].clinicaNome = cNome; DB._cache[_uIdx].clinicaLogoUrl = cLogo; }
+      usuarioLogado.clinicaNome    = cNome;
+      usuarioLogado.clinicaLogoUrl = cLogo;
       sessionStorage.setItem("neupsilin_user", JSON.stringify(usuarioLogado));
     }
+    _logoClinicaPendente = null; // limpa pendente após salvar
+    _atualizarNavClinica(dados.nome, dados.logoUrl);
     btn.textContent = "✅ Configurações salvas!";
     setTimeout(() => { btn.textContent = "💾 Salvar Configurações"; btn.disabled = false; }, 2400);
     _renderOverview();
@@ -792,6 +818,80 @@ async function salvarPerfilClinica() {
     btn.disabled    = false;
     if (err) { err.textContent = String(e); err.classList.remove("hidden"); }
   }
+}
+
+/** Variável temporária para logo pendente de salvar (base64 ou null para remover). */
+let _logoClinicaPendente = null;
+
+/** Atualiza o nav item de Clínica no sidebar e o cabeçalho da seção com nome e logo dinâmicos. */
+function _atualizarNavClinica(nome, logoUrl) {
+  // Nav sidebar
+  const nomeEl  = document.getElementById("nav-clinica-nome");
+  const imgEl   = document.getElementById("nav-clinica-logo-img");
+  const emojiEl = document.getElementById("nav-clinica-logo-emoji");
+  if (nomeEl)  nomeEl.textContent = nome || "Clínica";
+  if (imgEl && emojiEl) {
+    if (logoUrl) {
+      imgEl.src = logoUrl;
+      imgEl.style.display = "inline-block";
+      emojiEl.style.display = "none";
+    } else {
+      imgEl.style.display = "none";
+      emojiEl.style.display = "";
+    }
+  }
+  // Cabeçalho da seção Gestão da Clínica
+  const hNomeEl  = document.getElementById("clin-header-nome");
+  const hImgEl   = document.getElementById("clin-header-logo-img");
+  const hEmojiEl = document.getElementById("clin-header-logo-emoji");
+  if (hNomeEl)  hNomeEl.textContent = nome || "Gestão da Clínica";
+  if (hImgEl && hEmojiEl) {
+    if (logoUrl) {
+      hImgEl.src = logoUrl;
+      hImgEl.style.display = "block";
+      hEmojiEl.style.display = "none";
+    } else {
+      hImgEl.style.display = "none";
+      hEmojiEl.style.display = "";
+    }
+  }
+}
+
+/** Lida com o upload do logo: valida tamanho e converte para base64. */
+function handleLogoClinica(event) {
+  const file = event.target.files?.[0];
+  if (!file) return;
+  if (file.size > 512 * 1024) {
+    alert("Imagem muito grande. Máximo permitido: 500 KB.");
+    event.target.value = "";
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const base64 = e.target.result;
+    _logoClinicaPendente = base64;
+    // Atualiza preview
+    const previewImg   = document.getElementById("clin-logo-preview-img");
+    const previewEmoji = document.getElementById("clin-logo-preview-emoji");
+    const removerBtn   = document.getElementById("clin-logo-remover");
+    if (previewImg)   { previewImg.src = base64; previewImg.style.display = "block"; }
+    if (previewEmoji) previewEmoji.style.display = "none";
+    if (removerBtn)   removerBtn.style.display = "";
+  };
+  reader.readAsDataURL(file);
+}
+
+/** Remove o logo da clínica (marca para exclusão ao salvar). */
+function removerLogoClinica() {
+  _logoClinicaPendente = ""; // string vazia = remover
+  const previewImg   = document.getElementById("clin-logo-preview-img");
+  const previewEmoji = document.getElementById("clin-logo-preview-emoji");
+  const removerBtn   = document.getElementById("clin-logo-remover");
+  const fileInput    = document.getElementById("clin-logo-input");
+  if (previewImg)   { previewImg.src = ""; previewImg.style.display = "none"; }
+  if (previewEmoji) previewEmoji.style.display = "";
+  if (removerBtn)   removerBtn.style.display = "none";
+  if (fileInput)    fileInput.value = "";
 }
 
 // ──────────────────────────────────────────────────────

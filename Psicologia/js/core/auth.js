@@ -177,15 +177,18 @@ async function fazerLogin() {
     }
     DB.verificarExpiracoes();
 
-    // Resolve clinicaNome: para Colaborador/Cliente, busca no doc do Psicólogo responsável
-    let clinicaNome = "";
+    // Resolve clinicaNome e clinicaLogoUrl: para Colaborador/Cliente, busca no doc do Psicólogo responsável
+    let clinicaNome    = "";
+    let clinicaLogoUrl = "";
     if (["colaborador", "cliente"].includes(usuarioData.role) && clinicaId) {
       try {
         const _psiDoc = await _firestoreDB.collection("usuarios").doc(clinicaId).get();
-        clinicaNome = _psiDoc.exists ? (_psiDoc.data().clinicaNome || "") : "";
+        clinicaNome    = _psiDoc.exists ? (_psiDoc.data().clinicaNome    || "") : "";
+        clinicaLogoUrl = _psiDoc.exists ? (_psiDoc.data().clinicaLogoUrl || "") : "";
       } catch { /* silencioso */ }
     } else if (usuarioData.role !== "admin") {
-      clinicaNome = usuarioData.clinicaNome || "";
+      clinicaNome    = usuarioData.clinicaNome    || "";
+      clinicaLogoUrl = usuarioData.clinicaLogoUrl || "";
     }
 
     errDiv.classList.add("hidden");
@@ -195,8 +198,9 @@ async function fazerLogin() {
       crp:        usuarioData.crp,
       cpf:        normalizarCPF(_identValue),
       role:       usuarioData.role,
-      clinicaId,  // null para admin; email próprio para psicólogo; email do psicólogo para colaborador/cliente
-      clinicaNome // "" para admin; nome da clínica definido pelo psicólogo
+      clinicaId,
+      clinicaNome,
+      clinicaLogoUrl
     };
     sessionStorage.setItem("neupsilin_user", JSON.stringify(usuarioLogado));
     limparFormulario();
@@ -401,6 +405,13 @@ function abrirDashboard() {
     const roles = el.dataset.roles.split(" ");
     el.style.display = roles.includes(role) ? "flex" : "none";
   });
+  // Atualiza nav item da Clínica com nome e logo já disponíveis na sessão
+  try {
+    _atualizarNavClinica(
+      usuarioLogado.clinicaNome || "",
+      usuarioLogado.clinicaLogoUrl || ""
+    );
+  } catch(e) { /* gestao.js ainda não carregado */ }
   const _uApl = DB.findByEmail(usuarioLogado.email);
   if (_uApl?.ocultarAplicacao && role !== "admin") {
     document.querySelectorAll(".nav-aplicacao").forEach(el => el.style.display = "none");

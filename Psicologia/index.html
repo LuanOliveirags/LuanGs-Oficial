@@ -174,6 +174,15 @@
       <strong>PsiCorrection</strong>
     </div>
     <nav class="sidebar-nav">
+      <!-- Clínica: destaque no topo, com logo e nome dinâmicos -->
+      <a href="#" class="nav-item nav-clinica-item" data-roles="admin profissional psicologo colaborador cliente" onclick="navegarPara('clinica', this)"
+        style="border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:6px;padding-bottom:10px">
+        <span class="nav-icon" style="position:relative">
+          <img id="nav-clinica-logo-img" src="" alt="" style="width:24px;height:24px;border-radius:50%;object-fit:cover;display:none;vertical-align:middle">
+          <span id="nav-clinica-logo-emoji">🏥</span>
+        </span>
+        <span id="nav-clinica-nome" style="font-weight:600">Clínica</span>
+      </a>
       <a href="#" class="nav-item active" data-roles="admin profissional psicologo" onclick="navegarPara('dashboard', this)">
         <span class="nav-icon">📊</span> Dashboard
       </a>
@@ -188,9 +197,6 @@
       </a>
       <a href="#" class="nav-item" data-roles="admin profissional psicologo colaborador" onclick="navegarPara('pacientes', this)">
         <span class="nav-icon">👤</span> Pacientes
-      </a>
-      <a href="#" class="nav-item" data-roles="admin profissional psicologo colaborador cliente" onclick="navegarPara('clinica', this)">
-        <span class="nav-icon">🏥</span> Clínica
       </a>
       <a href="#" class="nav-item nav-admin" data-roles="admin profissional psicologo" style="display:none" onclick="navegarPara('usuarios', this)">
         <span class="nav-icon">🔑</span> Usuários
@@ -1470,9 +1476,15 @@
     <section id="sec-clinica" class="sec hidden">
 
       <!-- Cabeçalho da seção -->
-      <div style="margin-bottom:16px">
-        <h2 style="margin:0">🏥 Gestão da Clínica</h2>
-        <p style="font-size:13px;color:var(--text-muted);margin:4px 0 0">Agenda, financeiro e dados do consultório</p>
+      <div style="margin-bottom:16px;display:flex;align-items:center;gap:12px">
+        <span id="clin-header-logo" style="display:flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;border:2px solid var(--border);overflow:hidden;background:var(--bg-input,#f1f5f9);font-size:26px;flex-shrink:0">
+          <img id="clin-header-logo-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none">
+          <span id="clin-header-logo-emoji">🏥</span>
+        </span>
+        <div>
+          <h2 id="clin-header-nome" style="margin:0">Gestão da Clínica</h2>
+          <p style="font-size:13px;color:var(--text-muted);margin:4px 0 0">Agenda, financeiro e dados do consultório</p>
+        </div>
       </div>
 
       <!-- ── Barra de métricas ── -->
@@ -1739,6 +1751,24 @@
         <div class="card">
           <h3 style="margin:0 0 18px">🏢 Dados do Consultório / Clínica</h3>
           <div id="clin-perfil-err" class="alert alert-error hidden" style="margin-bottom:14px"></div>
+          <!-- Logo da clínica -->
+          <div class="form-group full" style="margin-bottom:18px">
+            <label>Logo da Clínica</label>
+            <div style="display:flex;align-items:center;gap:16px;margin-top:6px">
+              <div id="clin-logo-preview" style="width:72px;height:72px;border-radius:50%;border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;font-size:36px;overflow:hidden;background:var(--bg-input,#f1f5f9);flex-shrink:0">
+                <span id="clin-logo-preview-emoji">🏥</span>
+                <img id="clin-logo-preview-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;display:none">
+              </div>
+              <div>
+                <label class="btn btn-secondary" style="cursor:pointer;font-size:13px;margin:0">
+                  📁 Escolher imagem
+                  <input type="file" id="clin-logo-input" accept="image/png,image/jpeg,image/webp" style="display:none" onchange="handleLogoClinica(event)">
+                </label>
+                <button id="clin-logo-remover" class="btn btn-secondary" style="font-size:13px;margin-left:8px;display:none" onclick="removerLogoClinica()">🗑 Remover</button>
+                <p style="font-size:11px;color:var(--text-muted);margin:6px 0 0">PNG, JPG ou WebP · Máx. 500 KB · Aparece no menu lateral</p>
+              </div>
+            </div>
+          </div>
           <div class="clin-perfil-form">
             <div class="form-group">
               <label>Nome da Clínica / Consultório</label>
