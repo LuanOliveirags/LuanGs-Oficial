@@ -412,7 +412,7 @@ function abrirDashboard() {
     const roles = el.dataset.roles.split(" ");
     el.style.display = roles.includes(role) ? "flex" : "none";
   });
-  // Atualiza nav item da Clínica com nome e logo já disponíveis na sessão
+  // Atualiza o cabeçalho interno da seção Clínica com dados do consultório
   try {
     _atualizarNavClinica(
       usuarioLogado.clinicaNome || "",

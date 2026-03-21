@@ -178,30 +178,36 @@
       <strong id="brand-clinica-nome">PsiCorrection</strong>
     </div>
     <nav class="sidebar-nav">
-      <!-- Item fixo: Gestão da Clínica -->
-      <a href="#" class="nav-item nav-clinica-item" data-roles="admin profissional psicologo colaborador cliente" onclick="navegarPara('clinica', this)"
-        style="border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:6px;padding-bottom:10px">
+      <!-- Gestão da Clínica — cabeçalho do grupo colapsável -->
+      <a href="#" class="nav-item nav-clinica-item" data-roles="admin profissional psicologo colaborador cliente"
+        onclick="navegarPara('clinica', this); _toggleNavGrupo(this)"
+        style="border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:10px;margin-bottom:4px">
         <span class="nav-icon">⚙️</span>
-        <span>Gestão da Clínica</span>
+        <span style="flex:1">Gestão da Clínica</span>
+        <span class="nav-chevron" id="nav-chevron-principal">▾</span>
       </a>
-      <a href="#" class="nav-item active" data-roles="admin profissional psicologo" onclick="navegarPara('dashboard', this)">
-        <span class="nav-icon">📊</span> Dashboard
-      </a>
-      <a href="#" class="nav-item" data-roles="admin profissional psicologo" onclick="navegarPara('testes', this)">
-        <span class="nav-icon">📋</span> Correção de Testes
-      </a>
-      <a href="#" class="nav-item nav-aplicacao" data-roles="admin profissional psicologo" onclick="navegarPara('aplicacao', this)">
-        <span class="nav-icon">📝</span> Aplicação de Testes
-      </a>
-      <a href="#" class="nav-item" data-roles="admin profissional psicologo" onclick="navegarPara('historico', this)">
-        <span class="nav-icon">📁</span> Histórico
-      </a>
-      <a href="#" class="nav-item" data-roles="admin profissional psicologo colaborador" onclick="navegarPara('pacientes', this)">
-        <span class="nav-icon">👤</span> Pacientes
-      </a>
-      <a href="#" class="nav-item nav-admin" data-roles="admin profissional psicologo" style="display:none" onclick="navegarPara('usuarios', this)">
-        <span class="nav-icon">🔑</span> Usuários
-      </a>
+
+      <!-- Sub-itens colapsáveis -->
+      <div class="nav-subitems" id="nav-subitems-principal">
+        <a href="#" class="nav-item nav-subitem active" data-roles="admin profissional psicologo" onclick="navegarPara('dashboard', this)">
+          <span class="nav-icon">📊</span> Dashboard
+        </a>
+        <a href="#" class="nav-item nav-subitem" data-roles="admin profissional psicologo" onclick="navegarPara('testes', this)">
+          <span class="nav-icon">📋</span> Correção de Testes
+        </a>
+        <a href="#" class="nav-item nav-subitem nav-aplicacao" data-roles="admin profissional psicologo" onclick="navegarPara('aplicacao', this)">
+          <span class="nav-icon">📝</span> Aplicação de Testes
+        </a>
+        <a href="#" class="nav-item nav-subitem" data-roles="admin profissional psicologo" onclick="navegarPara('historico', this)">
+          <span class="nav-icon">📁</span> Histórico
+        </a>
+        <a href="#" class="nav-item nav-subitem" data-roles="admin profissional psicologo colaborador" onclick="navegarPara('pacientes', this)">
+          <span class="nav-icon">👤</span> Pacientes
+        </a>
+        <a href="#" class="nav-item nav-subitem nav-admin" data-roles="admin profissional psicologo" style="display:none" onclick="navegarPara('usuarios', this)">
+          <span class="nav-icon">🔑</span> Usuários
+        </a>
+      </div>
     </nav>
     <div class="sidebar-footer">
       <div id="sidebar-user" style="line-height:1.3;text-align:center;margin-bottom:4px">
@@ -1541,6 +1547,7 @@
         <button class="clin-tab-btn active" data-aba="agenda"     onclick="_trocarAbaClin('agenda')">📅 Agenda</button>
         <button class="clin-tab-btn" data-aba="financeiro" data-roles="admin profissional psicologo colaborador" onclick="_trocarAbaClin('financeiro')">💰 Financeiro <span class="clin-tab-notif" style="display:none"></span></button>
         <button class="clin-tab-btn" data-aba="perfil"     data-roles="admin profissional psicologo" onclick="_trocarAbaClin('perfil')">🏢 Perfil</button>
+        <button class="clin-tab-btn" data-aba="teleconsulta" data-roles="admin profissional psicologo" onclick="_trocarAbaClin('teleconsulta')">📹 Teleconsulta</button>
       </div>
 
       <!-- ══ PAINEL: AGENDA ══ -->
@@ -1811,6 +1818,77 @@
           <div style="margin-top:18px;display:flex;justify-content:flex-end">
             <button id="clin-btn-salvar" class="btn btn-primary" onclick="salvarPerfilClinica()">💾 Salvar Configurações</button>
           </div>
+        </div>
+      </div>
+
+      <!-- ══ PAINEL: TELECONSULTA ══ -->
+      <div class="clin-tab-pane" id="clin-pane-teleconsulta" style="display:none">
+
+        <!-- Banner informativo -->
+        <div class="tele-info-banner">
+          <div class="tele-info-icon">ℹ️</div>
+          <div>
+            <strong>Como funciona?</strong>
+            <p>Gere uma sala privada e segura vinculada a um agendamento. Copie o link e envie ao paciente — ele entra direto pelo navegador, sem instalar nada. O psicólogo conduz a sessão integrado à plataforma.</p>
+          </div>
+        </div>
+
+        <!-- Configurar sessão -->
+        <div class="card" id="tele-setup-card">
+          <div class="clin-pane-header">
+            <div class="clin-pane-title">
+              <h3 style="margin:0">📹 Nova Teleconsulta</h3>
+              <p>Selecione um agendamento ou inicie uma sessão avulsa</p>
+            </div>
+          </div>
+          <div class="tele-setup-form">
+            <div class="form-group" style="margin:0;flex:1">
+              <label>Agendamento vinculado</label>
+              <select id="tele-sel-agendamento" style="width:100%">
+                <option value="">— Sessão avulsa (sem agendamento) —</option>
+              </select>
+            </div>
+            <button class="btn btn-primary tele-btn-gerar" onclick="gerarSalaTeleconsulta()">
+              📹 Gerar Sala Segura
+            </button>
+          </div>
+        </div>
+
+        <!-- Sala ativa -->
+        <div id="tele-sala-ativa" style="display:none">
+
+          <!-- Info da sala + link -->
+          <div class="card tele-sala-info">
+            <div class="tele-sala-header">
+              <div>
+                <div class="tele-sala-titulo" id="tele-sala-titulo">Sala ativa</div>
+                <div class="tele-sala-sub" id="tele-sala-sub"></div>
+              </div>
+              <button class="btn btn-secondary" onclick="encerrarTeleconsulta()" style="font-size:13px">⏹ Encerrar Sala</button>
+            </div>
+            <div class="tele-link-box">
+              <div style="flex:1;min-width:0">
+                <div class="tele-link-label">🔗 Link para o paciente (copie e envie)</div>
+                <div class="tele-link-url" id="tele-link-url"></div>
+              </div>
+              <button class="btn btn-secondary tele-btn-copiar" id="tele-btn-copiar" onclick="copiarLinkTeleconsulta()">📋 Copiar</button>
+              <button class="btn btn-secondary tele-btn-wpp" onclick="enviarLinkTeleconsultaWhatsApp()" title="Enviar via WhatsApp">💬 WhatsApp</button>
+            </div>
+          </div>
+
+          <!-- iframe da videochamada -->
+          <div class="card tele-iframe-card">
+            <div class="tele-iframe-header">
+              <span>🎥 Videochamada em andamento</span>
+              <span class="tele-badge-live">● AO VIVO</span>
+            </div>
+            <div class="tele-iframe-wrap">
+              <iframe id="tele-iframe"
+                allow="camera; microphone; display-capture; autoplay; clipboard-write"
+                allowfullscreen></iframe>
+            </div>
+          </div>
+
         </div>
       </div>
 

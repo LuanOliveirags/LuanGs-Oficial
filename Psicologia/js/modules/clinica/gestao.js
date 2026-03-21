@@ -279,6 +279,7 @@ function _trocarAbaClin(aba) {
   const role = usuarioLogado?.role || "profissional";
   if (aba === "financeiro" && role === "cliente") return;
   if (aba === "perfil" && ["colaborador", "cliente"].includes(role)) return;
+  if (aba === "teleconsulta" && ["colaborador", "cliente"].includes(role)) return;
 
   _abaClinAtiva = aba;
   document.querySelectorAll(".clin-tab-btn").forEach(b =>
@@ -286,9 +287,10 @@ function _trocarAbaClin(aba) {
   document.querySelectorAll(".clin-tab-pane").forEach(p => {
     p.style.display = (p.id === "clin-pane-" + aba) ? "block" : "none";
   });
-  if (aba === "agenda")     _renderAgenda();
-  if (aba === "financeiro") _renderFinanceiro();
-  if (aba === "perfil")     _renderPerfil();
+  if (aba === "agenda")        _renderAgenda();
+  if (aba === "financeiro")    _renderFinanceiro();
+  if (aba === "perfil")        _renderPerfil();
+  if (aba === "teleconsulta")  _renderTeleconsulta();
 }
 
 // ──────────────────────────────────────────────────────
@@ -825,21 +827,9 @@ let _logoClinicaPendente = null;
 
 /** Atualiza a brand da sidebar e o cabeçalho da seção com nome e logo dinâmicos da clínica. */
 function _atualizarNavClinica(nome, logoUrl) {
-  // ── Brand (topo do sidebar) ──
-  const brandNome    = document.getElementById("brand-clinica-nome");
-  const brandLogoC   = document.getElementById("brand-clinica-logo");
-  const brandLogoS   = document.getElementById("brand-sistema-logo");
-  if (brandNome) brandNome.textContent = nome || "PsiCorrection";
-  if (brandLogoC && brandLogoS) {
-    if (logoUrl) {
-      brandLogoC.src = logoUrl;
-      brandLogoC.style.display = "block";
-      brandLogoS.style.display = "none";
-    } else {
-      brandLogoC.style.display = "none";
-      brandLogoS.style.display = "";
-    }
-  }
+  // A brand da sidebar (logo + "PsiCorrection") é fixa — não muda com o perfil da clínica.
+  // Apenas o cabeçalho interno da seção reflete o nome/logo do consultório.
+
   // ── Cabeçalho da seção Gestão da Clínica ──
   const hNomeEl  = document.getElementById("clin-header-nome");
   const hImgEl   = document.getElementById("clin-header-logo-img");
@@ -1151,3 +1141,168 @@ function _toast(msg, dur = 3000) {
   }, dur);
 }
 
+// ══════════════════════════════════════════════════════
+// TELECONSULTA — Videochamada via Jitsi Meet
+// ══════════════════════════════════════════════════════
+
+/** Estado da sala ativa. */
+let _teleSalaAtiva = null; // { roomName, url, agenId }
+
+/**
+ * Preenche o select de agendamentos com os próximos agendamentos do dia/semana.
+ */
+function _renderTeleconsulta() {
+  const sel = document.getElementById("tele-sel-agendamento");
+  if (!sel) return;
+
+  const hoje = _hoje();
+  const agendamentos = DB_CLINICA.getMeusAgendamentos()
+    .filter(a => a.data >= hoje && a.status !== "cancelado")
+    .sort((a, b) => (a.data + (a.horaInicio || "")).localeCompare(b.data + (b.horaInicio || "")))
+    .slice(0, 50);
+
+  // Preserva seleção atual
+  const valorAtual = sel.value;
+  sel.innerHTML = '<option value="">— Sessão avulsa (sem agendamento) —</option>';
+
+  agendamentos.forEach(a => {
+    const opt = document.createElement("option");
+    opt.value = a.id;
+    const dataFmt = a.data ? a.data.split("-").reverse().join("/") : "";
+    const hora    = a.horaInicio ? ` ${a.horaInicio}` : "";
+    opt.textContent = `${dataFmt}${hora} — ${a.pacienteNome || "Paciente"} (${a.tipo || "sessão"})`;
+    sel.appendChild(opt);
+  });
+
+  if (valorAtual) sel.value = valorAtual;
+
+  // Se já há sala ativa, mostra ela novamente
+  if (_teleSalaAtiva) {
+    _exibirSalaAtiva(_teleSalaAtiva);
+  }
+}
+
+/**
+ * Gera um nome de sala criptograficamente aleatório e inicia a videochamada.
+ */
+function gerarSalaTeleconsulta() {
+  const sel     = document.getElementById("tele-sel-agendamento");
+  const agenId  = sel?.value || "";
+
+  // Gera nome de sala seguro: 14 chars alfanuméricos aleatórios
+  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+  const buf   = new Uint8Array(14);
+  crypto.getRandomValues(buf);
+  const aleatorio = Array.from(buf).map(b => chars[b % chars.length]).join("");
+  const roomName  = "psicorrection-" + aleatorio;
+  const url       = "https://meet.jit.si/" + roomName;
+
+  _teleSalaAtiva = { roomName, url, agenId };
+  _exibirSalaAtiva(_teleSalaAtiva);
+  _toast("✅ Sala criada! Compartilhe o link com o paciente.");
+}
+
+/**
+ * Exibe o painel da sala ativa e carrega o iframe do Jitsi.
+ * @param {{ roomName: string, url: string, agenId: string }} sala
+ */
+function _exibirSalaAtiva(sala) {
+  // Determina o título da sessão
+  let titulo = "Sessão Avulsa";
+  let sub    = "";
+  if (sala.agenId) {
+    const a = DB_CLINICA.getMeusAgendamentos().find(x => x.id === sala.agenId);
+    if (a) {
+      const dataFmt = a.data ? a.data.split("-").reverse().join("/") : "";
+      titulo = a.pacienteNome || "Paciente";
+      sub    = `${dataFmt}${a.horaInicio ? " às " + a.horaInicio : ""} · ${a.tipo || "sessão"}`;
+    }
+  }
+
+  const tituloEl = document.getElementById("tele-sala-titulo");
+  const subEl    = document.getElementById("tele-sala-sub");
+  const linkEl   = document.getElementById("tele-link-url");
+  const iframe   = document.getElementById("tele-iframe");
+  const salaDiv  = document.getElementById("tele-sala-ativa");
+
+  if (tituloEl) tituloEl.textContent = titulo;
+  if (subEl)    subEl.textContent    = sub;
+  if (linkEl)   linkEl.textContent   = sala.url;
+
+  // Carrega o iframe apenas se ainda não está apontando para a mesma sala
+  if (iframe && iframe.src !== sala.url) {
+    iframe.src = sala.url;
+  }
+
+  if (salaDiv) salaDiv.style.display = "block";
+}
+
+/**
+ * Copia o link da sala para a área de transferência.
+ */
+function copiarLinkTeleconsulta() {
+  if (!_teleSalaAtiva) return;
+  navigator.clipboard.writeText(_teleSalaAtiva.url).then(() => {
+    const btn = document.getElementById("tele-btn-copiar");
+    if (btn) {
+      const orig = btn.textContent;
+      btn.textContent = "✅ Copiado!";
+      setTimeout(() => { btn.textContent = orig; }, 2000);
+    }
+    _toast("🔗 Link copiado para a área de transferência!");
+  }).catch(() => {
+    // Fallback para navegadores sem clipboard API
+    const ta = document.createElement("textarea");
+    ta.value = _teleSalaAtiva.url;
+    ta.style.position = "fixed";
+    ta.style.opacity  = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+    _toast("🔗 Link copiado!");
+  });
+}
+
+/**
+ * Abre o WhatsApp com o link da sala pré-preenchido.
+ */
+function enviarLinkTeleconsultaWhatsApp() {
+  if (!_teleSalaAtiva) return;
+  let titulo = "Sessão";
+  if (_teleSalaAtiva.agenId) {
+    const a = DB_CLINICA.getMeusAgendamentos().find(x => x.id === _teleSalaAtiva.agenId);
+    if (a?.pacienteNome) titulo = a.pacienteNome;
+  }
+  const texto = encodeURIComponent(
+    `Olá! Segue o link para nossa sessão de teleconsulta:\n${_teleSalaAtiva.url}\n\nClique no link para entrar — nenhuma instalação necessária.`
+  );
+  window.open("https://wa.me/?text=" + texto, "_blank", "noopener,noreferrer");
+}
+
+/**
+ * Encerra a sala ativa: limpa o iframe e reseta o painel.
+ */
+function encerrarTeleconsulta() {
+  if (!confirm("Deseja encerrar a sala de teleconsulta? A videochamada será interrompida.")) return;
+
+  const iframe  = document.getElementById("tele-iframe");
+  const salaDiv = document.getElementById("tele-sala-ativa");
+
+  if (iframe)  iframe.src  = "about:blank";
+  if (salaDiv) salaDiv.style.display = "none";
+
+  _teleSalaAtiva = null;
+  _toast("⏹ Teleconsulta encerrada.");
+}
+
+/**
+ * Atalho para abrir a aba Teleconsulta com um agendamento pré-selecionado.
+ * Pode ser chamado a partir dos botões na linha da agenda.
+ * @param {string} agenId
+ */
+function abrirTeleconsultaComAgendamento(agenId) {
+  _trocarAbaClin("teleconsulta");
+  const sel = document.getElementById("tele-sel-agendamento");
+  if (sel && agenId) sel.value = agenId;
+}

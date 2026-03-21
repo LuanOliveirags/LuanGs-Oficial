@@ -88,3 +88,26 @@ function navegarPara(secao, linkEl) {
 function toggleSidebar() {
   document.getElementById("sidebar").classList.toggle("open");
 }
+
+/**
+ * Colapsa ou expande o grupo de sub-itens da navegação principal.
+ * @param {HTMLElement} el - o item "Gestão da Clínica"
+ */
+function _toggleNavGrupo(el) {
+  const grupo = document.getElementById("nav-subitems-principal");
+  if (!grupo) return;
+  const colapsado = grupo.classList.toggle("colapsado");
+  el.classList.toggle("colapsado", colapsado);
+  try { localStorage.setItem("_navGrupoColapsado", colapsado ? "1" : "0"); } catch(e) {}
+}
+
+/** Restaura o estado colapsado do grupo ao carregar a página. */
+function _restaurarNavGrupo() {
+  if (localStorage.getItem("_navGrupoColapsado") !== "1") return;
+  const grupo  = document.getElementById("nav-subitems-principal");
+  const header = document.querySelector(".nav-clinica-item");
+  if (grupo)  grupo.classList.add("colapsado");
+  if (header) header.classList.add("colapsado");
+}
+
+document.addEventListener("DOMContentLoaded", _restaurarNavGrupo);

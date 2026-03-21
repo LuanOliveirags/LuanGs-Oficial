@@ -280,3 +280,144 @@ tr.row-cancelado { opacity: .5; }
 .fin-inadim-info { font-size: 12px; color: var(--text-muted); }
 .fin-inadim-info strong { color: #ea580c; }
 @media (max-width: 640px) { .fin-extras-grid { grid-template-columns: 1fr; } }
+
+/* ══════════════════════════════════════════════════════
+   TELECONSULTA
+══════════════════════════════════════════════════════ */
+
+/* ── Banner informativo ── */
+.tele-info-banner {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  background: rgba(29, 78, 216, .06);
+  border: 1px solid rgba(29, 78, 216, .2);
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin-bottom: 18px;
+  font-size: 13px;
+  color: var(--text);
+}
+.tele-info-banner strong { display: block; margin-bottom: 4px; color: var(--primary, #1d4ed8); font-size: 14px; }
+.tele-info-banner p      { margin: 0; color: var(--text-muted); line-height: 1.6; }
+.tele-info-icon          { font-size: 22px; flex-shrink: 0; margin-top: 2px; }
+
+/* ── Formulário de setup ── */
+.tele-setup-form {
+  display: flex;
+  gap: 14px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+.tele-btn-gerar {
+  flex-shrink: 0;
+  white-space: nowrap;
+  padding: 9px 20px;
+}
+
+/* ── Painel da sala ativa ── */
+.tele-sala-info {
+  margin-bottom: 16px;
+}
+.tele-sala-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.tele-sala-titulo {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+.tele-sala-sub {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 3px;
+}
+
+/* ── Caixa do link ── */
+.tele-link-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-input, #f1f5f9);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  flex-wrap: wrap;
+}
+.tele-link-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  margin-bottom: 4px;
+}
+.tele-link-url {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary, #1d4ed8);
+  word-break: break-all;
+}
+.tele-btn-copiar,
+.tele-btn-wpp {
+  flex-shrink: 0;
+  white-space: nowrap;
+  font-size: 13px;
+  padding: 7px 14px;
+}
+
+/* ── Card do iframe ── */
+.tele-iframe-card {
+  padding: 0 !important;
+  overflow: hidden;
+}
+.tele-iframe-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+  font-weight: 600;
+}
+.tele-badge-live {
+  background: #ef4444;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  animation: tele-pulse 1.6s ease-in-out infinite;
+}
+@keyframes tele-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: .55; }
+}
+.tele-iframe-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #0f172a;
+}
+.tele-iframe-wrap iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+@media (max-width: 640px) {
+  .tele-setup-form   { flex-direction: column; align-items: stretch; }
+  .tele-btn-gerar    { width: 100%; }
+  .tele-link-box     { flex-direction: column; align-items: stretch; }
+  .tele-btn-copiar,
+  .tele-btn-wpp      { width: 100%; text-align: center; }
+  .tele-iframe-wrap  { aspect-ratio: 4 / 3; }
+}
