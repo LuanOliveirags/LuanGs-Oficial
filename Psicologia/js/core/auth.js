@@ -399,12 +399,23 @@ function abrirDashboard() {
   const role = usuarioLogado.role;
   document.getElementById("page-login").classList.add("hidden");
   document.getElementById("page-dashboard").classList.remove("hidden");
-  document.getElementById("sidebar-user-nome").textContent = usuarioLogado.nome;
-  document.getElementById("sidebar-user-crp").textContent =
-    usuarioLogado.crp      ? `CRP ${usuarioLogado.crp}` :
-    role === "admin"       ? "Administrador" :
-    role === "colaborador" ? (usuarioLogado.clinicaNome || "Colaborador") :
-    role === "cliente"     ? (usuarioLogado.clinicaNome || "Cliente") : "";
+  // Exibe cargo, nome e CRP/CPF
+  let cargo = "";
+  if (usuarioLogado.role === "psicologo" || usuarioLogado.role === "profissional") cargo = "Psicólogo";
+  else if (usuarioLogado.role === "colaborador") cargo = "Colaborador";
+  else if (usuarioLogado.role === "cliente") cargo = "Cliente";
+  else if (usuarioLogado.role === "admin") cargo = "Administrador";
+  else cargo = usuarioLogado.role;
+
+  document.getElementById("sidebar-user-nome").innerHTML = `<span style='font-size:12px;color:var(--text-muted)'>${cargo}:</span><br><strong>${usuarioLogado.nome}</strong>`;
+
+  let infoExtra = "";
+  if (usuarioLogado.role === "psicologo" || usuarioLogado.role === "profissional") {
+    infoExtra = usuarioLogado.crp ? `CRP: ${usuarioLogado.crp}` : "";
+  } else if (usuarioLogado.cpf) {
+    infoExtra = `CPF: ${usuarioLogado.cpf}`;
+  }
+  document.getElementById("sidebar-user-crp").textContent = infoExtra;
   document.getElementById("topbar-user-name").textContent  = usuarioLogado.nome;
 
   // ── Exibir/ocultar itens de menu conforme perfil ──
@@ -539,12 +550,21 @@ async function salvarPerfil() {
     usuarioLogado.nome = atualizado.nome;
     usuarioLogado.crp  = atualizado.crp;
     sessionStorage.setItem("neupsilin_user", JSON.stringify(usuarioLogado));
-    document.getElementById("sidebar-user-nome").textContent = usuarioLogado.nome;
-    document.getElementById("sidebar-user-crp").textContent =
-      usuarioLogado.crp                        ? `CRP ${usuarioLogado.crp}` :
-      usuarioLogado.role === "admin"           ? "Administrador" :
-      usuarioLogado.role === "colaborador"     ? (usuarioLogado.clinicaNome || "Colaborador") :
-      usuarioLogado.role === "cliente"         ? (usuarioLogado.clinicaNome || "Cliente") : "";
+    // Exibe cargo, nome e CRP/CPF
+    let cargo = "";
+    if (usuarioLogado.role === "psicologo" || usuarioLogado.role === "profissional") cargo = "Psicólogo";
+    else if (usuarioLogado.role === "colaborador") cargo = "Colaborador";
+    else if (usuarioLogado.role === "cliente") cargo = "Cliente";
+    else if (usuarioLogado.role === "admin") cargo = "Administrador";
+    else cargo = usuarioLogado.role;
+    document.getElementById("sidebar-user-nome").innerHTML = `<span style='font-size:12px;color:var(--text-muted)'>${cargo}:</span><br><strong>${usuarioLogado.nome}</strong>`;
+    let infoExtra = "";
+    if (usuarioLogado.role === "psicologo" || usuarioLogado.role === "profissional") {
+      infoExtra = usuarioLogado.crp ? `CRP: ${usuarioLogado.crp}` : "";
+    } else if (usuarioLogado.cpf) {
+      infoExtra = `CPF: ${usuarioLogado.cpf}`;
+    }
+    document.getElementById("sidebar-user-crp").textContent = infoExtra;
     document.getElementById("topbar-user-name").textContent  = usuarioLogado.nome;
     okEl.textContent = "Perfil atualizado com sucesso!";
     okEl.classList.remove("hidden");

@@ -490,64 +490,88 @@ function _renderFinanceiro() {
     (f.pacienteNome || "").toLowerCase().includes(filtroBusca) ||
     (f.obs || "").toLowerCase().includes(filtroBusca));
 
-  // Cálculos
-  const totalValor = lista.reduce((s, f) => s + (parseFloat(f.valor) || 0), 0);
-  const totalPago  = lista.filter(f => f.statusPag === "pago").reduce((s, f) => s + (parseFloat(f.valor) || 0), 0);
-  const totalPend  = lista.filter(f => f.statusPag === "pendente").reduce((s, f) => s + (parseFloat(f.valor) || 0), 0);
-  const nPago      = lista.filter(f => f.statusPag === "pago").length;
-  const ticket     = nPago > 0 ? totalPago / nPago : 0;
 
+  // Controle de acesso do colaborador: só pode ver/registrar pagamentos, sem métricas
+  const role = usuarioLogado?.role || "profissional";
   const el = id => document.getElementById(id);
-  if (el("fin-total-valor"))  el("fin-total-valor").textContent  = fmtBRL(totalValor);
-  if (el("fin-total-pago"))   el("fin-total-pago").textContent   = fmtBRL(totalPago);
-  if (el("fin-total-pend"))   el("fin-total-pend").textContent   = fmtBRL(totalPend);
-  if (el("fin-ticket-medio")) el("fin-ticket-medio").textContent = fmtBRL(ticket);
-  if (el("fin-n-sessoes"))    el("fin-n-sessoes").textContent    = `${nPago} sessão(ões) paga(s)`;
+  if (role === "colaborador") {
+    // Esconde todos os cards de resumo, meta, gráficos, projeção, inadimplentes e exportação
+    [
+      "fin-total-valor", "fin-total-pago", "fin-total-pend", "fin-ticket-medio", "fin-n-sessoes",
+      "fin-trend-pago", "meta-bar-wrap", "chart-receita", "chart-formas", "fin-formas-card",
+      "fin-projecao-val", "fin-projecao-sub", "fin-inadimplentes", "fin-projecao-card", "fin-extras-grid"
+    ].forEach(id => { const e = el(id); if (e) e.closest('.fin-resumo-card,.meta-bar-wrap,.fin-chart-card,.fin-extras-grid,.fin-inadimplentes,.fin-projecao-card')?.classList?.add('hidden'); });
+    // Esconde barra de meta mensal, gráficos, projeção, inadimplentes, exportação CSV
+    if (el("meta-bar-wrap")) el("meta-bar-wrap").style.display = "none";
+    if (el("fin-formas-card")) el("fin-formas-card").style.display = "none";
+    if (el("fin-inadimplentes")) el("fin-inadimplentes").style.display = "none";
+    if (el("fin-projecao-val")) el("fin-projecao-val").style.display = "none";
+    if (el("fin-projecao-sub")) el("fin-projecao-sub").style.display = "none";
+    // Esconde botão de exportar CSV
+    const bar = document.querySelector('.fin-action-bar');
+    if (bar) bar.style.display = "none";
+  } else {
+    // Cálculos
+    const totalValor = lista.reduce((s, f) => s + (parseFloat(f.valor) || 0), 0);
+    const totalPago  = lista.filter(f => f.statusPag === "pago").reduce((s, f) => s + (parseFloat(f.valor) || 0), 0);
+    const totalPend  = lista.filter(f => f.statusPag === "pendente").reduce((s, f) => s + (parseFloat(f.valor) || 0), 0);
+    const nPago      = lista.filter(f => f.statusPag === "pago").length;
+    const ticket     = nPago > 0 ? totalPago / nPago : 0;
 
-  // Tendência: receita mês atual vs. anterior (sobre todos os registros, não apenas filtrados)
-  const todaFin = DB_CLINICA.getMeuFinanceiro();
-  const mes    = _mesAtual();
-  const mesAnt = _mesAnterior();
-  const pagoMes = todaFin.filter(f => f.statusPag === "pago" && f.data?.startsWith(mes))
-                          .reduce((s, f) => s + (parseFloat(f.valor) || 0), 0);
-  const pagoAnt = todaFin.filter(f => f.statusPag === "pago" && f.data?.startsWith(mesAnt))
-                          .reduce((s, f) => s + (parseFloat(f.valor) || 0), 0);
-  if (el("fin-trend-pago") && pagoAnt > 0) {
-    const pct = ((pagoMes - pagoAnt) / pagoAnt * 100).toFixed(0);
-    const cor = pct >= 0 ? "#16a34a" : "#dc2626";
-    el("fin-trend-pago").innerHTML = `<span style="color:${cor};font-weight:700">${pct >= 0 ? "↑" : "↓"} ${Math.abs(pct)}%</span> vs. mês anterior`;
-  }
+    if (el("fin-total-valor"))  el("fin-total-valor").textContent  = fmtBRL(totalValor);
+    if (el("fin-total-pago"))   el("fin-total-pago").textContent   = fmtBRL(totalPago);
+    if (el("fin-total-pend"))   el("fin-total-pend").textContent   = fmtBRL(totalPend);
+    if (el("fin-ticket-medio")) el("fin-ticket-medio").textContent = fmtBRL(ticket);
+    if (el("fin-n-sessoes"))    el("fin-n-sessoes").textContent    = `${nPago} sessão(ões) paga(s)`;
 
-  // Meta mensal
-  const perf = DB_CLINICA.getPerfil();
-  const meta = parseFloat(perf?.metaMensal) || 0;
-  const metaWrap = el("meta-bar-wrap");
-  if (metaWrap) {
-    if (meta > 0) {
-      metaWrap.style.display = "";
-      const pct = Math.min(100, Math.round(pagoMes / meta * 100));
-      if (el("meta-bar-pct"))  el("meta-bar-pct").textContent  = pct + "%";
-      if (el("meta-bar-fill")) el("meta-bar-fill").style.width = pct + "%";
-      if (el("meta-bar-sub"))  el("meta-bar-sub").textContent  =
-        `${fmtBRL(pagoMes)} de ${fmtBRL(meta)} · faltam ${fmtBRL(Math.max(0, meta - pagoMes))}`;
-    } else {
-      metaWrap.style.display = "none";
+    // Tendência: receita mês atual vs. anterior (sobre todos os registros, não apenas filtrados)
+    const todaFin = DB_CLINICA.getMeuFinanceiro();
+    const mes    = _mesAtual();
+    const mesAnt = _mesAnterior();
+    const pagoMes = todaFin.filter(f => f.statusPag === "pago" && f.data?.startsWith(mes))
+                            .reduce((s, f) => s + (parseFloat(f.valor) || 0), 0);
+    const pagoAnt = todaFin.filter(f => f.statusPag === "pago" && f.data?.startsWith(mesAnt))
+                            .reduce((s, f) => s + (parseFloat(f.valor) || 0), 0);
+    if (el("fin-trend-pago") && pagoAnt > 0) {
+      const pct = ((pagoMes - pagoAnt) / pagoAnt * 100).toFixed(0);
+      const cor = pct >= 0 ? "#16a34a" : "#dc2626";
+      el("fin-trend-pago").innerHTML = `<span style="color:${cor};font-weight:700">${pct >= 0 ? "↑" : "↓"} ${Math.abs(pct)}%</span> vs. mês anterior`;
     }
-  }
 
-  // Gráfico
-  _buildChartReceita();
-  _buildChartFormas();
-  _renderInadimplentes();
+    // Meta mensal
+    const perf = DB_CLINICA.getPerfil();
+    const meta = parseFloat(perf?.metaMensal) || 0;
+    const metaWrap = el("meta-bar-wrap");
+    if (metaWrap) {
+      if (meta > 0) {
+        metaWrap.style.display = "";
+        const pct = Math.min(100, Math.round(pagoMes / meta * 100));
+        if (el("meta-bar-pct"))  el("meta-bar-pct").textContent  = pct + "%";
+        if (el("meta-bar-fill")) el("meta-bar-fill").style.width = pct + "%";
+        if (el("meta-bar-sub"))  el("meta-bar-sub").textContent  =
+          `${fmtBRL(pagoMes)} de ${fmtBRL(meta)} · faltam ${fmtBRL(Math.max(0, meta - pagoMes))}`;
+      } else {
+        metaWrap.style.display = "none";
+      }
+    }
 
-  // Projeção do mês
-  if (el("fin-projecao-val")) {
-    const valorPad2  = parseFloat(perf?.valorPadrao) || 0;
-    const sessoesMes = DB_CLINICA.getMeusAgendamentos()
-      .filter(a => a.status === "agendado" && a.data?.startsWith(mes)).length;
-    el("fin-projecao-val").textContent = fmtBRL(sessoesMes * valorPad2);
-    if (el("fin-projecao-sub"))
-      el("fin-projecao-sub").textContent = `${sessoesMes} sessão(ões) agend. × ${fmtBRL(valorPad2)}`;
+    // Gráfico
+    _buildChartReceita();
+    _buildChartFormas();
+    _renderInadimplentes();
+
+    // Projeção do mês
+    if (el("fin-projecao-val")) {
+      const valorPad2  = parseFloat(perf?.valorPadrao) || 0;
+      const sessoesMes = DB_CLINICA.getMeusAgendamentos()
+        .filter(a => a.status === "agendado" && a.data?.startsWith(mes)).length;
+      el("fin-projecao-val").textContent = fmtBRL(sessoesMes * valorPad2);
+      if (el("fin-projecao-sub"))
+        el("fin-projecao-sub").textContent = `${sessoesMes} sessão(ões) agend. × ${fmtBRL(valorPad2)}`;
+    }
+    // Mostra barra de ações
+    const bar = document.querySelector('.fin-action-bar');
+    if (bar) bar.style.display = "";
   }
 
   // Tabela
