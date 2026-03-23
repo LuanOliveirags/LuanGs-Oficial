@@ -189,12 +189,15 @@
 
       <!-- Sub-itens colapsáveis -->
       <div class="nav-subitems" id="nav-subitems-principal">
-        <a href="#" class="nav-item nav-subitem nav-correcoes-item active" data-roles="admin profissional psicologo" onclick="_toggleNavCorrecoes(this)">
+        <a href="#" class="nav-item nav-subitem nav-correcoes-item" data-roles="admin profissional psicologo" onclick="_toggleNavCorrecoes(this)">
           <span class="nav-icon">📋</span>
           <span style="flex:1">Correção de Testes</span>
           <span class="nav-chevron" id="nav-chevron-correcoes">▾</span>
         </a>
         <div class="nav-subitems nav-subitems-correcoes" id="nav-subitems-correcoes">
+          <a href="#" class="nav-item nav-subitem" data-roles="admin profissional psicologo" onclick="navegarPara('testes', this)">
+            <span class="nav-icon">▶️</span> Iniciar Correção
+          </a>
           <a href="#" class="nav-item nav-subitem" data-roles="admin profissional psicologo" onclick="navegarPara('dashboard', this)">
             <span class="nav-icon">📊</span> Dashboard
           </a>

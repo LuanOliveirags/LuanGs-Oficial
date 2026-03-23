@@ -55,9 +55,15 @@ function navegarPara(secao, linkEl) {
   }
   if (linkEl) linkEl.classList.add("active");
 
-  // Abre Correção de Testes para seções filhas, mantém também aberto no histórico/pacientes
-  if (["dashboard","historico","pacientes"].includes(secao)) {
+  // Abre Correção de Testes para seções filhas, mantém também aberto no histórico/pacientes/testes
+  if (["dashboard","historico","pacientes","testes"].includes(secao)) {
     _setNavCorrecoes(true);
+  }
+
+  // Marca menu pai Correção de Testes quando subitem selecionado
+  if (["dashboard","historico","pacientes","testes"].includes(secao)) {
+    const correcoesMenu = document.querySelector(".nav-correcoes-item");
+    if (correcoesMenu) correcoesMenu.classList.add("active");
   }
 
   // Fecha sidebar no mobile
