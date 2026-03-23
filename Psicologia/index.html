@@ -224,7 +224,9 @@
       </div>
       <button class="btn-logout" onclick="fazerLogout()">Sair</button>
       <button id="btn-alterar-senha" class="btn btn-secondary" style="width:100%;margin-top:6px;font-size:12px;padding:6px" onclick="abrirModalPerfil()">&#128100; Meu Perfil</button>
-      <button class="btn btn-sm btn-info" onclick="exportarDados()" style="width:100%;margin-top:8px;">📥 Exportar Dados</button>
+      <button class="btn btn-sm btn-info" id="btn-exportar-dados" onclick="exportarDados()" style="width:100%;margin-top:8px;display:none;">📥 Exportar Dados</button>
+      <button class="btn btn-sm btn-success" onclick="gerarRelatorioPDF()" style="width:100%;margin-top:8px;">📄 Relatório PDF</button>
+      <button class="btn btn-sm btn-warning" onclick="abrirModalLembrete()" style="width:100%;margin-top:8px;">⏰ Agendar Lembrete</button>
       <button class="btn btn-sm btn-primary" onclick="abrirChatSuporte()" style="width:100%;margin-top:8px;">💬 Suporte</button>
       <a href="https://www.instagram.com/luanoliveirags/" target="_blank" rel="noopener noreferrer"
         style="display:block;text-align:center;font-size:11px;color:var(--text-muted);text-decoration:none;margin-top:8px;opacity:.7">
@@ -275,6 +277,19 @@
           </div>
         </div>
       </div>
+
+      <!-- Gráficos Interativos -->
+      <div class="dashboard-charts">
+        <div class="chart-card">
+          <h4>Avaliações por Mês</h4>
+          <canvas id="chart-avaliacoes-mes"></canvas>
+        </div>
+        <div class="chart-card">
+          <h4>Distribuição por Teste</h4>
+          <canvas id="chart-tipos-teste"></canvas>
+        </div>
+      </div>
+
       <div class="card">
         <h3>Últimas Avaliações</h3>
         <table class="table" id="tabela-recentes">
@@ -2372,6 +2387,27 @@
     <div class="modal-footer">
       <button class="btn btn-accent" id="modal-pdf-btn">📄 Exportar PDF</button>
       <button class="btn btn-danger" id="modal-del-btn">🗑 Excluir</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Lembrete -->
+<div id="modal-lembrete-overlay" class="modal-overlay hidden" onclick="fecharModalLembrete()">
+  <div class="modal-card" onclick="event.stopPropagation()" style="max-width:400px">
+    <div class="modal-header">
+      <h3>⏰ Agendar Lembrete</h3>
+      <button class="modal-close" onclick="fecharModalLembrete()">&#10005;</button>
+    </div>
+    <div style="padding:24px">
+      <div class="form-group">
+        <label>Descrição</label>
+        <input type="text" id="lembrete-descricao" placeholder="Ex: Sessão com João às 14h">
+      </div>
+      <div class="form-group">
+        <label>Data e Hora</label>
+        <input type="datetime-local" id="lembrete-datahora">
+      </div>
+      <button class="btn btn-primary" onclick="salvarLembrete()" style="width:100%">Agendar</button>
     </div>
   </div>
 </div>

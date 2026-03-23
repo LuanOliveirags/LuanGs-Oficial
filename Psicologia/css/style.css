@@ -120,16 +120,30 @@ body {
   border: 1px solid var(--border);
   border-radius: 4px;
 }
-.chat-input button {
-  margin-left: 8px;
-  padding: 8px 12px;
-  background: var(--primary);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
 .chat-input button:hover { background: var(--primary-dark); }
+
+/* Dashboard Charts */
+.dashboard-charts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.chart-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  animation: fadeInUp 0.6s ease-out;
+}
+.chart-card h4 {
+  margin: 0 0 16px;
+  font-size: 16px;
+  font-weight: 600;
+}
+.chart-card canvas {
+  max-height: 250px;
+}
 
 /* Acessibilidade: foco visível */
 *:focus {
@@ -147,6 +161,33 @@ button:focus, input:focus, select:focus, textarea:focus {
 }
 .btn-info:hover {
   background: #0891b2;
+}
+
+/* Botão success */
+.btn-success {
+  background: #10b981;
+  color: white;
+}
+.btn-success:hover {
+  background: #059669;
+}
+
+/* Botão PDF */
+.btn-pdf {
+  background: #dc2626;
+  color: white;
+}
+.btn-pdf:hover {
+  background: #b91c1c;
+}
+
+/* Botão lembretes */
+.btn-reminder {
+  background: #f59e0b;
+  color: white;
+}
+.btn-reminder:hover {
+  background: #d97706;
 }
 
 /* ================================================================
@@ -737,6 +778,63 @@ textarea { resize: vertical; }
   background: #fafafa;
   border-radius: 0 0 var(--radius-xl) var(--radius-xl);
 }
+
+/* Modal de lembretes */
+#modal-lembretes .modal-card { max-width: 500px; }
+#modal-lembretes .form-group { margin-bottom: 16px; }
+#modal-lembretes label { display: block; margin-bottom: 6px; font-weight: 500; color: var(--text-main); }
+#modal-lembretes input, #modal-lembretes select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; }
+#modal-lembretes input:focus, #modal-lembretes select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+
+/* Modal de perfil */
+#modal-perfil .modal-card { max-width: 600px; }
+#modal-perfil .profile-info { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+#modal-perfil .profile-avatar { width: 60px; height: 60px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: bold; }
+#modal-perfil .profile-details h3 { margin: 0; font-size: 18px; color: var(--text-main); }
+#modal-perfil .profile-details p { margin: 4px 0 0; color: var(--text-muted); font-size: 14px; }
+#modal-perfil .form-group { margin-bottom: 16px; }
+#modal-perfil label { display: block; margin-bottom: 6px; font-weight: 500; color: var(--text-main); }
+#modal-perfil input, #modal-perfil select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; }
+#modal-perfil input:focus, #modal-perfil select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+
+/* Modal de chat */
+#modal-chat .modal-card { max-width: 400px; height: 500px; display: flex; flex-direction: column; }
+#modal-chat .chat-messages { flex: 1; overflow-y: auto; padding: 16px; }
+#modal-chat .chat-input { padding: 16px; border-top: 1px solid var(--border); }
+#modal-chat .chat-input input { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; }
+#modal-chat .chat-input input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+
+/* Modal de exportar dados */
+#modal-export .modal-card { max-width: 500px; }
+#modal-export .export-options { margin-bottom: 20px; }
+#modal-export .export-option { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+#modal-export .export-option input[type="checkbox"] { margin: 0; }
+#modal-export .export-option label { margin: 0; font-weight: 500; color: var(--text-main); }
+#modal-export .export-format { margin-bottom: 20px; }
+#modal-export .export-format label { display: block; margin-bottom: 8px; font-weight: 500; color: var(--text-main); }
+#modal-export .export-format select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; }
+#modal-export .export-format select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+
+/* Modal de tema */
+#modal-tema .modal-card { max-width: 500px; }
+#modal-tema .theme-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 16px; margin-bottom: 20px; }
+#modal-tema .theme-option { border: 2px solid var(--border); border-radius: var(--radius-lg); padding: 16px; cursor: pointer; transition: all 0.3s ease; text-align: center; }
+#modal-tema .theme-option:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+#modal-tema .theme-option.selected { border-color: var(--primary); background: var(--primary-lt); }
+#modal-tema .theme-option h4 { margin: 0 0 8px; font-size: 16px; font-weight: 600; color: var(--text-main); }
+#modal-tema .theme-option p { margin: 0; font-size: 12px; color: var(--text-muted); }
+#modal-tema .theme-preview { display: flex; justify-content: center; gap: 4px; margin-top: 8px; }
+#modal-tema .color-swatch { width: 16px; height: 16px; border-radius: 50%; border: 1px solid var(--border); }
+
+/* Modal de PDF */
+#modal-pdf .modal-card { max-width: 500px; }
+#modal-pdf .pdf-options { margin-bottom: 20px; }
+#modal-pdf .pdf-option { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+#modal-pdf .pdf-option input[type="checkbox"] { margin: 0; }
+#modal-pdf .pdf-option label { margin: 0; font-weight: 500; color: var(--text-main); }
+#modal-pdf .pdf-preview { margin-bottom: 20px; padding: 16px; background: var(--surface); border-radius: var(--radius-sm); border: 1px solid var(--border); }
+#modal-pdf .pdf-preview h4 { margin: 0 0 12px; font-size: 16px; font-weight: 600; color: var(--text-main); }
+#modal-pdf .pdf-preview p { margin: 4px 0; font-size: 14px; color: var(--text-muted); }
 
 /* ================================================================
    HUB DE TESTES

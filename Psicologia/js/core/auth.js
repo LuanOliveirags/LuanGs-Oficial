@@ -455,6 +455,11 @@ function abrirDashboard() {
     const roles = el.dataset.roles.split(" ");
     el.style.display = roles.includes(role) ? "flex" : "none";
   });
+
+  // ── Exibir/ocultar botão de exportar dados (apenas admin) ──
+  const btnExportar = document.getElementById("btn-exportar-dados");
+  if (btnExportar) btnExportar.style.display = role === "admin" ? "block" : "none";
+
   // Atualiza o cabeçalho interno da seção Clínica com dados do consultório
   try {
     _atualizarNavClinica(

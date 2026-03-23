@@ -87,8 +87,13 @@ function adicionarMensagem(tipo, texto) {
   messages.scrollTop = messages.scrollHeight;
 }
 
-// Exportar dados para backup
+// Exportar dados para backup (apenas admin)
 function exportarDados() {
+  if (!usuarioLogado || usuarioLogado.role !== "admin") {
+    mostrarNotificacao('Apenas administradores podem exportar dados!', 'error');
+    return;
+  }
+
   const dados = {
     usuario: usuarioLogado,
     avaliacoes: getAvaliacoes(),
@@ -111,6 +116,79 @@ function aplicarTemaPersonalizado(corPrimaria) {
   document.documentElement.style.setProperty('--primary', corPrimaria);
   localStorage.setItem('psi_tema_cor', corPrimaria);
   mostrarNotificacao('Tema personalizado aplicado!', 'success');
+}
+
+// Lembretes de sessões
+let lembretes = JSON.parse(localStorage.getItem('psi_lembretes') || '[]');
+
+function adicionarLembrete(descricao, dataHora) {
+  lembretes.push({ id: Date.now(), descricao, dataHora: new Date(dataHora).toISOString() });
+  localStorage.setItem('psi_lembretes', JSON.stringify(lembretes));
+  verificarLembretes();
+  mostrarNotificacao('Lembrete agendado!', 'success');
+}
+
+function verificarLembretes() {
+  const agora = new Date();
+  lembretes.forEach(l => {
+    const d = new Date(l.dataHora);
+    if (d > agora && d - agora < 60000) { // 1 minuto antes
+      mostrarNotificacao(`Lembrete: ${l.descricao}`, 'warning');
+      // Remover após notificar
+      lembretes = lembretes.filter(ll => ll.id !== l.id);
+      localStorage.setItem('psi_lembretes', JSON.stringify(lembretes));
+    }
+  });
+}
+
+// Verificar lembretes a cada minuto
+setInterval(verificarLembretes, 60000);
+
+function abrirModalLembrete() {
+  document.getElementById('lembrete-descricao').value = '';
+  document.getElementById('lembrete-datahora').value = '';
+  document.getElementById('modal-lembrete-overlay').classList.remove('hidden');
+}
+
+function fecharModalLembrete() {
+  document.getElementById('modal-lembrete-overlay').classList.add('hidden');
+}
+
+function salvarLembrete() {
+  const desc = document.getElementById('lembrete-descricao').value.trim();
+  const dataHora = document.getElementById('lembrete-datahora').value;
+  if (!desc || !dataHora) {
+    mostrarNotificacao('Preencha todos os campos!', 'error');
+    return;
+  }
+  adicionarLembrete(desc, dataHora);
+  fecharModalLembrete();
+}
+
+// Relatório automático em PDF
+async function gerarRelatorioPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  doc.setFontSize(20);
+  doc.text('Relatório PsiCorrection', 20, 30);
+
+  doc.setFontSize(12);
+  doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, 20, 50);
+  doc.text(`Usuário: ${usuarioLogado?.nome || 'N/A'}`, 20, 60);
+
+  const lista = getAvaliacoes();
+  doc.text(`Total de Avaliações: ${lista.length}`, 20, 80);
+
+  // Adicionar tabela simples
+  let y = 100;
+  lista.slice(-10).forEach((a, i) => {
+    doc.text(`${i+1}. ${a.pacienteNome} - ${a.instrumento} (${formatarData(a.data)})`, 20, y);
+    y += 10;
+  });
+
+  doc.save(`relatorio-psicorrection-${new Date().toISOString().slice(0,10)}.pdf`);
+  mostrarNotificacao('Relatório PDF gerado!', 'success');
 }
 
 // ──────────────────────────────────────────────────────
@@ -219,6 +297,74 @@ function atualizarStats() {
   if (statTotal) statTotal.textContent = lista.length;
   document.getElementById("stat-pacientes").textContent = pacientes.length;
   document.getElementById("stat-mes").textContent       = mes.length;
+
+  // Atualizar gráficos
+  atualizarGraficosDashboard();
+}
+
+function atualizarGraficosDashboard() {
+  const lista = getAvaliacoes();
+
+  // Gráfico de avaliações por mês
+  const meses = {};
+  lista.forEach(a => {
+    const d = new Date(a.data);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    meses[key] = (meses[key] || 0) + 1;
+  });
+  const labelsMes = Object.keys(meses).sort();
+  const dataMes = labelsMes.map(m => meses[m]);
+
+  if (_charts['avaliacoes-mes']) _charts['avaliacoes-mes'].destroy();
+  const ctxMes = document.getElementById('chart-avaliacoes-mes');
+  if (ctxMes) {
+    _charts['avaliacoes-mes'] = new Chart(ctxMes, {
+      type: 'line',
+      data: {
+        labels: labelsMes,
+        datasets: [{
+          label: 'Avaliações',
+          data: dataMes,
+          borderColor: 'var(--primary)',
+          backgroundColor: 'rgba(59, 130, 246, 0.1)',
+          tension: 0.4
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true } }
+      }
+    });
+  }
+
+  // Gráfico de distribuição por teste
+  const tipos = {};
+  lista.forEach(a => {
+    const tipo = a.instrumento || 'Outro';
+    tipos[tipo] = (tipos[tipo] || 0) + 1;
+  });
+  const labelsTipo = Object.keys(tipos);
+  const dataTipo = labelsTipo.map(t => tipos[t]);
+
+  if (_charts['tipos-teste']) _charts['tipos-teste'].destroy();
+  const ctxTipo = document.getElementById('chart-tipos-teste');
+  if (ctxTipo) {
+    _charts['tipos-teste'] = new Chart(ctxTipo, {
+      type: 'doughnut',
+      data: {
+        labels: labelsTipo,
+        datasets: [{
+          data: dataTipo,
+          backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6']
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom' } }
+      }
+    });
+  }
 }
 
 function renderizarTabelaRecentes() {
