@@ -18,6 +18,101 @@ let avaliacaoAtiva   = null;  // última avaliação calculada (NEUPSILIN adulto
 let modalAvaliacaoId = null;
 const _charts        = {};   // instâncias Chart.js activas por ctx
 
+// Sistema de notificações
+const notificacoes = [];
+function mostrarNotificacao(mensagem, tipo = 'info') {
+  const notif = document.createElement('div');
+  notif.className = `notificacao notificacao-${tipo}`;
+  notif.innerHTML = `
+    <span>${mensagem}</span>
+    <button onclick="this.parentElement.remove()">×</button>
+  `;
+  document.body.appendChild(notif);
+  setTimeout(() => notif.remove(), 5000);
+}
+
+// Gamificação: Pontos por avaliações
+let pontosUsuario = parseInt(localStorage.getItem('psi_pontos') || '0');
+function adicionarPontos(pontos, motivo) {
+  pontosUsuario += pontos;
+  localStorage.setItem('psi_pontos', pontosUsuario);
+  mostrarNotificacao(`+${pontos} pontos: ${motivo}! Total: ${pontosUsuario}`, 'success');
+  atualizarBadgePontos();
+}
+function atualizarBadgePontos() {
+  const badge = document.getElementById('badge-pontos');
+  if (badge) badge.textContent = pontosUsuario;
+}
+
+// Chat de suporte simples
+function abrirChatSuporte() {
+  const chat = document.createElement('div');
+  chat.id = 'chat-suporte';
+  chat.innerHTML = `
+    <div class="chat-header">💬 Suporte PsiCorrection <button onclick="fecharChatSuporte()">×</button></div>
+    <div class="chat-messages" id="chat-messages">
+      <div class="message bot">Olá! Como posso ajudar hoje?</div>
+    </div>
+    <div class="chat-input">
+      <input type="text" id="chat-input" placeholder="Digite sua mensagem..." onkeypress="enviarMensagem(event)">
+      <button onclick="enviarMensagem()">Enviar</button>
+    </div>
+  `;
+  document.body.appendChild(chat);
+  chat.style.display = 'block';
+}
+
+function fecharChatSuporte() {
+  const chat = document.getElementById('chat-suporte');
+  if (chat) chat.remove();
+}
+
+function enviarMensagem(event) {
+  if (event && event.key !== 'Enter') return;
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  adicionarMensagem('user', msg);
+  input.value = '';
+  // Simulação de resposta automática
+  setTimeout(() => adicionarMensagem('bot', 'Obrigado pelo feedback! Entraremos em contato em breve.'), 1000);
+}
+
+function adicionarMensagem(tipo, texto) {
+  const messages = document.getElementById('chat-messages');
+  const msg = document.createElement('div');
+  msg.className = `message ${tipo}`;
+  msg.textContent = texto;
+  messages.appendChild(msg);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+// Exportar dados para backup
+function exportarDados() {
+  const dados = {
+    usuario: usuarioLogado,
+    avaliacoes: getAvaliacoes(),
+    pacientes: DB_PAC.getMeus(),
+    pontos: pontosUsuario,
+    exportadoEm: new Date().toISOString()
+  };
+  const blob = new Blob([JSON.stringify(dados, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `backup-psicorrection-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  mostrarNotificacao('Dados exportados com sucesso!', 'success');
+}
+
+// Tema personalizado
+function aplicarTemaPersonalizado(corPrimaria) {
+  document.documentElement.style.setProperty('--primary', corPrimaria);
+  localStorage.setItem('psi_tema_cor', corPrimaria);
+  mostrarNotificacao('Tema personalizado aplicado!', 'success');
+}
+
 // ──────────────────────────────────────────────────────
 // INICIALIZAÇÃO
 // ──────────────────────────────────────────────────────
@@ -27,6 +122,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.documentElement.setAttribute("data-theme", _temaS);
   const _btnTema = document.getElementById("btn-tema");
   if (_btnTema) _btnTema.textContent = _temaS === "dark" ? "☀️" : "🌙";
+
+  // Carrega tema personalizado
+  const _temaCor = localStorage.getItem("psi_tema_cor");
+  if (_temaCor) document.documentElement.style.setProperty('--primary', _temaCor);
+
+  atualizarBadgePontos(); // Atualiza pontos na inicialização
 
   // Auth anônima garante que as regras do Firestore sejam cumpridas
   await firebase.auth().signInAnonymously().catch(console.error);

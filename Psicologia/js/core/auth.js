@@ -506,6 +506,9 @@ function abrirModalPerfil() {
   ["perfil-senha-atual", "perfil-senha-nova", "perfil-senha-confirmar"].forEach(id => {
     document.getElementById(id).value = "";
   });
+  // Define cor do tema atual
+  const corAtual = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#2563eb';
+  document.getElementById("perfil-cor-tema").value = corAtual;
   // Exibe o nome da clínica quando disponível
   const _clinicaInfoEl   = document.getElementById("perfil-clinica-info");
   const _clinicaNomeText = document.getElementById("perfil-clinica-nome-text");
