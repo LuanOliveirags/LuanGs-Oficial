@@ -82,7 +82,18 @@ async function fazerLogin() {
     }
 
     const usuarioData = doc.data();
-    usuarioData.role = pillarRole(usuarioData.role || "profissional");
+
+    // Garantia extra: e-mail do administrador padrão sempre roda como admin.
+    // Para evitar casos em que o campo role esteja vazio no Firestore.
+    const rawRole = (usuarioData.role || "").trim() ||
+      (email === ADMIN_PADRAO.email ? "admin" : "profissional");
+    usuarioData.role = pillarRole(rawRole);
+
+    if (email === ADMIN_PADRAO.email && usuarioData.role !== "admin") {
+      usuarioData.role = "admin";
+      _firestoreDB.collection("usuarios").doc(email)
+        .update({ role: "admin" }).catch(console.error);
+    }
 
     const hash = await hashSenha(senha);
     if (hash !== usuarioData.senhaHash) {
