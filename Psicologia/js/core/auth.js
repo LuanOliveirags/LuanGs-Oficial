@@ -23,6 +23,14 @@ function toggleSenha(btn) {
   eyeOff.classList.toggle("hidden", !isPassword);
 }
 
+/** Normaliza valores de role antes de decisões no fluxo de login. */
+function pillarRole(role) {
+  if (typeof normalizarRole === "function") {
+    return normalizarRole(role);
+  }
+  return String(role || "").toLowerCase().trim();
+}
+
 /** Autentica o profissional via Firestore e inicia a sessão. */
 // Dados temporários do usuário em primeiro acesso (aguardando troca de senha)
 let _primeiroAcessoData = null;
@@ -46,6 +54,7 @@ async function fazerLogin() {
   const _crpGroupEl  = document.getElementById("login-crp-group");
   const _crpHidden   = _crpGroupEl && _crpGroupEl.style.display === "none";
 
+  // Pré-validação de CPF apenas se o campo estiver visível (admin tem campo oculto)
   if (!_crpHidden) {
     const _cpfPreCheck = validarFormatoCPF(_identValue);
     if (!_cpfPreCheck.ok) {
@@ -73,6 +82,8 @@ async function fazerLogin() {
     }
 
     const usuarioData = doc.data();
+    usuarioData.role = pillarRole(usuarioData.role || "profissional");
+
     const hash = await hashSenha(senha);
     if (hash !== usuarioData.senhaHash) {
       errDiv.textContent = "E-mail ou senha incorretos.";
@@ -131,27 +142,29 @@ async function fazerLogin() {
       return;
     }
 
-    // Validação do CPF: formato + conferência obrigatória com cadastro
-    const cpfFinal = validarFormatoCPF(_identValue);
-    if (!cpfFinal.ok) {
-      errDiv.textContent = cpfFinal.mensagem;
-      errDiv.classList.remove("hidden");
-      return;
-    }
-    if (!usuarioData.cpf) {
-      // Usuário sem CPF cadastrado — bloqueia login até admin corrigir
-      errDiv.textContent = "CPF não registrado no cadastro. Solicite ao administrador que atualize seus dados.";
-      errDiv.classList.remove("hidden");
-      return;
-    }
-    if (normalizarCPF(_identValue) !== normalizarCPF(usuarioData.cpf)) {
-      errDiv.textContent = "E-mail, senha ou CPF incorretos.";
-      errDiv.classList.remove("hidden");
-      return;
-    }
-    // Para psicólogos: dispara verificação assíncrona no cadastro do CFP (não bloqueia o login)
-    if (!["admin", "colaborador", "cliente"].includes(usuarioData.role)) {
-      validarCRPExternoAsync(usuarioData.crp || "", email, _identValue);
+    // ── Validação de CPF — admin é isento (pode não ter CPF cadastrado) ──
+    if (usuarioData.role !== "admin") {
+      const cpfFinal = validarFormatoCPF(_identValue);
+      if (!cpfFinal.ok) {
+        errDiv.textContent = cpfFinal.mensagem;
+        errDiv.classList.remove("hidden");
+        return;
+      }
+      if (!usuarioData.cpf) {
+        // Usuário sem CPF cadastrado — bloqueia login até admin corrigir
+        errDiv.textContent = "CPF não registrado no cadastro. Solicite ao administrador que atualize seus dados.";
+        errDiv.classList.remove("hidden");
+        return;
+      }
+      if (normalizarCPF(_identValue) !== normalizarCPF(usuarioData.cpf)) {
+        errDiv.textContent = "E-mail, senha ou CPF incorretos.";
+        errDiv.classList.remove("hidden");
+        return;
+      }
+      // Para psicólogos: dispara verificação assíncrona no cadastro do CFP (não bloqueia o login)
+      if (!["colaborador", "cliente"].includes(usuarioData.role)) {
+        validarCRPExternoAsync(usuarioData.crp || "", email, _identValue);
+      }
     }
 
     // Determina clinicaId e valida vínculo obrigatório
@@ -196,7 +209,7 @@ async function fazerLogin() {
       email:      usuarioData.email,
       nome:       usuarioData.nome,
       crp:        usuarioData.crp,
-      cpf:        normalizarCPF(_identValue),
+      cpf:        usuarioData.role === "admin" ? "" : normalizarCPF(_identValue),
       role:       usuarioData.role,
       clinicaId,
       clinicaNome,
@@ -217,7 +230,8 @@ async function fazerLogin() {
 
 /**
  * Detecta o papel do usuário pelo e-mail e alterna o campo identificador
- * entre CRP (psicólogo) e CPF (admin). Chamado no onblur do campo e-mail.
+ * entre CPF (psicólogo/colaborador/cliente) ou oculto (admin).
+ * Chamado no onblur do campo e-mail.
  */
 async function detectarCampoIdentificador() {
   const email = document.getElementById("login-email").value.trim().toLowerCase();
@@ -238,6 +252,7 @@ async function detectarCampoIdentificador() {
     crpHint.className       = "crp-hint";
 
     const cfpLink = document.getElementById("crp-cfp-link");
+    const role = pillarRole(doc.data().role || "profissional");
 
     // Primeiro acesso: ocultar campo identificador (não é necessário CPF)
     if (doc.data().primeiroAcesso) {
@@ -250,26 +265,29 @@ async function detectarCampoIdentificador() {
       if (cfpLink) cfpLink.classList.add("hidden");
       return;
     }
-    crpGroup.style.display = ""; // garante visibilidade para demais usuários
 
-    if (doc.data().role === "admin") {
-      crpInput.dataset.mode = "cpf";
+    // ── ADMIN: campo CPF não é necessário — ocultar ──
+    if (role === "admin") {
+      crpGroup.style.display = "none";
+      crpInput.value         = "";
       crpGroup.querySelector("label").innerHTML =
         'CPF <span class="crp-label-badge crp-label-badge--admin">Admin</span>';
-      crpInput.placeholder = "000.000.000-00";
-      crpInput.maxLength   = 14;
-      crpHint.textContent  = "Formato: 000.000.000-00  \u00b7  CPF do administrador";
+      crpHint.textContent  = "";
       if (cfpLink) cfpLink.classList.add("hidden");
-    } else {
-      const _roleLabel = { colaborador: 'Colaborador', cliente: 'Cliente' }[doc.data().role] || 'Psicólogo';
-      crpInput.dataset.mode = "cpf";
-      crpGroup.querySelector("label").innerHTML =
-        `CPF <span class="crp-label-badge">${_roleLabel}</span>`;
-      crpInput.placeholder = "000.000.000-00";
-      crpInput.maxLength   = 14;
-      crpHint.textContent  = "Formato: 000.000.000-00  \u00b7  CPF de acesso";
-      if (cfpLink) cfpLink.classList.add("hidden");
+      return;
     }
+
+    crpGroup.style.display = ""; // garante visibilidade para demais usuários
+
+    const _roleLabel = { colaborador: 'Colaborador', cliente: 'Cliente' }[role] || 'Psicólogo';
+    crpInput.dataset.mode = "cpf";
+    crpGroup.querySelector("label").innerHTML =
+      `CPF <span class="crp-label-badge">${_roleLabel}</span>`;
+    crpInput.placeholder = "000.000.000-00";
+    crpInput.maxLength   = 14;
+    crpHint.textContent  = "Formato: 000.000.000-00  ·  CPF de acesso";
+    if (cfpLink) cfpLink.classList.add("hidden");
+
   } catch { /* silencioso — não bloqueia login */ }
 }
 
@@ -352,8 +370,10 @@ function fazerLogout() {
   document.getElementById("page-primeiro-acesso").classList.add("hidden");
   document.getElementById("login-email").value = "";
   document.getElementById("login-senha").value = "";
-  // Resetar campo identificador para modo CPF (padrão)
+  // Resetar campo identificador para modo CPF (padrão) e garantir visibilidade
+  const _crpGroupReset = document.getElementById("login-crp-group");
   const _identReset = document.getElementById("login-crp");
+  if (_crpGroupReset) _crpGroupReset.style.display = "";
   if (_identReset) {
     _identReset.value = "";
     _identReset.dataset.mode  = "cpf";
@@ -396,7 +416,8 @@ function aceitarAviso() {
 
 /** Transita da tela de login para o dashboard após autenticação. */
 function abrirDashboard() {
-  const role = usuarioLogado.role;
+  const role = pillarRole(usuarioLogado.role || "profissional");
+  usuarioLogado.role = role;
   document.getElementById("page-login").classList.add("hidden");
   document.getElementById("page-dashboard").classList.remove("hidden");
   // Exibe cargo, nome e CRP/CPF

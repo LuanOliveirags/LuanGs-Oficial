@@ -39,6 +39,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   if (sessao) {
     try {
       usuarioLogado = JSON.parse(sessao);
+      usuarioLogado.role = normalizarRole(usuarioLogado.role || "profissional");
       const _srole = usuarioLogado.role;
       await DB.carregarTodos(_srole === "admin", usuarioLogado.email);
       if (["admin", "profissional", "psicologo"].includes(_srole)) {

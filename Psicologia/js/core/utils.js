@@ -61,6 +61,31 @@ function stripHTML(str) {
 }
 
 /**
+ * Normaliza valores de role de usuário para os nomes suportados.
+ * Aceita diferenças de caixa, acentuação e valores legados.
+ */
+function normalizarRole(role) {
+  const raw = String(role || "").toLowerCase().trim();
+  const semDiacritico = raw.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  const key = semDiacritico.replace(/[^a-z0-9]/g, "");
+
+  switch (key) {
+    case "admin":
+      return "admin";
+    case "profissional":
+      return "profissional";
+    case "psicologo":
+      return "psicologo";
+    case "colaborador":
+      return "colaborador";
+    case "cliente":
+      return "cliente";
+    default:
+      return "profissional";
+  }
+}
+
+/**
  * Converte o nome de uma classe CSS de badge em pares de cor RGB
  * para uso no jsPDF (background e texto).
  * @param {string} badge

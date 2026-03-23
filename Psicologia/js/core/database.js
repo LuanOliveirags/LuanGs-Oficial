@@ -4,6 +4,8 @@
    Cache em memória garante leituras síncronas após o login.
 ═══════════════════════════════════════════════════════ */
 
+
+
 const ADMIN_PADRAO = {
   email: "luanoliveirags@gmail.com",
   nome:  "Luan Gs",
@@ -66,6 +68,7 @@ const DB = {
 
   // ── Criar usuário ──────────────────────────────────
   async create({ email, senha, nome, crp = "", cpf = "", role = "profissional", plano = "1mes", ocultarAplicacao = false, clinicaId = "", primeiroAcesso = false, clinicaNome = "" }) {
+    role = typeof normalizarRole === 'function' ? normalizarRole(role) : String(role || "profissional").toLowerCase().trim();
     if (!email || !senha || !nome) throw new Error("Preencha todos os campos obrigatórios.");
     if (senha.length < 6) throw new Error("A senha deve ter ao menos 6 caracteres.");
     if (["colaborador", "cliente"].includes(role) && !clinicaId)
@@ -101,7 +104,9 @@ const DB = {
     const idx = this._cache.findIndex(u => u.email === emailNorm);
     if (idx === -1) throw new Error("Usuário não encontrado.");
 
-    const novoRole = role !== undefined ? role : this._cache[idx].role;
+    const novoRole = role !== undefined
+      ? (typeof normalizarRole === 'function' ? normalizarRole(role) : String(role).toLowerCase().trim())
+      : this._cache[idx].role;
     if (["colaborador", "cliente"].includes(novoRole) && clinicaId === "")
       throw new Error("Selecione a clínica (psicólogo responsável) para este perfil.");
 
@@ -109,7 +114,7 @@ const DB = {
     if (nome !== undefined)             updates.nome = nome.trim();
     if (crp !== undefined)              updates.crp  = crp.trim();
     if (cpf !== undefined)              updates.cpf  = cpf.replace(/\D/g, "");
-    if (role !== undefined)             updates.role = role;
+    if (role !== undefined)             updates.role = novoRole;
     if (ocultarAplicacao !== undefined) updates.ocultarAplicacao = ocultarAplicacao;
     if (clinicaId !== undefined)
       updates.clinicaId = ["colaborador", "cliente"].includes(novoRole) ? clinicaId.toLowerCase().trim() : "";
