@@ -189,20 +189,24 @@
 
       <!-- Sub-itens colapsáveis -->
       <div class="nav-subitems" id="nav-subitems-principal">
-        <a href="#" class="nav-item nav-subitem active" data-roles="admin profissional psicologo" onclick="navegarPara('dashboard', this)">
-          <span class="nav-icon">📊</span> Dashboard
+        <a href="#" class="nav-item nav-subitem nav-correcoes-item active" data-roles="admin profissional psicologo" onclick="_toggleNavCorrecoes(this)">
+          <span class="nav-icon">📋</span>
+          <span style="flex:1">Correção de Testes</span>
+          <span class="nav-chevron" id="nav-chevron-correcoes">▾</span>
         </a>
-        <a href="#" class="nav-item nav-subitem" data-roles="admin profissional psicologo" onclick="navegarPara('testes', this)">
-          <span class="nav-icon">📋</span> Correção de Testes
-        </a>
+        <div class="nav-subitems nav-subitems-correcoes" id="nav-subitems-correcoes">
+          <a href="#" class="nav-item nav-subitem" data-roles="admin profissional psicologo" onclick="navegarPara('dashboard', this)">
+            <span class="nav-icon">📊</span> Dashboard
+          </a>
+          <a href="#" class="nav-item nav-subitem" data-roles="admin profissional psicologo" onclick="navegarPara('historico', this)">
+            <span class="nav-icon">📁</span> Histórico
+          </a>
+          <a href="#" class="nav-item nav-subitem" data-roles="admin profissional psicologo colaborador" onclick="navegarPara('pacientes', this)">
+            <span class="nav-icon">👤</span> Pacientes
+          </a>
+        </div>
         <a href="#" class="nav-item nav-subitem nav-aplicacao" data-roles="admin profissional psicologo" onclick="navegarPara('aplicacao', this)">
           <span class="nav-icon">📝</span> Aplicação de Testes
-        </a>
-        <a href="#" class="nav-item nav-subitem" data-roles="admin profissional psicologo" onclick="navegarPara('historico', this)">
-          <span class="nav-icon">📁</span> Histórico
-        </a>
-        <a href="#" class="nav-item nav-subitem" data-roles="admin profissional psicologo colaborador" onclick="navegarPara('pacientes', this)">
-          <span class="nav-icon">👤</span> Pacientes
         </a>
         <a href="#" class="nav-item nav-subitem nav-admin" data-roles="admin profissional psicologo" style="display:none" onclick="navegarPara('usuarios', this)">
           <span class="nav-icon">🔑</span> Usuários

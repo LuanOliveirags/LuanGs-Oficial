@@ -160,6 +160,15 @@
   max-height: 0;
   opacity: 0;
 }
+.nav-subitems-correcoes {
+  margin-left: 14px;
+  max-height: 540px;
+  border-left: 0;
+}
+.nav-subitems-correcoes .nav-item {
+  padding-left: 16px;
+  font-size: 13px;
+}
 .nav-subitem {
   padding-left: 16px !important;
   font-size: 13px !important;

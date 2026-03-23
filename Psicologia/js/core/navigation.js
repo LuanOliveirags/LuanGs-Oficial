@@ -55,6 +55,11 @@ function navegarPara(secao, linkEl) {
   }
   if (linkEl) linkEl.classList.add("active");
 
+  // Abre Correção de Testes para seções filhas, mantém também aberto no histórico/pacientes
+  if (["dashboard","historico","pacientes"].includes(secao)) {
+    _setNavCorrecoes(true);
+  }
+
   // Fecha sidebar no mobile
   document.getElementById("sidebar").classList.remove("open");
 
@@ -72,6 +77,12 @@ function navegarPara(secao, linkEl) {
     usuarios:         "Gerenciar Usuários"
   };
   document.getElementById("topbar-title").textContent = titulos[secao] || secao;
+
+  // Marca menu pai Correção de Testes quando subitem selecionado
+  if (["dashboard","historico","pacientes"].includes(secao)) {
+    const correcoesMenu = document.querySelector(".nav-correcoes-item");
+    if (correcoesMenu) correcoesMenu.classList.add("active");
+  }
 
   // Ações de inicialização por seção
   if (secao === "historico")      renderizarHistorico();
@@ -101,13 +112,46 @@ function _toggleNavGrupo(el) {
   try { localStorage.setItem("_navGrupoColapsado", colapsado ? "1" : "0"); } catch(e) {}
 }
 
+/**
+ * Ajusta estado do menu Correção de Testes (expandido/colapsado).
+ */
+function _setNavCorrecoes(expand) {
+  const grupo = document.getElementById("nav-subitems-correcoes");
+  const botao = document.querySelector(".nav-correcoes-item");
+  const chevron = document.getElementById("nav-chevron-correcoes");
+  if (!grupo) return;
+
+  const colapsado = !expand;
+  grupo.classList.toggle("colapsado", colapsado);
+  if (botao) botao.classList.toggle("colapsado", colapsado);
+  if (chevron) chevron.textContent = colapsado ? "▸" : "▾";
+  try { localStorage.setItem("_navCorrecoesColapsado", colapsado ? "1" : "0"); } catch(e) {}
+}
+
+/**
+ * Alterna os subitens do menu Correção de Testes.
+ */
+function _toggleNavCorrecoes(el) {
+  const grupo = document.getElementById("nav-subitems-correcoes");
+  if (!grupo) return;
+  const isCollapsed = grupo.classList.contains("colapsado");
+  _setNavCorrecoes(isCollapsed);
+  if (el) el.classList.toggle("colapsado", isCollapsed);
+}
 /** Restaura o estado colapsado do grupo ao carregar a página. */
 function _restaurarNavGrupo() {
-  if (localStorage.getItem("_navGrupoColapsado") !== "1") return;
-  const grupo  = document.getElementById("nav-subitems-principal");
-  const header = document.querySelector(".nav-clinica-item");
-  if (grupo)  grupo.classList.add("colapsado");
-  if (header) header.classList.add("colapsado");
+  if (localStorage.getItem("_navGrupoColapsado") === "1") {
+    const grupo  = document.getElementById("nav-subitems-principal");
+    const header = document.querySelector(".nav-clinica-item");
+    if (grupo)  grupo.classList.add("colapsado");
+    if (header) header.classList.add("colapsado");
+  }
+
+  if (localStorage.getItem("_navCorrecoesColapsado") === "1") {
+    _setNavCorrecoes(false);
+  } else {
+    _setNavCorrecoes(true);
+  }
 }
 
 document.addEventListener("DOMContentLoaded", _restaurarNavGrupo);
