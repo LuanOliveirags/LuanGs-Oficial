@@ -1212,18 +1212,38 @@ function _renderTeleconsulta() {
 function gerarSalaTeleconsulta() {
   const sel     = document.getElementById("tele-sel-agendamento");
   const agenId  = sel?.value || "";
+  const tipo    = document.getElementById("tele-tipo-sala")?.value || "jitsi";
 
   // Gera nome de sala seguro: 14 chars alfanuméricos aleatórios
   const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
   const buf   = new Uint8Array(14);
   crypto.getRandomValues(buf);
   const aleatorio = Array.from(buf).map(b => chars[b % chars.length]).join("");
-  const roomName  = "psicorrection-" + aleatorio;
-  const url       = "https://meet.jit.si/" + roomName;
 
-  _teleSalaAtiva = { roomName, url, agenId };
+  let roomName;
+  let url;
+  let provider;
+
+  if (tipo === "google") {
+    provider = "google";
+    const googleCode = gerarCodigoGoogleMeet();
+    roomName = googleCode;
+    url = "https://meet.google.com/" + googleCode;
+  } else {
+    provider = "jitsi";
+    roomName = "psicorrection-" + aleatorio;
+    url = "https://meet.jit.si/" + roomName;
+  }
+
+  _teleSalaAtiva = { roomName, url, agenId, provider };
   _exibirSalaAtiva(_teleSalaAtiva);
   _toast("✅ Sala criada! Compartilhe o link com o paciente.");
+}
+
+function gerarCodigoGoogleMeet() {
+  const chars = "abcdefghijklmnopqrstuvwxyz";
+  const parts = [3, 4, 3];
+  return parts.map(len => Array.from({ length: len }, () => chars[Math.floor(Math.random() * chars.length)]).join("")).join("-");
 }
 
 /**
@@ -1248,14 +1268,24 @@ function _exibirSalaAtiva(sala) {
   const linkEl   = document.getElementById("tele-link-url");
   const iframe   = document.getElementById("tele-iframe");
   const salaDiv  = document.getElementById("tele-sala-ativa");
+  const btnGoogle = document.getElementById("tele-btn-abrir-google");
 
   if (tituloEl) tituloEl.textContent = titulo;
   if (subEl)    subEl.textContent    = sub;
   if (linkEl)   linkEl.textContent   = sala.url;
 
-  // Carrega o iframe apenas se ainda não está apontando para a mesma sala
-  if (iframe && iframe.src !== sala.url) {
-    iframe.src = sala.url;
+  if (sala.provider === "google") {
+    if (iframe) iframe.style.display = "none";
+    if (btnGoogle) {
+      btnGoogle.style.display = "inline-flex";
+      btnGoogle.setAttribute("data-url", sala.url);
+    }
+  } else {
+    if (iframe) {
+      iframe.style.display = "block";
+      if (iframe.src !== sala.url) iframe.src = sala.url;
+    }
+    if (btnGoogle) btnGoogle.style.display = "none";
   }
 
   if (salaDiv) salaDiv.style.display = "block";
@@ -1286,6 +1316,13 @@ function copiarLinkTeleconsulta() {
     document.body.removeChild(ta);
     _toast("🔗 Link copiado!");
   });
+}
+
+function abrirGoogleMeet() {
+  const btn = document.getElementById("tele-btn-abrir-google");
+  const url = btn?.getAttribute("data-url");
+  if (!url) return;
+  window.open(url, "_blank", "noopener,noreferrer");
 }
 
 /**

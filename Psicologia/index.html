@@ -1868,6 +1868,11 @@
           </div>
           <div class="tele-setup-form">
             <div class="form-group" style="margin:0;flex:1">
+              <label>Tipo de Sala</label>
+              <select id="tele-tipo-sala" style="width:100%;margin-bottom:8px">
+                <option value="jitsi">Jitsi Meet (padrão)</option>
+                <option value="google">Google Meet</option>
+              </select>
               <label>Agendamento vinculado</label>
               <select id="tele-sel-agendamento" style="width:100%">
                 <option value="">— Sessão avulsa (sem agendamento) —</option>
@@ -1896,6 +1901,7 @@
                 <div class="tele-link-label">🔗 Link para o paciente (copie e envie)</div>
                 <div class="tele-link-url" id="tele-link-url"></div>
               </div>
+              <button id="tele-btn-abrir-google" class="btn btn-success" style="display:none; margin-right:8px;" onclick="abrirGoogleMeet()">▶ Abrir Google Meet</button>
               <button class="btn btn-secondary tele-btn-copiar" id="tele-btn-copiar" onclick="copiarLinkTeleconsulta()">📋 Copiar</button>
               <button class="btn btn-secondary tele-btn-wpp" onclick="enviarLinkTeleconsultaWhatsApp()" title="Enviar via WhatsApp">💬 WhatsApp</button>
             </div>
