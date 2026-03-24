@@ -283,6 +283,26 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 // ──────────────────────────────────────────────────────
+// Ferramentas dropdown
+// ──────────────────────────────────────────────────────
+function toggleFerramentasMenu() {
+  const menu = document.getElementById('ferramentas-menu');
+  if (!menu) return;
+  menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+}
+
+document.addEventListener('click', (event) => {
+  const menu = document.getElementById('ferramentas-menu');
+  if (!menu) return;
+  const opened = menu.style.display === 'block';
+  if (!opened) return;
+
+  const target = event.target;
+  if (target.closest('#btn-ferramentas') || target.closest('#ferramentas-menu')) return;
+  menu.style.display = 'none';
+});
+
+// ──────────────────────────────────────────────────────
 // RENDER: Stats e tabelas
 // ──────────────────────────────────────────────────────
 function atualizarStats() {

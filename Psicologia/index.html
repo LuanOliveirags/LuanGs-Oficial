@@ -224,10 +224,17 @@
       </div>
       <button class="btn-logout" onclick="fazerLogout()">Sair</button>
       <button id="btn-alterar-senha" class="btn btn-secondary" style="width:100%;margin-top:6px;font-size:12px;padding:6px" onclick="abrirModalPerfil()">&#128100; Meu Perfil</button>
-      <button class="btn btn-sm btn-info" id="btn-exportar-dados" onclick="exportarDados()" style="width:100%;margin-top:8px;display:none;">📥 Exportar Dados</button>
-      <button class="btn btn-sm btn-success" onclick="gerarRelatorioPDF()" style="width:100%;margin-top:8px;">📄 Relatório PDF</button>
-      <button class="btn btn-sm btn-warning" onclick="abrirModalLembrete()" style="width:100%;margin-top:8px;">⏰ Agendar Lembrete</button>
-      <button class="btn btn-sm btn-primary" onclick="abrirChatSuporte()" style="width:100%;margin-top:8px;">💬 Suporte</button>
+      <div class="tools-dropdown" style="width:100%;margin-top:8px;position:relative">
+        <button id="btn-ferramentas" class="btn btn-sm btn-info" onclick="toggleFerramentasMenu()" style="width:100%;">
+          🛠️ Ferramentas ▾
+        </button>
+        <div id="ferramentas-menu" class="dropdown-menu" style="position:absolute;top:100%;left:0;right:0;z-index:20;background:var(--surface);border:1px solid var(--border);border-radius:8px;box-shadow:0 4px 10px rgba(0,0,0,.15);margin-top:4px;display:none;">
+          <button class="btn btn-sm btn-info" id="btn-exportar-dados" onclick="exportarDados()" style="width:100%;margin-bottom:6px;display:none;">📥 Exportar Dados</button>
+          <button class="btn btn-sm btn-success" onclick="gerarRelatorioPDF()" style="width:100%;margin-bottom:6px;">📄 Relatório PDF</button>
+          <button class="btn btn-sm btn-warning" onclick="abrirModalLembrete()" style="width:100%;margin-bottom:6px;">⏰ Agendar Lembrete</button>
+          <button class="btn btn-sm btn-primary" onclick="abrirChatSuporte()" style="width:100%;">💬 Suporte</button>
+        </div>
+      </div>
       <a href="https://www.instagram.com/luanoliveirags/" target="_blank" rel="noopener noreferrer"
         style="display:block;text-align:center;font-size:11px;color:var(--text-muted);text-decoration:none;margin-top:8px;opacity:.7">
         Desenvolvido por <span style="text-decoration:underline">Luan Gs</span>
