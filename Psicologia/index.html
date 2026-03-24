@@ -187,34 +187,52 @@
         <span class="nav-chevron" id="nav-chevron-principal">▾</span>
       </a>
 
-      <!-- Sub-itens colapsáveis -->
+      <!-- Sub-itens Gestão da Clínica -->
       <div class="nav-subitems" id="nav-subitems-principal">
-        <a href="#" class="nav-item nav-subitem nav-correcoes-item" data-roles="admin profissional psicologo" onclick="_toggleNavCorrecoes(this)">
-          <span class="nav-icon">📋</span>
-          <span style="flex:1">Correção de Testes</span>
-          <span class="nav-chevron" id="nav-chevron-correcoes">▾</span>
+        <a href="#" class="nav-item nav-subitem" data-roles="admin profissional psicologo" onclick="navegarPara('clinica', this); _trocarAbaClin('perfil')">
+          <span class="nav-icon">🏢</span> Perfil
         </a>
-        <div class="nav-subitems nav-subitems-correcoes" id="nav-subitems-correcoes">
-          <a href="#" class="nav-item nav-subitem" data-roles="admin profissional psicologo" onclick="navegarPara('testes', this)">
-            <span class="nav-icon">▶️</span> Iniciar Correção
-          </a>
-          <a href="#" class="nav-item nav-subitem" data-roles="admin profissional psicologo" onclick="navegarPara('dashboard', this)">
-            <span class="nav-icon">📊</span> Dashboard
-          </a>
-          <a href="#" class="nav-item nav-subitem" data-roles="admin profissional psicologo" onclick="navegarPara('historico', this)">
-            <span class="nav-icon">📁</span> Histórico
-          </a>
-          <a href="#" class="nav-item nav-subitem" data-roles="admin profissional psicologo colaborador" onclick="navegarPara('pacientes', this)">
-            <span class="nav-icon">👤</span> Pacientes
-          </a>
-        </div>
-        <a href="#" class="nav-item nav-subitem nav-aplicacao" data-roles="admin profissional psicologo" onclick="navegarPara('aplicacao', this)">
-          <span class="nav-icon">📝</span> Aplicação de Testes
+        <a href="#" class="nav-item nav-subitem" data-roles="admin profissional psicologo colaborador cliente" onclick="navegarPara('clinica', this); _trocarAbaClin('agenda')">
+          <span class="nav-icon">📅</span> Agenda
         </a>
-        <a href="#" class="nav-item nav-subitem nav-admin" data-roles="admin profissional psicologo" style="display:none" onclick="navegarPara('usuarios', this)">
-          <span class="nav-icon">🔑</span> Usuários
+        <a href="#" class="nav-item nav-subitem" data-roles="admin profissional psicologo colaborador cliente" onclick="navegarPara('clinica', this); _trocarAbaClin('financeiro')">
+          <span class="nav-icon">💰</span> Financeiro
+        </a>
+        <a href="#" class="nav-item nav-subitem" data-roles="admin profissional psicologo" onclick="navegarPara('clinica', this); _trocarAbaClin('teleconsulta')">
+          <span class="nav-icon">📹</span> Teleconsulta
         </a>
       </div>
+
+      <!-- Correção de Testes — grupo separado -->
+      <a href="#" class="nav-item nav-correcoes-item" data-roles="admin profissional psicologo" onclick="_toggleNavCorrecoes(this)">
+        <span class="nav-icon">📋</span>
+        <span style="flex:1">Correção de Testes</span>
+        <span class="nav-chevron" id="nav-chevron-correcoes">▾</span>
+      </a>
+      <div class="nav-subitems nav-subitems-correcoes" id="nav-subitems-correcoes">
+        <a href="#" class="nav-item nav-subitem" data-roles="admin profissional psicologo" onclick="navegarPara('testes', this)">
+          <span class="nav-icon">▶️</span> Iniciar Correção
+        </a>
+        <a href="#" class="nav-item nav-subitem" data-roles="admin profissional psicologo" onclick="navegarPara('dashboard', this)">
+          <span class="nav-icon">📊</span> Dashboard
+        </a>
+        <a href="#" class="nav-item nav-subitem" data-roles="admin profissional psicologo" onclick="navegarPara('historico', this)">
+          <span class="nav-icon">📁</span> Histórico
+        </a>
+        <a href="#" class="nav-item nav-subitem" data-roles="admin profissional psicologo colaborador" onclick="navegarPara('pacientes', this)">
+          <span class="nav-icon">👤</span> Pacientes
+        </a>
+      </div>
+
+      <!-- Aplicação de Testes -->
+      <a href="#" class="nav-item nav-aplicacao" data-roles="admin profissional psicologo" onclick="navegarPara('aplicacao', this)">
+        <span class="nav-icon">📝</span> Aplicação de Testes
+      </a>
+
+      <!-- Usuários -->
+      <a href="#" class="nav-item nav-admin" data-roles="admin profissional psicologo" onclick="navegarPara('usuarios', this)">
+        <span class="nav-icon">🔑</span> Usuários
+      </a>
     </nav>
     <div class="sidebar-footer">
       <div id="sidebar-user" style="line-height:1.3;text-align:center;margin-bottom:4px">
@@ -1576,9 +1594,9 @@
 
       <!-- Abas -->
       <div class="clin-tabs">
-        <button class="clin-tab-btn active" data-aba="agenda"     onclick="_trocarAbaClin('agenda')">📅 Agenda</button>
+        <button class="clin-tab-btn active" data-aba="perfil" data-roles="admin profissional psicologo" onclick="_trocarAbaClin('perfil')">🏢 Perfil</button>
+        <button class="clin-tab-btn" data-aba="agenda" onclick="_trocarAbaClin('agenda')">📅 Agenda</button>
         <button class="clin-tab-btn" data-aba="financeiro" data-roles="admin profissional psicologo colaborador" onclick="_trocarAbaClin('financeiro')">💰 Financeiro <span class="clin-tab-notif" style="display:none"></span></button>
-        <button class="clin-tab-btn" data-aba="perfil"     data-roles="admin profissional psicologo" onclick="_trocarAbaClin('perfil')">🏢 Perfil</button>
         <button class="clin-tab-btn" data-aba="teleconsulta" data-roles="admin profissional psicologo" onclick="_trocarAbaClin('teleconsulta')">📹 Teleconsulta</button>
       </div>
 

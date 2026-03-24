@@ -360,7 +360,7 @@ tr.row-cancelado { opacity: .5; }
 .tele-link-url {
   font-size: 13px;
   font-weight: 600;
-  color: var(--primary, #1d4ed8);
+  color: var(--success, #10b981);
   word-break: break-all;
 }
 .tele-btn-copiar,

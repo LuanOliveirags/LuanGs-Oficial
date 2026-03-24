@@ -156,7 +156,7 @@ const DB_CLINICA = {
 // ──────────────────────────────────────────────────────
 let _editandoAgenId = null;
 let _editandoFinId  = null;
-let _abaClinAtiva   = "agenda";
+let _abaClinAtiva   = "perfil"; // primeira aba padrão
 let _chartReceita   = null;
 let _chartFormas    = null;
 
@@ -1319,8 +1319,13 @@ function copiarLinkTeleconsulta() {
 }
 
 function abrirGoogleMeet() {
-  const btn = document.getElementById("tele-btn-abrir-google");
-  const url = btn?.getAttribute("data-url");
+  if (!_teleSalaAtiva || _teleSalaAtiva.provider !== 'google') {
+    const tipoSelect = document.getElementById('tele-tipo-sala');
+    if (tipoSelect) tipoSelect.value = 'google';
+    gerarSalaTeleconsulta();
+  }
+
+  const url = _teleSalaAtiva?.url;
   if (!url) return;
   window.open(url, "_blank", "noopener,noreferrer");
 }

@@ -66,6 +66,12 @@ function navegarPara(secao, linkEl) {
     if (correcoesMenu) correcoesMenu.classList.add("active");
   }
 
+  // Marca menu pai Gestão da Clínica para a seção clinica
+  if (secao === "clinica") {
+    const clinicaMenu = document.querySelector(".nav-clinica-item");
+    if (clinicaMenu) clinicaMenu.classList.add("active");
+  }
+
   // Fecha sidebar no mobile
   document.getElementById("sidebar").classList.remove("open");
 
