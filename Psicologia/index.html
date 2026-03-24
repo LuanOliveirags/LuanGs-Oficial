@@ -201,6 +201,9 @@
         <a href="#" class="nav-item nav-subitem" data-roles="admin profissional psicologo" onclick="navegarPara('clinica', this); _trocarAbaClin('teleconsulta')">
           <span class="nav-icon">📹</span> Teleconsulta
         </a>
+        <a href="#" class="nav-item nav-subitem" data-roles="admin profissional psicologo" onclick="navegarPara('clinica', this); _trocarAbaClin('pacientes')">
+          <span class="nav-icon">👥</span> Pacientes
+        </a>
       </div>
 
       <!-- Correção de Testes — grupo separado -->
@@ -1598,6 +1601,7 @@
         <button class="clin-tab-btn" data-aba="agenda" onclick="_trocarAbaClin('agenda')">📅 Agenda</button>
         <button class="clin-tab-btn" data-aba="financeiro" data-roles="admin profissional psicologo colaborador" onclick="_trocarAbaClin('financeiro')">💰 Financeiro <span class="clin-tab-notif" style="display:none"></span></button>
         <button class="clin-tab-btn" data-aba="teleconsulta" data-roles="admin profissional psicologo" onclick="_trocarAbaClin('teleconsulta')">📹 Teleconsulta</button>
+        <button class="clin-tab-btn" data-aba="pacientes" data-roles="admin profissional psicologo" onclick="_trocarAbaClin('pacientes')">👥 Pacientes</button>
       </div>
 
       <!-- ══ PAINEL: AGENDA ══ -->
@@ -1945,6 +1949,38 @@
           </div>
 
         </div>
+      </div>
+
+      <!-- ══ PAINEL: PACIENTES ══ -->
+      <div class="clin-tab-pane" id="clin-pane-pacientes" style="display:none">
+
+        <div class="card">
+          <div class="clin-pane-header">
+            <div class="clin-pane-title">
+              <h3 style="margin:0">👥 Pacientes</h3>
+              <p>Gerencie os pacientes registrados na clínica</p>
+            </div>
+            <button class="btn btn-primary" onclick="abrirModalPaciente()" style="white-space:nowrap">➕ Novo Paciente</button>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="table" id="tabela-pacientes">
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>E-mail</th>
+                  <th>Telefone</th>
+                  <th>Data Cadastro</th>
+                  <th style="text-align:center">Ações</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <div style="padding:16px;text-align:center;color:var(--text-muted);font-size:13px" id="tabela-pacientes-vazia">
+            Nenhum paciente cadastrado ainda
+          </div>
+        </div>
+
       </div>
 
     </section>

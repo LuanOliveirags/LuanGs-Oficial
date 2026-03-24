@@ -280,6 +280,7 @@ function _trocarAbaClin(aba) {
   if (aba === "financeiro" && role === "cliente") return;
   if (aba === "perfil" && ["colaborador", "cliente"].includes(role)) return;
   if (aba === "teleconsulta" && ["colaborador", "cliente"].includes(role)) return;
+  if (aba === "pacientes" && ["colaborador", "cliente"].includes(role)) return;
 
   _abaClinAtiva = aba;
   document.querySelectorAll(".clin-tab-btn").forEach(b =>
@@ -291,6 +292,7 @@ function _trocarAbaClin(aba) {
   if (aba === "financeiro")    _renderFinanceiro();
   if (aba === "perfil")        _renderPerfil();
   if (aba === "teleconsulta")  _renderTeleconsulta();
+  if (aba === "pacientes")     _renderPacientes();
 }
 
 // ──────────────────────────────────────────────────────
@@ -1352,4 +1354,53 @@ function abrirTeleconsultaComAgendamento(agenId) {
   _trocarAbaClin("teleconsulta");
   const sel = document.getElementById("tele-sel-agendamento");
   if (sel && agenId) sel.value = agenId;
+}
+
+/**
+ * Renderiza a aba de Pacientes — lista de pacientes com ações
+ */
+function _renderPacientes() {
+  const tbl = document.getElementById("tabela-pacientes");
+  const vz = document.getElementById("tabela-pacientes-vazia");
+  if (!tbl || !vz) return;
+
+  const pacientes = DB_PAC?.getTodosPacientes?.() || [];
+  const tbody = tbl.querySelector("tbody");
+
+  if (!pacientes.length) {
+    tbody.innerHTML = "";
+    vz.style.display = "block";
+    return;
+  }
+
+  vz.style.display = "none";
+  tbody.innerHTML = pacientes.map(p => `
+    <tr>
+      <td>${p.nome || "—"}</td>
+      <td>${p.email || "—"}</td>
+      <td>${p.telefone || "—"}</td>
+      <td>${p.dataCadastro ? new Date(p.dataCadastro).toLocaleDateString("pt-BR") : "—"}</td>
+      <td style="text-align:center;white-space:nowrap;font-size:12px">
+        <button class="btn btn-sm btn-secondary" onclick="abrirModalPaciente('${p.id}')" title="Editar">✏️</button>
+        <button class="btn btn-sm btn-danger" onclick="deletarPacienteUI('${p.id}')" title="Deletar">🗑️</button>
+      </td>
+    </tr>
+  `).join("");
+}
+
+/**
+ * Abre o modal de paciente (novo ou edição)
+ */
+function abrirModalPaciente(id = null) {
+  // Placeholder: integrar com modal de paciene já existente
+  console.log("Abrir paciente:", id);
+}
+
+/**
+ * Deleta um paciente com confirmação
+ */
+function deletarPacienteUI(id) {
+  if (!confirm("Tem certeza que deseja deletar este paciente?")) return;
+  // Placeholder: implementar deleção
+  console.log("Deletar paciente:", id);
 }
