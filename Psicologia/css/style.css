@@ -836,6 +836,29 @@ textarea { resize: vertical; }
 #modal-pdf .pdf-preview h4 { margin: 0 0 12px; font-size: 16px; font-weight: 600; color: var(--text-main); }
 #modal-pdf .pdf-preview p { margin: 4px 0; font-size: 14px; color: var(--text-muted); }
 
+/* Modal de aviso legal obrigatorio */
+#modal-aviso-overlay .modal-card {
+  max-width: min(520px, 100%);
+  width: min(100%, 520px);
+}
+#modal-aviso-overlay .modal-card .modal-header h3 {
+  font-size: 16px;
+}
+#modal-aviso-overlay .modal-card p {
+  font-size: 14px;
+  line-height: 1.6;
+}
+@media (max-width: 768px) {
+  #modal-aviso-overlay .modal-card {
+    max-width: 100%;
+    width: calc(100% - 16px);
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    max-height: 92vh;
+  }
+  #modal-aviso-overlay .modal-card p { font-size: 13px; }
+  #modal-aviso-overlay .modal-card label { font-size: 12px; }
+}
+
 /* ================================================================
    HUB DE TESTES
 ================================================================ */

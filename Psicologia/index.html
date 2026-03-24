@@ -1894,9 +1894,8 @@
           <div class="tele-setup-form">
             <div class="form-group" style="margin:0;flex:1">
               <label>Tipo de Sala</label>
-              <select id="tele-tipo-sala" style="width:100%;margin-bottom:8px">
-                <option value="jitsi">Jitsi Meet (padrão)</option>
-                <option value="google">Google Meet</option>
+              <select id="tele-tipo-sala" style="width:100%;margin-bottom:8px" disabled>
+                <option value="google">Google Meet (padrão)</option>
               </select>
               <label>Agendamento vinculado</label>
               <select id="tele-sel-agendamento" style="width:100%">
@@ -2081,7 +2080,7 @@
 
 <!-- Modal Aviso Obrigatório CFP -->
 <div id="modal-aviso-overlay" class="modal-overlay hidden">
-  <div class="modal-card" onclick="event.stopPropagation()" style="max-width:520px">
+  <div class="modal-card" onclick="event.stopPropagation()">
     <div class="modal-header">
       <h3>⚠️ Aviso Legal Obrigatório</h3>
     </div>
