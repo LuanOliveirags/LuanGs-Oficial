@@ -1,0 +1,264 @@
+/* ============================================
+   ANIMAÇÕES E TRANSIÇÕES
+   ============================================ */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ============================================
+   MODO ESCURO MELHORADO
+   ============================================ */
+
+body.dark {
+    --light-bg: #0f0f0f;
+    --card-bg: #1e1e1e;
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0b0;
+    --border-color: #333333;
+}
+
+body.dark header {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+body.dark .stat.card {
+    background: linear-gradient(135deg, #2a2a2a 0%, #1e1e1e 100%);
+}
+
+body.dark .chart-container {
+    border: 1px solid var(--border-color);
+}
+
+body.dark form {
+    border: 1px solid var(--border-color);
+}
+
+body.dark li:hover {
+    background-color: #2a2a2a;
+}
+
+body.dark .bottom-nav {
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================
+   ACESSIBILIDADE
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Suporte a high contrast */
+@media (prefers-contrast: more) {
+    .btn-primary, .btn-success {
+        border: 2px solid var(--primary);
+    }
+
+    button:focus {
+        outline: 3px solid var(--primary);
+    }
+}
+
+/* ============================================
+   IMPRESSÃO
+   ============================================ */
+
+@media print {
+    header, .bottom-nav, .fab, button {
+        display: none;
+    }
+
+    body {
+        background: white;
+        color: black;
+    }
+
+    section {
+        page-break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #ccc;
+    }
+
+    .nav-item {
+        display: none;
+    }
+}
+
+/* ============================================
+   SUPORTE A NOTCH/SAFE AREA
+   ============================================ */
+
+@supports (padding: max(0px)) {
+    body {
+        padding-left: max(0px, env(safe-area-inset-left));
+        padding-right: max(0px, env(safe-area-inset-right));
+    }
+
+    header {
+        padding-top: max(1rem, env(safe-area-inset-top));
+        padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    }
+
+    main {
+        padding-bottom: max(80px, calc(80px + env(safe-area-inset-bottom)));
+    }
+
+    .bottom-nav {
+        padding-bottom: max(0px, env(safe-area-inset-bottom));
+    }
+
+    .fab {
+        bottom: max(80px, calc(80px + env(safe-area-inset-bottom)));
+        right: max(1.5rem, calc(1.5rem + env(safe-area-inset-right)));
+    }
+}
+
+/* ============================================
+   MODO ESCURO DO SISTEMA
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+    body:not(.dark) {
+        background-color: #0f0f0f;
+        color: #ffffff;
+    }
+
+    body:not(.dark) section {
+        background-color: #1e1e1e;
+    }
+
+    body:not(.dark) input, body:not(.dark) select {
+        background-color: #2a2a2a;
+        color: #ffffff;
+        border-color: #444;
+    }
+
+    body:not(.dark) .bottom-nav {
+        background-color: #1e1e1e;
+    }
+}
+
+/* ============================================
+   LOADING STATE
+   ============================================ */
+
+.loading {
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 24px;
+    height: 24px;
+    border: 3px solid var(--border-color);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: rotate 0.8s linear infinite;
+}
+
+/* ============================================
+   NOTIFICAÇÕES
+   ============================================ */
+
+.alert {
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    animation: slideDown 0.3s ease-out;
+}
+
+.alert-success {
+    background-color: rgba(76, 175, 80, 0.1);
+    border-left: 4px solid var(--success);
+    color: var(--success);
+}
+
+.alert-danger {
+    background-color: rgba(244, 67, 54, 0.1);
+    border-left: 4px solid var(--danger);
+    color: var(--danger);
+}
+
+.alert-warning {
+    background-color: rgba(255, 193, 7, 0.1);
+    border-left: 4px solid var(--warning);
+    color: #f57f17;
+}
+
+.alert-info {
+    background-color: rgba(33, 150, 243, 0.1);
+    border-left: 4px solid var(--secondary);
+    color: var(--secondary);
+}
+
+/* ============================================
+   SKELETON LOADING
+   ============================================ */
+
+.skeleton {
+    background: linear-gradient(90deg, var(--border-color) 25%, transparent 50%, var(--border-color) 75%);
+    background-size: 200% 100%;
+    animation: pulse 2s infinite;
+    border-radius: 4px;
+    height: 20px;
+}
+
+.skeleton-text {
+    height: 16px;
+    margin-bottom: 0.5rem;
+}
+
+.skeleton-card {
+    height: 100px;
+    margin-bottom: 1rem;
+}

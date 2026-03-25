@@ -6,6 +6,8 @@
     <meta name="theme-color" content="#4CAF50">
     <link rel="manifest" href="manifest.json">
     <title>Controle de Finanças Pessoais</title>
+    <link rel="stylesheet" href="css/app-style.css">
+    <link rel="stylesheet" href="css/animations.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/base/responsive.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -17,7 +19,7 @@
         <button id="toggle-tema" class="btn-tema"><i class="fas fa-moon"></i></button>
     </header>
     <main>
-        <section id="dashboard">
+        <section id="dashboard" class="active">
             <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
             <div class="stats">
                 <div class="stat card">
@@ -192,7 +194,78 @@
             <button id="btn-testar-notificacao" class="btn btn-warning">Testar Notificação</button>
         </section>
     </main>
+    
+    <!-- Floating Action Button -->
+    <button class="fab" id="fab-adicionar" title="Adicionar Transação">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" data-section="dashboard" title="Dashboard">
+            <i class="fas fa-chart-pie"></i>
+            <span>Resumo</span>
+        </button>
+        <button class="nav-item" data-section="formulario" title="Adicionar Transação">
+            <i class="fas fa-plus-circle"></i>
+            <span>Adicionar</span>
+        </button>
+        <button class="nav-item" data-section="dividas" title="Dívidas">
+            <i class="fas fa-file-invoice-dollar"></i>
+            <span>Dívidas</span>
+        </button>
+        <button class="nav-item" data-section="salarios" title="Salários">
+            <i class="fas fa-wallet"></i>
+            <span>Salários</span>
+        </button>
+    </nav>
+
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="js/script.js"></script>
+    <script>
+        // App Navigation System
+        document.addEventListener('DOMContentLoaded', function() {
+            const navItems = document.querySelectorAll('.nav-item');
+            const fab = document.getElementById('fab-adicionar');
+            const sections = document.querySelectorAll('section');
+
+            function showSection(sectionId) {
+                // Hide all sections
+                sections.forEach(section => {
+                    section.classList.remove('active');
+                });
+
+                // Show selected section
+                const targetSection = document.getElementById(sectionId);
+                if (targetSection) {
+                    targetSection.classList.add('active');
+                }
+
+                // Update nav items
+                navItems.forEach(item => {
+                    item.classList.remove('active');
+                });
+                document.querySelector(`[data-section="${sectionId}"]`)?.classList.add('active');
+
+                // Scroll to top
+                window.scrollTo(0, 0);
+            }
+
+            // Nav item click handlers
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    showSection(this.dataset.section);
+                });
+            });
+
+            // FAB click handler
+            fab.addEventListener('click', function() {
+                showSection('formulario');
+            });
+
+            // Set dashboard as active on load
+            showSection('dashboard');
+        });
+    </script>
 </body>
 </html>
