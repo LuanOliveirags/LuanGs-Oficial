@@ -25,9 +25,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
-  max-width: 1400px;
-  margin: 0 auto;
+  padding: 1rem 1rem;
+  max-width: none;
+  margin: 0;
+}
+
+/* ajusta o menu desktop para ficar no lado direito */
+.nav-menu-desktop {
+  margin-left: auto;
 }
 
 /* Logo na barra */
