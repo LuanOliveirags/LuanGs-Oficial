@@ -1,0 +1,293 @@
+/* ============================================
+   CUSTOMIZAÇÕES PARA SEÇÕES
+   ============================================ */
+
+section h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 0 0 1.5rem 0;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+section h2 i {
+    color: var(--primary);
+    font-size: 1.3rem;
+}
+
+section h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 1.5rem 0 1rem 0;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.9rem;
+}
+
+section h3 i {
+    color: var(--primary);
+}
+
+/* ============================================
+   GRID PARA SEÇÕES COM MÚLTIPLAS COLUNAS
+   ============================================ */
+
+#dividas form,
+#salarios form,
+#filtros {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+/* ============================================
+   SEÇÃO FILTROS
+   ============================================ */
+
+#filtros {
+    background: var(--card-bg);
+    padding: 1.25rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 1.5rem;
+}
+
+#filtros label {
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+#filtros input,
+#filtros select {
+    margin-bottom: 0.75rem;
+}
+
+/* Botões lado a lado em mobile */
+#filtros button {
+    width: 100%;
+    margin-bottom: 0.5rem;
+}
+
+@media (min-width: 480px) {
+    #filtros {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        align-items: end;
+    }
+
+    #filtros label {
+        grid-column: 1 / -1;
+    }
+
+    #filtros button {
+        grid-column: 1;
+        width: 100%;
+        margin: 0;
+    }
+}
+
+/* ============================================
+   LISTA DE DÍVIDAS ESTILIZADA
+   ============================================ */
+
+#lista-dividas-luan,
+#lista-dividas-bianca,
+#lista-dividas-conjunto {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+#lista-dividas-luan li,
+#lista-dividas-bianca li,
+#lista-dividas-conjunto li {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    align-items: center;
+}
+
+/* ============================================
+   SALÁRIOS DISPLAY
+   ============================================ */
+
+.salarios-display {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.salarios-display > div {
+    background: var(--card-bg);
+    padding: 1.25rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border-top: 4px solid var(--primary);
+    text-align: center;
+}
+
+.salarios-display > div h3 {
+    margin: 0 0 1rem 0;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.salarios-display > div p {
+    margin: 0.5rem 0;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.salarios-display > div p strong {
+    color: var(--text-primary);
+    font-weight: 700;
+    font-size: 1rem;
+    display: block;
+    margin-top: 0.25rem;
+}
+
+@media (min-width: 600px) {
+    .salarios-display {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 768px) {
+    .salarios-display {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* ============================================
+   GRÁFICOS
+   ============================================ */
+
+.charts {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.chart-container {
+    background: var(--card-bg);
+    padding: 1.25rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.chart-container h3 {
+    margin: 0 0 1rem 0;
+    text-align: center;
+}
+
+#grafico, #grafico-dividas {
+    max-width: 100%;
+    height: 250px;
+    display: block;
+}
+
+@media (min-width: 768px) {
+    .charts {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    #grafico, #grafico-dividas {
+        height: 300px;
+    }
+}
+
+/* ============================================
+   ALERTAS E NOTIFICAÇÕES
+   ============================================ */
+
+.alert {
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    animation: slideDown 0.3s ease-out;
+}
+
+.alert-success {
+    background: rgba(81, 207, 102, 0.1);
+    border-left: 4px solid var(--success);
+    color: var(--success);
+}
+
+.alert-danger {
+    background: rgba(255, 107, 107, 0.1);
+    border-left: 4px solid var(--danger);
+    color: var(--danger);
+}
+
+.alert-warning {
+    background: rgba(255, 217, 61, 0.1);
+    border-left: 4px solid var(--warning);
+    color: #F0A500;
+}
+
+.alert-info {
+    background: rgba(108, 99, 255, 0.1);
+    border-left: 4px solid var(--primary);
+    color: var(--primary);
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================
+   RESPONSIVIDADE PARA MAIOR TELA
+   ============================================ */
+
+@media (min-width: 1024px) {
+    #filtros {
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        gap: 1.5rem;
+    }
+
+    #filtros label {
+        grid-column: auto;
+    }
+
+    #filtros button {
+        grid-column: auto;
+    }
+}
+
+/* ============================================
+   MODO ESCURO
+   ============================================ */
+
+body.dark section {
+    background: var(--light-bg);
+}
+
+body.dark .chart-container,
+body.dark .salarios-display > div,
+body.dark form,
+body.dark #filtros {
+    background: var(--card-bg);
+    border-color: var(--border-color);
+}

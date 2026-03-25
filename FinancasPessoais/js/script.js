@@ -15,22 +15,17 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => console.log('Erro no SW:', error));
     }
+    
     const form = document.getElementById('form-transacao');
-    const lista = document.getElementById('lista-transacoes');
     const saldoSpan = document.getElementById('saldo-atual');
     const totalReceitasSpan = document.getElementById('total-receitas');
     const totalDespesasSpan = document.getElementById('total-despesas');
-    const mediaMensalSpan = document.getElementById('media-mensal');
-    const totalDividasLuanSpan = document.getElementById('total-dividas-luan');
-    const totalDividasBiancaSpan = document.getElementById('total-dividas-bianca');
-    const totalDividasConjuntoSpan = document.getElementById('total-dividas-conjunto');
-    const salarioLiquidoSpan = document.getElementById('salario-liquido');
     const formDivida = document.getElementById('form-divida');
     const listaDividasLuan = document.getElementById('lista-dividas-luan');
     const listaDividasBianca = document.getElementById('lista-dividas-bianca');
     const listaDividasConjunto = document.getElementById('lista-dividas-conjunto');
     const formSalario = document.getElementById('form-salario');
-    const toggleTema = document.getElementById('toggle-tema');
+    const toggleTema = document.querySelector('.btn-tema');
     const btnFiltrar = document.getElementById('btn-filtrar');
     const btnLimparFiltros = document.getElementById('btn-limpar-filtros');
     const btnExportar = document.getElementById('btn-exportar');
@@ -39,6 +34,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnTestarNotificacao = document.getElementById('btn-testar-notificacao');
     const filtroMes = document.getElementById('filtro-mes');
     const filtroCategoria = document.getElementById('filtro-categoria');
+    const fab = document.getElementById('fab-adicionar');
+    const navItems = document.querySelectorAll('.nav-item');
 
     let transacoes = JSON.parse(localStorage.getItem('transacoes')) || [];
     let transacoesFiltradas = [...transacoes];
@@ -49,16 +46,48 @@ document.addEventListener('DOMContentLoaded', function() {
     // Tema
     function aplicarTema() {
         document.body.classList.toggle('dark', temaEscuro);
-        toggleTema.innerHTML = temaEscuro ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        if (toggleTema) {
+            toggleTema.innerHTML = temaEscuro ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        }
     }
 
-    toggleTema.addEventListener('click', function() {
-        temaEscuro = !temaEscuro;
-        localStorage.setItem('tema', temaEscuro ? 'dark' : 'light');
-        aplicarTema();
-    });
+    if (toggleTema) {
+        toggleTema.addEventListener('click', function() {
+            temaEscuro = !temaEscuro;
+            localStorage.setItem('tema', temaEscuro ? 'dark' : 'light');
+            aplicarTema();
+        });
+    }
 
     aplicarTema();
+
+    // Navegação por abas
+    function showSection(sectionId) {
+        const sections = document.querySelectorAll('section');
+        sections.forEach(section => section.classList.remove('active'));
+        
+        const targetSection = document.getElementById(sectionId);
+        if (targetSection) {
+            targetSection.classList.add('active');
+        }
+
+        navItems.forEach(item => item.classList.remove('active'));
+        document.querySelector(`[data-section="${sectionId}"]`)?.classList.add('active');
+
+        window.scrollTo(0, 0);
+    }
+
+    navItems.forEach(item => {
+        item.addEventListener('click', function() {
+            showSection(this.dataset.section);
+        });
+    });
+
+    if (fab) {
+        fab.addEventListener('click', function() {
+            showSection('formulario');
+        });
+    }
 
     // Cálculos
     function calcularTotais() {

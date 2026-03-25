@@ -6,7 +6,8 @@
     <meta name="theme-color" content="#4CAF50">
     <link rel="manifest" href="manifest.json">
     <title>Controle de Finanças Pessoais</title>
-    <link rel="stylesheet" href="css/app-style.css">
+    <link rel="stylesheet" href="css/calendar-style.css">
+    <link rel="stylesheet" href="css/sections.css">
     <link rel="stylesheet" href="css/animations.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/base/responsive.css">
@@ -15,63 +16,52 @@
 </head>
 <body>
     <header>
-        <h1><i class="fas fa-chart-line"></i> Controle de Finanças Pessoais - Casal</h1>
-        <button id="toggle-tema" class="btn-tema"><i class="fas fa-moon"></i></button>
+        <h1><i class="fas fa-chart-line"></i> Minhas Finanças</h1>
     </header>
     <main>
         <section id="dashboard" class="active">
-            <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
-            <div class="stats">
-                <div class="stat card">
-                    <i class="fas fa-arrow-up icon-green"></i>
-                    <h3>Total Receitas</h3>
-                    <p id="total-receitas">R$ 0.00</p>
+            <div class="dashboard-header">
+                <div class="month-selector">
+                    <button id="prev-month"><i class="fas fa-chevron-left"></i></button>
+                    <div class="month-name" id="current-month">Março 2026</div>
+                    <button id="next-month"><i class="fas fa-chevron-right"></i></button>
                 </div>
-                <div class="stat card">
-                    <i class="fas fa-arrow-down icon-red"></i>
-                    <h3>Total Despesas</h3>
-                    <p id="total-despesas">R$ 0.00</p>
+                <button id="toggle-tema" class="btn-tema"><i class="fas fa-moon"></i></button>
+            </div>
+
+            <div id="calendar" class="calendar">
+                <div class="calendar-weekdays">
+                    <div class="weekday">Dom</div>
+                    <div class="weekday">Seg</div>
+                    <div class="weekday">Ter</div>
+                    <div class="weekday">Qua</div>
+                    <div class="weekday">Qui</div>
+                    <div class="weekday">Sex</div>
+                    <div class="weekday">Sab</div>
                 </div>
-                <div class="stat card">
-                    <i class="fas fa-balance-scale icon-blue"></i>
-                    <h3>Saldo Atual</h3>
-                    <p id="saldo-atual">R$ 0.00</p>
+                <div class="calendar-days" id="calendar-days"></div>
+            </div>
+
+            <div class="month-summary">
+                <div class="summary-card income">
+                    <div class="summary-label"><i class="fas fa-arrow-up"></i> Receitas</div>
+                    <div class="summary-value" id="total-receitas">R$ 0.00</div>
                 </div>
-                <div class="stat card">
-                    <i class="fas fa-calendar-alt icon-purple"></i>
-                    <h3>Média Mensal</h3>
-                    <p id="media-mensal">R$ 0.00</p>
+                <div class="summary-card expense">
+                    <div class="summary-label"><i class="fas fa-arrow-down"></i> Despesas</div>
+                    <div class="summary-value" id="total-despesas">R$ 0.00</div>
                 </div>
-                <div class="stat card">
-                    <i class="fas fa-credit-card icon-orange"></i>
-                    <h3>Total Dívidas Luan</h3>
-                    <p id="total-dividas-luan">R$ 0.00</p>
-                </div>
-                <div class="stat card">
-                    <i class="fas fa-credit-card icon-pink"></i>
-                    <h3>Total Dívidas Bianca</h3>
-                    <p id="total-dividas-bianca">R$ 0.00</p>
-                </div>
-                <div class="stat card">
-                    <i class="fas fa-users icon-teal"></i>
-                    <h3>Total Dívidas Conjunto</h3>
-                    <p id="total-dividas-conjunto">R$ 0.00</p>
-                </div>
-                <div class="stat card">
-                    <i class="fas fa-money-bill-wave icon-green"></i>
-                    <h3>Salário Líquido Conjunto</h3>
-                    <p id="salario-liquido">R$ 0.00</p>
+                <div class="summary-card balance">
+                    <div class="summary-label"><i class="fas fa-wallet"></i> Saldo</div>
+                    <div class="summary-value" id="saldo-atual">R$ 0.00</div>
                 </div>
             </div>
-            <div class="charts">
-                <div class="chart-container">
-                    <h3><i class="fas fa-chart-pie"></i> Receitas vs Despesas</h3>
-                    <canvas id="grafico"></canvas>
+
+            <div class="expenses-timeline">
+                <div class="timeline-header">
+                    <i class="fas fa-history"></i> Transações do Mês
                 </div>
-                <div class="chart-container">
-                    <h3><i class="fas fa-chart-bar"></i> Dívidas por Responsável</h3>
-                    <canvas id="grafico-dividas"></canvas>
-                </div>
+                <div id="lista-transacoes" class="timeline-items"></div>
             </div>
         </section>
         <section id="formulario">
@@ -221,51 +211,7 @@
     </nav>
 
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="js/calendar.js"></script>
     <script src="js/script.js"></script>
-    <script>
-        // App Navigation System
-        document.addEventListener('DOMContentLoaded', function() {
-            const navItems = document.querySelectorAll('.nav-item');
-            const fab = document.getElementById('fab-adicionar');
-            const sections = document.querySelectorAll('section');
-
-            function showSection(sectionId) {
-                // Hide all sections
-                sections.forEach(section => {
-                    section.classList.remove('active');
-                });
-
-                // Show selected section
-                const targetSection = document.getElementById(sectionId);
-                if (targetSection) {
-                    targetSection.classList.add('active');
-                }
-
-                // Update nav items
-                navItems.forEach(item => {
-                    item.classList.remove('active');
-                });
-                document.querySelector(`[data-section="${sectionId}"]`)?.classList.add('active');
-
-                // Scroll to top
-                window.scrollTo(0, 0);
-            }
-
-            // Nav item click handlers
-            navItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    showSection(this.dataset.section);
-                });
-            });
-
-            // FAB click handler
-            fab.addEventListener('click', function() {
-                showSection('formulario');
-            });
-
-            // Set dashboard as active on load
-            showSection('dashboard');
-        });
-    </script>
 </body>
 </html>
