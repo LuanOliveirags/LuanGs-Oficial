@@ -75,6 +75,8 @@
   .login-logo-mobile { display: block; }
   .login-form-header { display: none; }
   .login-footer-mobile { display: block; }
+  /* Inputs de busca responsivos */
+  .input-busca, #pac-busca, #agen-busca, #fin-busca { width: 100% !important; max-width: none !important; }
 }
 
 /* SM -- 600px */
@@ -98,6 +100,8 @@
   .resultado-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
   .resultado-area .area-score { font-size: 18px; }
   .tc-nome { font-size: 18px; }
+  /* Inputs de busca responsivos */
+  .input-busca, #pac-busca, #agen-busca, #fin-busca { width: 100% !important; max-width: none !important; min-width: 0 !important; }
 }
 
 /* XS -- 480px */
@@ -136,6 +140,8 @@
   .stat-card { padding: 12px; }
   .card { padding: 12px; margin-bottom: 14px; }
   .sec { padding: 10px; }
+  /* Inputs de busca responsivos */
+  .input-busca, #pac-busca, #agen-busca, #fin-busca { width: 100% !important; max-width: none !important; }
 }
 
 /* LANDSCAPE -- height < 520px */
