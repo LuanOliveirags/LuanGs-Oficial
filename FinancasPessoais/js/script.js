@@ -18,6 +18,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('form-transacao');
     const lista = document.getElementById('lista-transacoes');
     const saldoSpan = document.getElementById('saldo-atual');
+    const totalReceitasSpan = document.getElementById('total-receitas');
+    const totalDespesasSpan = document.getElementById('total-despesas');
+    const mediaMensalSpan = document.getElementById('media-mensal');
     const totalDividasLuanSpan = document.getElementById('total-dividas-luan');
     const totalDividasBiancaSpan = document.getElementById('total-dividas-bianca');
     const totalDividasConjuntoSpan = document.getElementById('total-dividas-conjunto');
@@ -34,6 +37,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnImportar = document.getElementById('btn-importar');
     const inputImportar = document.getElementById('importar-excel');
     const btnTestarNotificacao = document.getElementById('btn-testar-notificacao');
+    const filtroMes = document.getElementById('filtro-mes');
+    const filtroCategoria = document.getElementById('filtro-categoria');
 
     let transacoes = JSON.parse(localStorage.getItem('transacoes')) || [];
     let transacoesFiltradas = [...transacoes];
