@@ -81,6 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.classList.toggle('dark', temaEscuro);
         if (toggleTema) {
             toggleTema.innerHTML = temaEscuro ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+            showToast('Tema alterado! 🎨', 'info');
         }
     }
 
@@ -93,6 +94,72 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     aplicarTema();
+
+    // Sistema de Notificação Toast - Melhorado
+    function showToast(message, type = 'success') {
+        // Remove toast anterior se existir
+        const oldToast = document.querySelector('.toast');
+        if (oldToast) oldToast.remove();
+        
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.innerHTML = `
+            <div class="toast-content">
+                <i class="fas fa-check-circle"></i>
+                <span>${message}</span>
+            </div>
+        `;
+        
+        toast.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(76, 175, 80, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            animation: slideInUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 10000;
+        `;
+        
+        if (type === 'error') {
+            toast.style.background = 'linear-gradient(135deg, #f44336, #d32f2f)';
+        } else if (type === 'warning') {
+            toast.style.background = 'linear-gradient(135deg, #ff9800, #f57c00)';
+        } else if (type === 'info') {
+            toast.style.background = 'linear-gradient(135deg, #2196F3, #1976D2)';
+        }
+        
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.animation = 'fadeOut 0.3s ease';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    // Adicionar estilos de animação ao toast
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(100px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        .toast-content {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+    `;
+    document.head.appendChild(style);
 
     // Navegação por abas
     function showSection(sectionId) {
@@ -287,15 +354,15 @@ document.addEventListener('DOMContentLoaded', function() {
         transacoes.push(transacao);
         aplicarFiltros();
         salvarTransacoes();
-        form.reset();
-        // Confete para receita
+        
+        // Feedback visual
         if (tipo === 'receita') {
-            confetti({
-                particleCount: 100,
-                spread: 70,
-                origin: { y: 0.6 }
-            });
+            showToast(`✓ Receita de R$ ${valor.toFixed(2)} adicionada!`, 'success');
+        } else {
+            showToast(`✓ Despesa de R$ ${valor.toFixed(2)} registrada!`, 'success');
         }
+        
+        form.reset();
     });
 
     // Adicionar dívida
@@ -312,6 +379,7 @@ document.addEventListener('DOMContentLoaded', function() {
         exibirDividas();
         calcularTotais();
         salvarDividas();
+        showToast(`✓ Dívida "${nome}" adicionada!`, 'success');
         formDivida.reset();
     });
 
@@ -326,6 +394,7 @@ document.addEventListener('DOMContentLoaded', function() {
         exibirSalarios();
         calcularTotais();
         salvarSalarios();
+        showToast(`✓ Salário de ${pessoa} atualizado!`, 'success');
         formSalario.reset();
     });
 
@@ -377,6 +446,7 @@ document.addEventListener('DOMContentLoaded', function() {
         a.download = 'transacoes.csv';
         a.click();
         URL.revokeObjectURL(url);
+        showToast(`✓ ${transacoesFiltradas.length} transações exportadas!`, 'success');
     });
 
     // Importar Excel
@@ -424,7 +494,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             salvarTransacoes();
             aplicarFiltros();
-            alert('Dados importados com sucesso!');
+            showToast(`✓ ${rows.length} transações importadas com sucesso!`, 'success');
         };
         reader.readAsArrayBuffer(file);
     });
