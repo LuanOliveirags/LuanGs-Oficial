@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Registrar Service Worker
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js')
+        navigator.serviceWorker.register('./sw.js')
             .then(registration => {
                 console.log('SW registrado');
                 // Pedir permissão para notificações

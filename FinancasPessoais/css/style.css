@@ -197,19 +197,78 @@ body.dark .chart-container h3 {
 }
 
 button {
-    background-color: #4CAF50;
-    color: white;
     border: none;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-button:hover {
-    background-color: #45a049;
-    transform: scale(1.05);
+.btn {
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: bold;
+    text-align: center;
+    display: inline-block;
+    text-decoration: none;
+    transition: all 0.3s ease;
 }
 
-button:active {
+.btn-primary {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #45a049;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.btn-success {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.btn-info {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.btn-info:hover {
+    background-color: #138496;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.btn-warning:hover {
+    background-color: #e0a800;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.btn:active {
     transform: scale(0.95);
 }
 
@@ -256,4 +315,88 @@ body.dark li {
     flex: 1;
     min-width: 200px;
     text-align: center;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    main {
+        padding: 0.5rem;
+    }
+
+    header h1 {
+        font-size: 1.5rem;
+    }
+
+    .stats {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .stat.card {
+        min-width: 200px;
+        margin: 0.5rem 0;
+    }
+
+    .charts {
+        flex-direction: column;
+    }
+
+    .chart-container {
+        min-width: 100%;
+        margin: 0.5rem 0;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+    }
+
+    label {
+        margin-top: 1rem;
+        font-weight: bold;
+    }
+
+    input, select, button {
+        width: 100%;
+        padding: 0.75rem;
+        font-size: 1rem;
+    }
+
+    button {
+        margin-top: 1rem;
+        padding: 0.75rem;
+        font-size: 1rem;
+    }
+
+    #filtros {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    #filtros label {
+        margin-top: 0.5rem;
+    }
+
+    #filtros input, #filtros select, #filtros button {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    .salarios-display {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .salarios-display > div {
+        padding: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+    }
+
+    body.dark .salarios-display > div {
+        background-color: #2a2a2a;
+        border-color: #555;
+    }
 }

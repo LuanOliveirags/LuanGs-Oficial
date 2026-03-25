@@ -96,7 +96,7 @@
                 <input type="number" id="valor" step="0.01" required>
                 <label for="data">Data:</label>
                 <input type="date" id="data" required>
-                <button type="submit">Adicionar</button>
+                <button type="submit" class="btn btn-primary">Adicionar</button>
             </form>
         </section>
         <section id="dividas">
@@ -116,7 +116,7 @@
                 <input type="number" id="dia-vencimento" min="1" max="31" required>
                 <label for="valor-divida">Valor Mensal:</label>
                 <input type="number" id="valor-divida" step="0.01" required>
-                <button type="submit">Adicionar Dívida</button>
+                <button type="submit" class="btn btn-primary">Adicionar Dívida</button>
             </form>
             <h3>Dívidas Luan</h3>
             <ul id="lista-dividas-luan"></ul>
@@ -137,7 +137,7 @@
                 <input type="number" id="salario-bruto" step="0.01" required>
                 <label for="descontos">Descontos Totais:</label>
                 <input type="number" id="descontos" step="0.01" value="0">
-                <button type="submit">Salvar Salário</button>
+                <button type="submit" class="btn btn-primary">Salvar Salário</button>
             </form>
             <div class="salarios-display">
                 <div>
@@ -176,17 +176,17 @@
                 <option value="saude">Saúde</option>
                 <option value="outros">Outros</option>
             </select>
-            <button id="btn-filtrar">Filtrar</button>
-            <button id="btn-limpar-filtros">Limpar Filtros</button>
-            <button id="btn-exportar">Exportar CSV</button>
+            <button id="btn-filtrar" class="btn btn-secondary">Filtrar</button>
+            <button id="btn-limpar-filtros" class="btn btn-secondary">Limpar Filtros</button>
+            <button id="btn-exportar" class="btn btn-success">Exportar CSV</button>
             <label for="importar-excel">Importar Excel:</label>
             <input type="file" id="importar-excel" accept=".xlsx,.xls">
-            <button id="btn-importar">Importar</button>
+            <button id="btn-importar" class="btn btn-info">Importar</button>
         </section>
         <section id="lembretes">
             <h2><i class="fas fa-bell"></i> Lembretes</h2>
             <p>Receba notificações para dívidas vencendo amanhã.</p>
-            <button id="btn-testar-notificacao">Testar Notificação</button>
+            <button id="btn-testar-notificacao" class="btn btn-warning">Testar Notificação</button>
         </section>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </body>

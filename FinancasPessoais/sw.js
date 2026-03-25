@@ -1,10 +1,10 @@
 const CACHE_NAME = 'financas-v1';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/css/style.css',
-  '/js/script.js',
-  '/manifest.json',
+  './',
+  './index.html',
+  './css/style.css',
+  './js/script.js',
+  './manifest.json',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css',
   'https://cdn.jsdelivr.net/npm/chart.js',
   'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'
@@ -29,8 +29,8 @@ self.addEventListener('message', event => {
   if (event.data && event.data.type === 'NOTIFY') {
     self.registration.showNotification('Lembrete de Dívida', {
       body: event.data.message,
-      icon: '/img/icon-192.png',
-      badge: '/img/icon-192.png'
+      icon: './img/icon-192.png',
+      badge: './img/icon-192.png'
     });
   }
 });
