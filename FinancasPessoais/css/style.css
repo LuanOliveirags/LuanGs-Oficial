@@ -208,10 +208,6 @@ section:hover {
     }
 }
 
-body.dark section {
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-}
-
 h2 {
     color: var(--text-primary);
     font-size: 1.5rem;
@@ -336,6 +332,7 @@ form {
     padding: 1.5rem;
     border-radius: 12px;
     border: 1px solid var(--border-color);
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 label {
@@ -459,6 +456,7 @@ input::-webkit-inner-spin-button {
     z-index: 100;
     box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(10px);
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 body.dark .bottom-nav {
@@ -754,6 +752,30 @@ body.dark li:hover {
     background: linear-gradient(135deg, rgba(76, 175, 80, 0.15), rgba(33, 150, 243, 0.1));
 }
 
+body.dark .nav-item {
+    color: var(--text-secondary);
+}
+
+body.dark .nav-item:hover {
+    color: var(--primary);
+}
+
+body.dark .nav-item.active {
+    color: var(--primary);
+}
+
+body.dark .nav-item.active::before {
+    background: linear-gradient(90deg, var(--primary), var(--primary-light));
+}
+
+body.dark section {
+    background: var(--card-bg);
+}
+
+body.dark section.active {
+    background: var(--card-bg);
+}
+
 .receita {
     color: #4CAF50;
     font-weight: 700;
@@ -1003,4 +1025,75 @@ body.dark li:hover {
 
 #filtros {
     display: none;
+}
+
+/* ============================================
+   MODO ESCURO - NAVEGAÇÃO E COMPONENTES
+   ============================================ */
+
+body.dark .bottom-nav {
+    background: var(--card-bg);
+    border-top-color: var(--border-color);
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.4);
+}
+
+body.dark .nav-item {
+    color: var(--text-secondary);
+    background: transparent;
+}
+
+body.dark .nav-item:hover {
+    color: var(--primary);
+    background: rgba(76, 175, 80, 0.1);
+}
+
+body.dark .nav-item.active {
+    color: var(--primary);
+    background: rgba(76, 175, 80, 0.15);
+}
+
+body.dark .nav-item.active::before {
+    background: linear-gradient(90deg, var(--primary), var(--primary-light));
+}
+
+body.dark .nav-item i {
+    color: inherit;
+}
+
+body.dark .nav-item.active i {
+    color: var(--primary);
+}
+
+body.dark .fab {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    box-shadow: 0 8px 24px rgba(76, 175, 80, 0.4);
+}
+
+body.dark .fab:hover {
+    box-shadow: 0 12px 36px rgba(76, 175, 80, 0.5);
+}
+
+body.dark section,
+body.dark section.active {
+    background: var(--card-bg);
+    color: var(--text-primary);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    border-color: var(--border-color);
+}
+
+body.dark form {
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.02), rgba(33, 150, 243, 0.02));
+    border-color: var(--border-color);
+}
+
+body.dark label {
+    color: var(--text-primary);
+}
+
+body.dark input,
+body.dark select,
+body.dark textarea {
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+    border-color: var(--border-color);
 }

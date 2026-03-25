@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const listaDividasBianca = document.getElementById('lista-dividas-bianca');
     const listaDividasConjunto = document.getElementById('lista-dividas-conjunto');
     const formSalario = document.getElementById('form-salario');
-    const toggleTema = document.querySelector('.btn-tema');
+    const toggleTema = document.getElementById('toggle-tema');
     const btnFiltrar = document.getElementById('btn-filtrar');
     const btnLimparFiltros = document.getElementById('btn-limpar-filtros');
     const btnExportar = document.getElementById('btn-exportar');
