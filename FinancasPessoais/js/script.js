@@ -43,6 +43,39 @@ document.addEventListener('DOMContentLoaded', function() {
     let salarios = JSON.parse(localStorage.getItem('salarios')) || { luan: { bruto: 0, descontos: 0 }, bianca: { bruto: 0, descontos: 0 } };
     let temaEscuro = localStorage.getItem('tema') === 'dark';
 
+    // Dados de teste se estiver vazio
+    if (transacoes.length === 0) {
+        const today = new Date();
+        const currentMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+        
+        transacoes = [
+            { data: `${currentMonth}-01`, tipo: 'receita', categoria: 'Salário', descricao: 'Salário Luan', valor: 3500 },
+            { data: `${currentMonth}-01`, tipo: 'receita', categoria: 'Salário', descricao: 'Salário Bianca', valor: 3000 },
+            { data: `${currentMonth}-05`, tipo: 'despesa', categoria: 'Alimentação', descricao: 'Compras no mercado', valor: 250 },
+            { data: `${currentMonth}-10`, tipo: 'despesa', categoria: 'Transporte', descricao: 'Uber', valor: 85.50 },
+            { data: `${currentMonth}-15`, tipo: 'despesa', categoria: 'Utilidades', descricao: 'Conta de luz', valor: 320 },
+            { data: `${currentMonth}-20`, tipo: 'receita', categoria: 'Extra', descricao: 'Freelance', valor: 500 },
+        ];
+        localStorage.setItem('transacoes', JSON.stringify(transacoes));
+        transacoesFiltradas = [...transacoes];
+    }
+
+    if (Object.keys(dividas).length === 0 || dividas.length === 0) {
+        dividas = [
+            { id: 1, nome: 'Empréstimo Banco', valor: 5000, responsavel: 'luan', diaVencimento: 10 },
+            { id: 2, nome: 'Cartão Crédito', valor: 1200, responsavel: 'bianca', diaVencimento: 5 },
+        ];
+        localStorage.setItem('dividas', JSON.stringify(dividas));
+    }
+
+    if (salarios.luan.bruto === 0 || salarios.bianca.bruto === 0) {
+        salarios = {
+            luan: { bruto: 3500, descontos: 420 },
+            bianca: { bruto: 3000, descontos: 350 }
+        };
+        localStorage.setItem('salarios', JSON.stringify(salarios));
+    }
+
     // Tema
     function aplicarTema() {
         document.body.classList.toggle('dark', temaEscuro);
@@ -95,9 +128,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const despesas = transacoesFiltradas.filter(t => t.tipo === 'despesa').reduce((sum, t) => sum + t.valor, 0);
         const saldo = receitas - despesas;
 
-        const meses = [...new Set(transacoesFiltradas.map(t => t.data.substring(0, 7)))];
-        const media = meses.length > 0 ? saldo / meses.length : 0;
-
         const dividasLuan = dividas.filter(d => d.responsavel === 'luan').reduce((sum, d) => sum + d.valor, 0);
         const dividasBianca = dividas.filter(d => d.responsavel === 'bianca').reduce((sum, d) => sum + d.valor, 0);
         const dividasConjunto = dividas.filter(d => d.responsavel === 'conjunto').reduce((sum, d) => sum + d.valor, 0);
@@ -106,14 +136,19 @@ document.addEventListener('DOMContentLoaded', function() {
         const salarioBiancaLiquido = salarios.bianca.bruto - salarios.bianca.descontos;
         const salarioConjuntoLiquido = salarioLuanLiquido + salarioBiancaLiquido;
 
-        totalReceitasSpan.textContent = `R$ ${receitas.toFixed(2)}`;
-        totalDespesasSpan.textContent = `R$ ${despesas.toFixed(2)}`;
-        saldoSpan.textContent = `R$ ${saldo.toFixed(2)}`;
-        mediaMensalSpan.textContent = `R$ ${media.toFixed(2)}`;
-        totalDividasLuanSpan.textContent = `R$ ${dividasLuan.toFixed(2)}`;
-        totalDividasBiancaSpan.textContent = `R$ ${dividasBianca.toFixed(2)}`;
-        totalDividasConjuntoSpan.textContent = `R$ ${dividasConjunto.toFixed(2)}`;
-        salarioLiquidoSpan.textContent = `R$ ${salarioConjuntoLiquido.toFixed(2)}`;
+        if (totalReceitasSpan) totalReceitasSpan.textContent = `R$ ${receitas.toFixed(2)}`;
+        if (totalDespesasSpan) totalDespesasSpan.textContent = `R$ ${despesas.toFixed(2)}`;
+        if (saldoSpan) saldoSpan.textContent = `R$ ${saldo.toFixed(2)}`;
+        
+        const totalDividasLuanSpan = document.getElementById('total-dividas-luan');
+        const totalDividasBiancaSpan = document.getElementById('total-dividas-bianca');
+        const totalDividasConjuntoSpan = document.getElementById('total-dividas-conjunto');
+        const salarioLiquidoSpan = document.getElementById('salario-liquido');
+
+        if (totalDividasLuanSpan) totalDividasLuanSpan.textContent = `R$ ${dividasLuan.toFixed(2)}`;
+        if (totalDividasBiancaSpan) totalDividasBiancaSpan.textContent = `R$ ${dividasBianca.toFixed(2)}`;
+        if (totalDividasConjuntoSpan) totalDividasConjuntoSpan.textContent = `R$ ${dividasConjunto.toFixed(2)}`;
+        if (salarioLiquidoSpan) salarioLiquidoSpan.textContent = `R$ ${salarioConjuntoLiquido.toFixed(2)}`;
     }
 
     // Gráfico
@@ -446,6 +481,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Verificar a cada hora (simulação)
     setInterval(verificarVencimentos, 3600000); // 1 hora
     verificarVencimentos(); // Ao carregar
+
+    // Listener para atualizar gráficos quando mês mudar
+    window.addEventListener('monthChanged', function() {
+        calcularTotais();
+        atualizarGrafico();
+    });
 
     aplicarFiltros();
     exibirDividas();

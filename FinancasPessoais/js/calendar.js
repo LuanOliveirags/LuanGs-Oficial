@@ -6,6 +6,8 @@ class CalendarGenerator {
     constructor() {
         this.currentDate = new Date();
         this.transacoes = JSON.parse(localStorage.getItem('transacoes')) || [];
+        this.dividas = JSON.parse(localStorage.getItem('dividas')) || [];
+        this.salarios = JSON.parse(localStorage.getItem('salarios')) || { luan: { bruto: 0, descontos: 0 }, bianca: { bruto: 0, descontos: 0 } };
     }
 
     generateCalendar() {
@@ -106,16 +108,75 @@ class CalendarGenerator {
         `).join('');
     }
 
+    updateSummary() {
+        const year = this.currentDate.getFullYear();
+        const month = this.currentDate.getMonth();
+        
+        const monthTransactions = this.transacoes.filter(t => {
+            const [tYear, tMonth] = t.data.split('-');
+            return parseInt(tYear) === year && parseInt(tMonth) === month + 1;
+        });
+
+        const receitas = monthTransactions
+            .filter(t => t.tipo === 'receita')
+            .reduce((sum, t) => sum + t.valor, 0);
+        
+        const despesas = monthTransactions
+            .filter(t => t.tipo === 'despesa')
+            .reduce((sum, t) => sum + t.valor, 0);
+        
+        const saldo = receitas - despesas;
+
+        // Atualizar cards de resumo
+        const totalReceitasSpan = document.getElementById('total-receitas');
+        const totalDespesasSpan = document.getElementById('total-despesas');
+        const saldoSpan = document.getElementById('saldo-atual');
+
+        if (totalReceitasSpan) totalReceitasSpan.textContent = `R$ ${receitas.toFixed(2)}`;
+        if (totalDespesasSpan) totalDespesasSpan.textContent = `R$ ${despesas.toFixed(2)}`;
+        if (saldoSpan) saldoSpan.textContent = `R$ ${saldo.toFixed(2)}`;
+
+        // Atualizar dívidas
+        const dividasLuan = this.dividas.filter(d => d.responsavel === 'luan').reduce((sum, d) => sum + d.valor, 0);
+        const dividasBianca = this.dividas.filter(d => d.responsavel === 'bianca').reduce((sum, d) => sum + d.valor, 0);
+        const dividasConjunto = this.dividas.filter(d => d.responsavel === 'conjunto').reduce((sum, d) => sum + d.valor, 0);
+
+        const totalDividasLuanSpan = document.getElementById('total-dividas-luan');
+        const totalDividasBiancaSpan = document.getElementById('total-dividas-bianca');
+        const totalDividasConjuntoSpan = document.getElementById('total-dividas-conjunto');
+
+        if (totalDividasLuanSpan) totalDividasLuanSpan.textContent = `R$ ${dividasLuan.toFixed(2)}`;
+        if (totalDividasBiancaSpan) totalDividasBiancaSpan.textContent = `R$ ${dividasBianca.toFixed(2)}`;
+        if (totalDividasConjuntoSpan) totalDividasConjuntoSpan.textContent = `R$ ${dividasConjunto.toFixed(2)}`;
+
+        // Atualizar salário líquido
+        const salarioLuanLiquido = this.salarios.luan.bruto - this.salarios.luan.descontos;
+        const salarioBiancaLiquido = this.salarios.bianca.bruto - this.salarios.bianca.descontos;
+        const salarioConjuntoLiquido = salarioLuanLiquido + salarioBiancaLiquido;
+
+        const salarioLiquidoSpan = document.getElementById('salario-liquido');
+        if (salarioLiquidoSpan) salarioLiquidoSpan.textContent = `R$ ${salarioConjuntoLiquido.toFixed(2)}`;
+    }
+
     previousMonth() {
         this.currentDate.setMonth(this.currentDate.getMonth() - 1);
         this.generateCalendar();
         this.updateTimeline();
+        this.updateSummary();
+        this.triggerChartUpdate();
     }
 
     nextMonth() {
         this.currentDate.setMonth(this.currentDate.getMonth() + 1);
         this.generateCalendar();
         this.updateTimeline();
+        this.updateSummary();
+        this.triggerChartUpdate();
+    }
+
+    triggerChartUpdate() {
+        // Dispara um evento customizado para atualizar os gráficos
+        window.dispatchEvent(new Event('monthChanged'));
     }
 
     updateTimeline() {
@@ -153,6 +214,7 @@ class CalendarGenerator {
         document.getElementById('next-month').addEventListener('click', () => this.nextMonth());
         this.generateCalendar();
         this.updateTimeline();
+        this.updateSummary();
     }
 }
 

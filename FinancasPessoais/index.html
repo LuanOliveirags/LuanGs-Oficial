@@ -63,6 +63,40 @@
                 </div>
                 <div id="lista-transacoes" class="timeline-items"></div>
             </div>
+
+            <div class="charts">
+                <div class="chart-container">
+                    <h3><i class="fas fa-chart-pie"></i> Receitas vs Despesas</h3>
+                    <canvas id="grafico"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3><i class="fas fa-chart-bar"></i> Dívidas por Responsável</h3>
+                    <canvas id="grafico-dividas"></canvas>
+                </div>
+            </div>
+
+            <div class="advanced-stats">
+                <div class="stat-card extra-small">
+                    <i class="fas fa-credit-card icon-orange"></i>
+                    <h4>Dívidas Luan</h4>
+                    <p id="total-dividas-luan">R$ 0.00</p>
+                </div>
+                <div class="stat-card extra-small">
+                    <i class="fas fa-credit-card icon-pink"></i>
+                    <h4>Dívidas Bianca</h4>
+                    <p id="total-dividas-bianca">R$ 0.00</p>
+                </div>
+                <div class="stat-card extra-small">
+                    <i class="fas fa-users icon-teal"></i>
+                    <h4>Dívidas Conjunto</h4>
+                    <p id="total-dividas-conjunto">R$ 0.00</p>
+                </div>
+                <div class="stat-card extra-small">
+                    <i class="fas fa-money-bill-wave icon-green"></i>
+                    <h4>Salário Líquido</h4>
+                    <p id="salario-liquido">R$ 0.00</p>
+                </div>
+            </div>
         </section>
         <section id="formulario">
             <h2><i class="fas fa-plus-circle"></i> Adicionar Transação</h2>
