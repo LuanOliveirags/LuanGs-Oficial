@@ -1,0 +1,437 @@
+/* ============================================
+   RESPONSIVIDADE MOBILE-FIRST
+   ============================================ */
+
+/* ============================================
+   MOBILE - Até 480px
+   ============================================ */
+@media (max-width: 480px) {
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        font-size: 14px;
+    }
+
+    header {
+        padding: 0.75rem 0.5rem;
+    }
+
+    header h1 {
+        font-size: 1.2rem;
+        margin: 0;
+    }
+
+    .btn-tema {
+        top: 5px;
+        right: 5px;
+        font-size: 1.25rem;
+    }
+
+    main {
+        max-width: 100%;
+        padding: 0.5rem;
+        margin: 0;
+    }
+
+    section {
+        margin-bottom: 1rem;
+        padding: 0.75rem;
+        border-radius: 8px;
+    }
+
+    h2 {
+        font-size: 1.25rem;
+        margin: 0.5rem 0;
+    }
+
+    h3 {
+        font-size: 1rem;
+        margin: 0.5rem 0;
+    }
+
+    .stats {
+        flex-direction: column;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .stat.card {
+        min-width: 100%;
+        margin: 0;
+        padding: 0.75rem;
+        flex: none;
+    }
+
+    .stat.card i {
+        font-size: 1.5rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat.card h3 {
+        font-size: 0.85rem;
+        margin: 0.25rem 0;
+    }
+
+    .stat.card p {
+        font-size: 1.2rem;
+    }
+
+    form {
+        gap: 0.5rem;
+    }
+
+    label {
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+        display: block;
+        font-weight: bold;
+    }
+
+    input, select, textarea {
+        width: 100%;
+        padding: 0.75rem;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-bottom: 0.5rem;
+        -webkit-appearance: none;
+        appearance: none;
+    }
+
+    select {
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.7rem center;
+        background-size: 1.5em 1.5em;
+        padding-right: 2.5rem;
+    }
+
+    button {
+        width: 100%;
+        padding: 0.75rem;
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .btn {
+        display: block;
+        width: 100%;
+        margin: 0.5rem 0;
+    }
+
+    .charts {
+        flex-direction: column;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .chart-container {
+        min-width: 100%;
+        margin: 0;
+        padding: 0.75rem;
+    }
+
+    #grafico, #grafico-dividas {
+        height: 250px;
+    }
+
+    #filtros {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    #filtros label {
+        margin-top: 0.75rem;
+    }
+
+    #filtros input, #filtros select {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    #filtros button {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    .salarios-display {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .salarios-display > div {
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    ul {
+        padding: 0;
+    }
+
+    li {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .actions {
+        display: flex;
+        gap: 0.5rem;
+        width: 100%;
+    }
+
+    .actions button {
+        flex: 1;
+        padding: 0.5rem;
+        font-size: 0.8rem;
+        margin: 0;
+    }
+}
+
+/* ============================================
+   TABLET PEQUENO - 481px até 600px
+   ============================================ */
+@media (min-width: 481px) and (max-width: 600px) {
+    body {
+        font-size: 14px;
+    }
+
+    header h1 {
+        font-size: 1.4rem;
+    }
+
+    main {
+        padding: 0.75rem;
+    }
+
+    section {
+        padding: 1rem;
+    }
+
+    .stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+    }
+
+    .stat.card {
+        min-width: auto;
+        margin: 0;
+    }
+
+    input, select, button {
+        font-size: 16px;
+        padding: 0.75rem;
+    }
+
+    #grafico, #grafico-dividas {
+        height: 280px;
+    }
+
+    .chart-container {
+        min-width: 100%;
+    }
+
+    .salarios-display {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+
+/* ============================================
+   TABLET MÉDIO - 601px até 768px
+   ============================================ */
+@media (min-width: 601px) and (max-width: 768px) {
+    header h1 {
+        font-size: 1.6rem;
+    }
+
+    main {
+        padding: 1rem;
+    }
+
+    .stats {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .stat.card {
+        min-width: auto;
+        margin: 0;
+    }
+
+    .charts {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .chart-container {
+        min-width: auto;
+        margin: 0;
+    }
+
+    #grafico, #grafico-dividas {
+        height: 300px;
+    }
+
+    #filtros {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+        align-items: end;
+    }
+
+    #filtros label {
+        grid-column: 1 / -1;
+        margin-top: 0.5rem;
+    }
+
+    #filtros input, #filtros select {
+        margin-bottom: 0;
+    }
+
+    .salarios-display {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .salarios-display > div {
+        margin: 0;
+    }
+}
+
+/* ============================================
+   DESKTOP PEQUENO - 769px até 1024px
+   ============================================ */
+@media (min-width: 769px) and (max-width: 1024px) {
+    main {
+        max-width: 960px;
+        padding: 1.5rem;
+    }
+
+    .stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat.card {
+        min-width: auto;
+        margin: 0;
+    }
+
+    .charts {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    #grafico, #grafico-dividas {
+        height: 350px;
+    }
+
+    #filtros {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr) auto auto;
+        gap: 1rem;
+        align-items: end;
+    }
+
+    .salarios-display {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+    }
+}
+
+/* ============================================
+   DESKTOP GRANDE - 1025px em diante
+   ============================================ */
+@media (min-width: 1025px) {
+    main {
+        max-width: 1200px;
+        padding: 2rem;
+    }
+
+    .stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .charts {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    #grafico, #grafico-dividas {
+        height: 400px;
+    }
+
+    .salarios-display {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+    }
+}
+
+/* ============================================
+   MELHORIAS GERAIS
+   ============================================ */
+
+/* Suporte ao prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Suporte ao prefers-color-scheme */
+@media (prefers-color-scheme: dark) {
+    body:not(.dark) {
+        background-color: #1a1a1a;
+        color: #e0e0e0;
+    }
+
+    body:not(.dark) section {
+        background-color: #2a2a2a;
+    }
+
+    body:not(.dark) input, body:not(.dark) select {
+        background-color: #333;
+        color: #e0e0e0;
+        border-color: #555;
+    }
+}
+
+/* Print style */
+@media print {
+    header, #filtros, button, form {
+        display: none;
+    }
+
+    body {
+        background: white;
+        color: black;
+    }
+
+    section {
+        page-break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #999;
+    }
+}
