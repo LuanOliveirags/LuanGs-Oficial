@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const filtroCategoria = document.getElementById('filtro-categoria');
     const fab = document.getElementById('fab-adicionar');
     const navItems = document.querySelectorAll('.nav-item');
+    const lista = document.getElementById('lista-transacoes');
 
     let transacoes = JSON.parse(localStorage.getItem('transacoes')) || [];
     let transacoesFiltradas = [...transacoes];
@@ -49,12 +50,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const currentMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
         
         transacoes = [
-            { data: `${currentMonth}-01`, tipo: 'receita', categoria: 'Salário', descricao: 'Salário Luan', valor: 3500 },
-            { data: `${currentMonth}-01`, tipo: 'receita', categoria: 'Salário', descricao: 'Salário Bianca', valor: 3000 },
-            { data: `${currentMonth}-05`, tipo: 'despesa', categoria: 'Alimentação', descricao: 'Compras no mercado', valor: 250 },
-            { data: `${currentMonth}-10`, tipo: 'despesa', categoria: 'Transporte', descricao: 'Uber', valor: 85.50 },
-            { data: `${currentMonth}-15`, tipo: 'despesa', categoria: 'Utilidades', descricao: 'Conta de luz', valor: 320 },
-            { data: `${currentMonth}-20`, tipo: 'receita', categoria: 'Extra', descricao: 'Freelance', valor: 500 },
+            { id: 1, data: `${currentMonth}-01`, tipo: 'receita', categoria: 'Salário', descricao: 'Salário Luan', valor: 3500 },
+            { id: 2, data: `${currentMonth}-01`, tipo: 'receita', categoria: 'Salário', descricao: 'Salário Bianca', valor: 3000 },
+            { id: 3, data: `${currentMonth}-05`, tipo: 'despesa', categoria: 'Alimentação', descricao: 'Compras no mercado', valor: 250 },
+            { id: 4, data: `${currentMonth}-10`, tipo: 'despesa', categoria: 'Transporte', descricao: 'Uber', valor: 85.50 },
+            { id: 5, data: `${currentMonth}-15`, tipo: 'despesa', categoria: 'Utilidades', descricao: 'Conta de luz', valor: 320 },
+            { id: 6, data: `${currentMonth}-20`, tipo: 'receita', categoria: 'Extra', descricao: 'Freelance', valor: 500 },
         ];
         localStorage.setItem('transacoes', JSON.stringify(transacoes));
         transacoesFiltradas = [...transacoes];
@@ -191,9 +192,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Cálculos
     function calcularTotais() {
-        const receitas = transacoesFiltradas.filter(t => t.tipo === 'receita').reduce((sum, t) => sum + t.valor, 0);
+        const receitas = transacoesFiltradas.filter(t => t.tipo === 'receita' && t.categoria !== 'Salário').reduce((sum, t) => sum + t.valor, 0);
         const despesas = transacoesFiltradas.filter(t => t.tipo === 'despesa').reduce((sum, t) => sum + t.valor, 0);
-        const saldo = receitas - despesas;
+        const dividasTotais = dividas.reduce((sum, d) => sum + d.valor, 0);
+        const saldo = salarioConjuntoLiquido + receitas - despesas - dividasTotais;
 
         const dividasLuan = dividas.filter(d => d.responsavel === 'luan').reduce((sum, d) => sum + d.valor, 0);
         const dividasBianca = dividas.filter(d => d.responsavel === 'bianca').reduce((sum, d) => sum + d.valor, 0);
@@ -221,18 +223,20 @@ document.addEventListener('DOMContentLoaded', function() {
     // Gráfico
     let chart, chartDividas;
     function atualizarGrafico() {
-        const receitas = transacoesFiltradas.filter(t => t.tipo === 'receita').reduce((sum, t) => sum + t.valor, 0);
+        const receitasExtras = transacoesFiltradas.filter(t => t.tipo === 'receita' && t.categoria !== 'Salário').reduce((sum, t) => sum + t.valor, 0);
         const despesas = transacoesFiltradas.filter(t => t.tipo === 'despesa').reduce((sum, t) => sum + t.valor, 0);
+        const dividasTotais = dividas.reduce((sum, d) => sum + d.valor, 0);
+        const salarios = salarioConjuntoLiquido;
 
         if (chart) chart.destroy();
 
         chart = new Chart(document.getElementById('grafico'), {
             type: 'doughnut',
             data: {
-                labels: ['Receitas', 'Despesas'],
+                labels: ['Salários', 'Receitas Extras', 'Despesas', 'Dívidas'],
                 datasets: [{
-                    data: [receitas, despesas],
-                    backgroundColor: ['#4CAF50', '#f44336']
+                    data: [salarios, receitasExtras, despesas, dividasTotais],
+                    backgroundColor: ['#4CAF50', '#8BC34A', '#f44336', '#FF9800']
                 }]
             },
             options: {

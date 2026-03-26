@@ -87,7 +87,7 @@ class CalendarGenerator {
     }
 
     renderTimelineForDay(transactions, day) {
-        const timeline = document.getElementById('lista-transacoes');
+        const timeline = document.getElementById('timeline-transacoes');
         
         if (transactions.length === 0) {
             timeline.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 2rem;">Nenhuma transação neste dia</p>';
