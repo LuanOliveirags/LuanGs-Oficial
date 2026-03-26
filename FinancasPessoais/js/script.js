@@ -195,15 +195,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const receitas = transacoesFiltradas.filter(t => t.tipo === 'receita' && t.categoria !== 'Salário').reduce((sum, t) => sum + t.valor, 0);
         const despesas = transacoesFiltradas.filter(t => t.tipo === 'despesa').reduce((sum, t) => sum + t.valor, 0);
         const dividasTotais = dividas.reduce((sum, d) => sum + d.valor, 0);
+
+        const salarioLuanLiquido = salarios.luan.bruto - salarios.luan.descontos;
+        const salarioBiancaLiquido = salarios.bianca.bruto - salarios.bianca.descontos;
+        const salarioConjuntoLiquido = salarioLuanLiquido + salarioBiancaLiquido;
         const saldo = salarioConjuntoLiquido + receitas - despesas - dividasTotais;
 
         const dividasLuan = dividas.filter(d => d.responsavel === 'luan').reduce((sum, d) => sum + d.valor, 0);
         const dividasBianca = dividas.filter(d => d.responsavel === 'bianca').reduce((sum, d) => sum + d.valor, 0);
         const dividasConjunto = dividas.filter(d => d.responsavel === 'conjunto').reduce((sum, d) => sum + d.valor, 0);
-
-        const salarioLuanLiquido = salarios.luan.bruto - salarios.luan.descontos;
-        const salarioBiancaLiquido = salarios.bianca.bruto - salarios.bianca.descontos;
-        const salarioConjuntoLiquido = salarioLuanLiquido + salarioBiancaLiquido;
 
         if (totalReceitasSpan) totalReceitasSpan.textContent = `R$ ${receitas.toFixed(2)}`;
         if (totalDespesasSpan) totalDespesasSpan.textContent = `R$ ${despesas.toFixed(2)}`;
@@ -226,7 +226,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const receitasExtras = transacoesFiltradas.filter(t => t.tipo === 'receita' && t.categoria !== 'Salário').reduce((sum, t) => sum + t.valor, 0);
         const despesas = transacoesFiltradas.filter(t => t.tipo === 'despesa').reduce((sum, t) => sum + t.valor, 0);
         const dividasTotais = dividas.reduce((sum, d) => sum + d.valor, 0);
-        const salarios = salarioConjuntoLiquido;
+
+        const salarioLuanLiquido = salarios.luan.bruto - salarios.luan.descontos;
+        const salarioBiancaLiquido = salarios.bianca.bruto - salarios.bianca.descontos;
+        const salarioConjuntoLiquido = salarioLuanLiquido + salarioBiancaLiquido;
 
         if (chart) chart.destroy();
 
@@ -235,7 +238,7 @@ document.addEventListener('DOMContentLoaded', function() {
             data: {
                 labels: ['Salários', 'Receitas Extras', 'Despesas', 'Dívidas'],
                 datasets: [{
-                    data: [salarios, receitasExtras, despesas, dividasTotais],
+                    data: [salarioConjuntoLiquido, receitasExtras, despesas, dividasTotais],
                     backgroundColor: ['#4CAF50', '#8BC34A', '#f44336', '#FF9800']
                 }]
             },
@@ -297,11 +300,30 @@ document.addEventListener('DOMContentLoaded', function() {
         listaDividasBianca.innerHTML = '';
         listaDividasConjunto.innerHTML = '';
 
+        if (dividas.length === 0) {
+            const vazio = document.createElement('p');
+            vazio.textContent = 'Nenhuma dívida cadastrada ainda.';
+            vazio.className = 'texto-vazio';
+            listaDividasLuan.appendChild(vazio);
+            listaDividasBianca.appendChild(vazio.cloneNode(true));
+            listaDividasConjunto.appendChild(vazio.cloneNode(true));
+            return;
+        }
+
         dividas.forEach(divida => {
+            const parcela = divida.parcela ? divida.parcela : 'não informada';
+            const vencimento = divida.diaVencimento ? divida.diaVencimento : 'não informado';
+            const valor = Number.isFinite(divida.valor) ? divida.valor.toFixed(2) : '0.00';
+
             const li = document.createElement('li');
             li.innerHTML = `
-                <span>${divida.nome} - Parcela: ${divida.parcela} - Venc: ${divida.diaVencimento} - R$ ${divida.valor.toFixed(2)}</span>
-                <button onclick="removerDivida(${divida.id})">Remover</button>
+                <div class="divida-dados">
+                    <strong>${divida.nome}</strong>
+                    <small>Parcela: ${parcela}</small>
+                    <small>Vencimento: ${vencimento}</small>
+                    <small>Valor: R$ ${valor}</small>
+                </div>
+                <button class="btn-remover" onclick="removerDivida(${divida.id})">Remover</button>
             `;
 
             if (divida.responsavel === 'luan') listaDividasLuan.appendChild(li);
@@ -348,6 +370,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Adicionar
     form.addEventListener('submit', function(e) {
         e.preventDefault();
+        form.classList.add('was-validated');
+
+        if (!form.checkValidity()) {
+            showToast('Preencha todos os campos obrigatórios corretamente.', 'warning');
+            return;
+        }
+
         const tipo = document.getElementById('tipo').value;
         const categoria = document.getElementById('categoria').value;
         const descricao = document.getElementById('descricao').value;
@@ -367,11 +396,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         form.reset();
+        form.classList.remove('was-validated');
     });
 
     // Adicionar dívida
     formDivida.addEventListener('submit', function(e) {
         e.preventDefault();
+        formDivida.classList.add('was-validated');
+
+        if (!formDivida.checkValidity()) {
+            showToast('Preencha todos os campos obrigatórios corretamente.', 'warning');
+            return;
+        }
+
         const responsavel = document.getElementById('responsavel').value;
         const nome = document.getElementById('nome-divida').value;
         const parcela = document.getElementById('parcela').value;
@@ -385,11 +422,19 @@ document.addEventListener('DOMContentLoaded', function() {
         salvarDividas();
         showToast(`✓ Dívida "${nome}" adicionada!`, 'success');
         formDivida.reset();
+        formDivida.classList.remove('was-validated');
     });
 
     // Adicionar salário
     formSalario.addEventListener('submit', function(e) {
         e.preventDefault();
+        formSalario.classList.add('was-validated');
+
+        if (!formSalario.checkValidity()) {
+            showToast('Preencha todos os campos obrigatórios corretamente.', 'warning');
+            return;
+        }
+
         const pessoa = document.getElementById('pessoa-salario').value;
         const bruto = parseFloat(document.getElementById('salario-bruto').value);
         const descontos = parseFloat(document.getElementById('descontos').value);
@@ -400,6 +445,7 @@ document.addEventListener('DOMContentLoaded', function() {
         salvarSalarios();
         showToast(`✓ Salário de ${pessoa} atualizado!`, 'success');
         formSalario.reset();
+        formSalario.classList.remove('was-validated');
     });
 
     // Testar notificação

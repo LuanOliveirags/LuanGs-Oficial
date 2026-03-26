@@ -377,7 +377,10 @@ input:focus, select:focus, textarea:focus {
     background-color: var(--card-bg);
 }
 
-input:invalid:not(:placeholder-shown), select:invalid:not(:placeholder-shown) {
+/* Validação só expõe estilo após tentativa de envio */
+.was-validated input:invalid:not(:placeholder-shown),
+.was-validated select:invalid:not(:placeholder-shown),
+.was-validated textarea:invalid:not(:placeholder-shown) {
     border-color: #f44336;
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05), 0 0 0 4px rgba(244, 67, 54, 0.1);
 }

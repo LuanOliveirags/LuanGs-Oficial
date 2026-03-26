@@ -196,10 +196,44 @@ section h3 i {
 #lista-dividas-luan li,
 #lista-dividas-bianca li,
 #lista-dividas-conjunto li {
-    display: grid;
-    grid-template-columns: 1fr auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
     gap: 1rem;
-    align-items: center;
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 1rem;
+    box-shadow: 0 10px 20px rgba(0,0,0,.08);
+}
+
+.divida-dados {
+    display: grid;
+    gap: 0.25rem;
+}
+
+.divida-dados strong {
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+.divida-dados small {
+    color: var(--text-secondary);
+    font-size: 0.82rem;
+}
+
+.btn-remover {
+    background: #f44336;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    transition: transform .2s ease, background .2s ease;
+}
+
+.btn-remover:hover {
+    transform: translateY(-1px);
+    background: #d32f2f;
 }
 
 /* ============================================
